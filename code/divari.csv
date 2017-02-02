@@ -1,0 +1,13 @@
+"rivi_id";"Omistaja";"Pakka";"Divari";"Nimi";"Omistaja_nimi";"Picked"
+1;1;1;2;"laurieka";"Lauri";0
+2;1;2;2;"lauritoka";"Lauri";1
+3;1;3;1;"laurikolmas";"Lauri";1
+4;1;4;1;"laurineljas";"Lauri";1
+5;1;5;2;"lauriviides";"Lauri";0
+6;1;6;2;"laurikuudes";"Lauri";1
+7;2;1;1;"marttieka";"Martti";1
+8;2;2;1;"marttitoka";"Martti";1
+9;2;3;2;"marttikolmas";"Martti";0
+10;2;4;2;"marttineljas";"Martti";0
+11;2;5;2;"marttiviides";"Martti";1
+12;2;6;2;"marttikuudes";"Martti";1
