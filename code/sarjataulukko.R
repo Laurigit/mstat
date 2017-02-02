@@ -18,7 +18,7 @@ pelidata_temp_all<-bo_data_conv(input_bo_mode)
     pelidata_all[,Divari:=0]
   }
   
-  #filteroi vaan yhden divarin data
+  #hfilteroi vaan yhden divarin data
   if(!is.na(input_divari) & input_total==FALSE) {
     pelidata_divari<-pelidata_all[Divari==input_divari]
   } else {
