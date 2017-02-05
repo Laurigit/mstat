@@ -1,41 +1,6 @@
-library(shiny)
-library(shinydashboard)
-library(shinyjs)
-library(data.table)
-library(lubridate)
-library(DT)
-library(reshape2)
-#library(shinythemes)
+source("init.R")
 
-options(max.print=1000000)
-options(DT.fillContainer = FALSE) 
-options(DT.autoHideNavigation = FALSE) 
-#setwd("C:/Users/laurilepisto/Documents/R/shiny/r2")
-setwd("C:/Users/Lauri/Documents/R/rkoodi")
-luecsv<-function(tiedostonimi) {
-  tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE))
-  return(tulos)
-}
-kircsv<-function(datataulu,tiedostonimi) {
-  tulos <- write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
-}
 
-paivitaSliderit<-function(input_peli_ID,session) {
-  kaikkipelit<-luecsv("pelit.csv")
-  laurin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Laurin_pakka])
-  martin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Martin_pakka])
-  
-  updateSelectInput(session,"select_laurin_pakka",selected=  laurin_pakka)
-  updateSelectInput(session,"select_martin_pakka",selected=  martin_pakka)
-  
-}
-
-aikaero<-function(aika,loppuaika,pvm,loppupvm){
-return((loppupvm-pvm)*60*60*24+loppuaika-aika)
-
-}
-
-source("sarjataulukko.R")
 
 
 
