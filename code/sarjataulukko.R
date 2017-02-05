@@ -8,14 +8,17 @@ pelidata_temp_all<-bo_data_conv(input_bo_mode)
   
   #ota pois pelaamattomat pelit
   pelidata_temp<-pelidata_temp_all[!is.na(Voittaja)]
+  nimiselite <-NULL
   
   #valitaan turnausnumero tai kaikki
   if(input_total!=TRUE) {
     pelidata_all<-pelidata_temp[TurnausNo==input_turnaus]
+    nimiselite <-"Tot"
   } else {
     pelidata_all<-pelidata_temp
     #nolladivari = kaikki pelit
     pelidata_all[,Divari:=0]
+    nimiselite <-"Tur"
   }
   
   #hfilterggoi vaan yhden divarin data
@@ -28,6 +31,7 @@ pelidata_temp_all<-bo_data_conv(input_bo_mode)
 
   if(!is.na(input_Laurin_pakka)&!is.na(input_Martin_pakka)) {
     pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka&Martin_pakka==input_Martin_pakka]
+    nimiselite <-paste(nimiselite,"VS",sep="_")
   } else {
     pelidata_vs<-pelidata_divari
   }

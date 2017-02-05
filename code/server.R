@@ -569,15 +569,17 @@ output$sarjataulukkovalitsin <- renderUI({
     
     
     transposed<-melt(vs_statsit$sarjataulukko,id.vars=c("Nimi"),variable.name="Tilasto")
-    lopputulos<-dcast(transposed,Tilasto~Nimi)
+    all_rows<-data.table(dcast(transposed,Tilasto~Nimi))
+  
+    lopputulos<-all_rows[Tilasto %in% c("Voitot","Voitto_pct","Putki")]
     return(lopputulos)  
-   
+     
   },    options = list(
     paging = FALSE,
     searching = FALSE,
     info=FALSE
     
-  ))
+  ),rownames=FALSE)
   
 #valueboksit
   output$vb_voittoputki<-renderValueBox({
