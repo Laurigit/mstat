@@ -4,39 +4,64 @@
 
 sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA) {
   
+#jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
+  
 pelidata_temp_all<-bo_data_conv(input_bo_mode)
   
   #ota pois pelaamattomat pelit
   pelidata_temp<-pelidata_temp_all[!is.na(Voittaja)]
-  nimiselite <-NULL
+  nimipaate<-NULL
   
+
   #valitaan turnausnumero tai kaikki
   if(input_total!=TRUE) {
     pelidata_all<-pelidata_temp[TurnausNo==input_turnaus]
-    nimiselite <-"Tot"
   } else {
     pelidata_all<-pelidata_temp
     #nolladivari = kaikki pelit
     pelidata_all[,Divari:=0]
-    nimiselite <-"Tur"
-  }
   
-  #hfilterggoi vaan yhden divarin data
+  }
+
+  #filteroi vaan yhden divarin data
   if(!is.na(input_divari) & input_total==FALSE) {
     pelidata_divari<-pelidata_all[Divari==input_divari]
   } else {
     pelidata_divari <-pelidata_all
   }
-  
 
+#vs statsit 
   if(!is.na(input_Laurin_pakka)&!is.na(input_Martin_pakka)) {
-    pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka&Martin_pakka==input_Martin_pakka]
-    nimiselite <-paste(nimiselite,"VS",sep="_")
+   
+    
+    
+
+      pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka&Martin_pakka==input_Martin_pakka]
+      nimipaate<-paste("VS",nimipaate,sep="")
+
+    
   } else {
     pelidata_vs<-pelidata_divari
   }
 
-
+#Laurin pakan statsit
+  if(!is.na(input_Laurin_pakka) & is.na(input_Martin_pakka)) {
+    
+    pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka]
+    nimipaate<-paste("Deck",nimipaate,sep="") 
+    
+  }
+  
+  #Martin pakan statsit
+  if(is.na(input_Laurin_pakka) & !is.na(input_Martin_pakka)) {
+    
+    pelidata_vs<-pelidata_divari[Martin_pakka==input_Martin_pakka]
+    nimipaate<-paste("Deck",nimipaate,sep="") 
+    
+  }
+  
+  
+  
 if(is.na(input_moving_average)) {
   pelidata<-pelidata_vs
   
@@ -44,10 +69,10 @@ if(is.na(input_moving_average)) {
   #montako pelattu
   pelit_kpl<-nrow(pelidata_vs)
   pelidata<-pelidata_vs[(pelit_kpl-min(pelit_kpl,input_moving_average)+1):pelit_kpl]
-  
+  nimipaate<-paste("MA",nimipaate,sep="")
 }
 
-  
+
   
   Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=1),by=.(Pakka=Laurin_pakka,Divari)]
   Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=2),by=.(Pakka=Martin_pakka,Divari)]
@@ -78,20 +103,45 @@ if(is.na(input_moving_average)) {
   joinedputki<-joinapakka[nykyputki]
   tulos<-NULL
   tulos$divarit <-sort(unique(joinedputki[,Divari]))
-  tulos$sarjataulukko<-joinedputki[,.(Nimi,Pelit,Voitot,Tappiot,Voitto_pct=round(Voitto_pct*100,0),Putki)][order(-Voitot)]
+  
+
+  if(!is.na(input_Laurin_pakka)&is.na(input_Martin_pakka)) {
+    joinedputki_filt  <- joinedputki[(Omistaja==1 & Pakka==input_Laurin_pakka)]
+  
+  } else if (is.na(input_Laurin_pakka)&!is.na(input_Martin_pakka)){
+    
+    joinedputki_filt  <- joinedputki[(Omistaja==2 & Pakka==input_Martin_pakka) ]
+
+  }else {
+    joinedputki_filt<-joinedputki
+  }
+  sarjataulukkotulos<-joinedputki_filt[,.(Nimi,Pelit,Voitot,Tappiot,Voitto_pct=round(Voitto_pct*100,0),Putki)][order(-Voitot)]
+  
+  #jos vs_statsit ei oo päällä, mutta pakkanumerot on annettu, niin palauta vaan niiden kahden pakan tulokset
+
+  
+  tulos$sarjataulukko<-sarjataulukkotulos
+
+  #colnames( tulos$sarjataulukko) <- paste(colnames(tulos$sarjataulukko),nimipaate, sep = "_")
+  
   #pisin voittoputk
   isoin_putki<-liitaputki[, .SD[which.max(Putki)]]
   setkeyv(isoin_putki,c("Omistaja","Pakka"))
   joinputkipakka <-pakkatiedot[isoin_putki]
   tulos$ison_putki<-joinputkipakka[,.(Nimi,Putki)]
   
-  
-  
-  #putki, 
+  #transponoitu_tilastot
+  transposed<-melt(sarjataulukkotulos,id.vars=c("Nimi"),variable.name=c("Tilasto"))
+  all_rows<-data.table(dcast(transposed,Tilasto~Nimi))
+  valitut_sarakkeet<-all_rows[Tilasto %in% c("Voitot","Voitto_pct","Putki")]
+
+  #valitut_sarakkeet[,selite:=nimipaate]
+  #tulos$transposed<-valitut_sarakkeet[!is.na(Tilasto),.(Tilasto,selite,laurieka,marttieka)]
+  tulos$transposed<-cbind(selite=nimipaate,valitut_sarakkeet)
+
   
   
   #eniten katkonut voittoputkia
-  #liitaputki[,putkikatki:=ifelse(Putki>2 & Voittaja=1 & Omistaja=)]
   #eniten jatkanus tappioputkia
   return(tulos)
 }

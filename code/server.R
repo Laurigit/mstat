@@ -529,15 +529,30 @@ output$sarjataulukkovalitsin <- renderUI({
 
   output$data_vs_taulukko<-renderDataTable({
     
-    vs_statsit<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta)
-    #vs_statsit<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,3,2,10)
+    vs_statsit_MA<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta)
+print(vs_statsit_MA)
+    vs_statsit_all<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA)
+    print(vs_statsit_all)
+    pakka_stats_all_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA)$transposed
+    pakka_stats_all_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA)$transposed
+    print(pakka_stats_all_lauri)
+    setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
+    setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
+    join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
+    
+    #MA_pakak
+    pakka_stats_MA_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta)$transposed
+    pakka_stats_MA_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta)$transposed
+
+    setkeyv(pakka_stats_MA_lauri,c("Tilasto","selite"))
+    setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
+    join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
     
-    transposed<-melt(vs_statsit$sarjataulukko,id.vars=c("Nimi"),variable.name="Tilasto")
-    all_rows<-data.table(dcast(transposed,Tilasto~Nimi))
-  
-    lopputulos<-all_rows[Tilasto %in% c("Voitot","Voitto_pct","Putki")]
-    return(lopputulos)  
+    append<-rbind(vs_statsit_MA$transposed,vs_statsit_all$transposed,join_pakka_stats_all,join_pakka_stats_MA)#,laurin_MA$transposed)
+ 
+    
+    return(append)  
      
   },    options = list(
     paging = FALSE,
