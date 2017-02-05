@@ -131,14 +131,26 @@ if(is.na(input_moving_average)) {
   tulos$ison_putki<-joinputkipakka[,.(Nimi,Putki)]
   
   #transponoitu_tilastot
+  #convertoi numeroksi sarakkeet
+  cols<-names(sarjataulukkotulos)[2:length(names(sarjataulukkotulos))]
+  sarjataulukkotulos[, (cols):=lapply(.SD, as.double),.SDcols=cols]
+
+  #convertointi valmis
   transposed<-melt(sarjataulukkotulos,id.vars=c("Nimi"),variable.name=c("Tilasto"))
   all_rows<-data.table(dcast(transposed,Tilasto~Nimi))
   valitut_sarakkeet<-all_rows[Tilasto %in% c("Voitot","Voitto_pct","Putki")]
 
   #valitut_sarakkeet[,selite:=nimipaate]
   #tulos$transposed<-valitut_sarakkeet[!is.na(Tilasto),.(Tilasto,selite,laurieka,marttieka)]
-  tulos$transposed<-cbind(selite=nimipaate,valitut_sarakkeet)
+  if(!is.null(nimipaate)) {
+    tulos$transposed<-cbind(selite=nimipaate,valitut_sarakkeet)
+  } else {
+    tulos$transposed<-valitut_sarakkeet
+    
+    }
 
+
+  tulos$laurin_voitto_pct<-joinedputki_filt[Omistaja==1,Voitto_pct]
   
   
   #eniten katkonut voittoputkia

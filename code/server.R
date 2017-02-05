@@ -220,6 +220,8 @@ alotusaika<-reactiveValues()
     print(paste("tallennatulosarvo",input$tallenna_tulos))
     
     kaikkipelit<-luecsv("pelit.csv")
+    print(paste("Laurin pakka: ",input$select_laurin_pakka))
+    print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
     maxottelu<-max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])
 
     
@@ -497,7 +499,7 @@ output$sarjataulukkovalitsin <- renderUI({
       output[[plotname]] <- renderDataTable({
 
         
-        Data_all<-sarjataulukkoKaikki(input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i)$sarjataulukko
+        Data_all<-sarjataulukkoKaikki(input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA)$sarjataulukko
        
         Data<-Data_all
         return(Data)
@@ -530,12 +532,12 @@ output$sarjataulukkovalitsin <- renderUI({
   output$data_vs_taulukko<-renderDataTable({
     
     vs_statsit_MA<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta)
-print(vs_statsit_MA)
+
     vs_statsit_all<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA)
-    print(vs_statsit_all)
+
     pakka_stats_all_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA)$transposed
     pakka_stats_all_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA)$transposed
-    print(pakka_stats_all_lauri)
+
     setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
     setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
     join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
@@ -562,15 +564,74 @@ print(vs_statsit_MA)
   ),rownames=FALSE)
   
 #valueboksit
+ 
+
+
+  output$paras_countteri<-renderValueBox({
+    
+    pelatut_parit<-luecsv("Pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
+    #looppaa parit läpi ja eti paras voitto%
+    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka)$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
+    #laurin paras countteri
+    laurin_counter<-pelatut_parit[, .SD[which.max(Voitto_pct)]]
+    pakat<-luecsv("Divari.csv")
+    martin_counter <- pelatut_parit[, .SD[which.max(vertailu)]]
+    
+    if (laurin_counter[,Voitto_pct]>martin_counter[,vertailu]) {
+      boksiteksti<-paste0(pakat[Omistaja==1 & Pakka == laurin_counter[,Laurin_pakka],Nimi], " voitto% VS ",pakat[Omistaja==2 & Pakka == laurin_counter[,Martin_pakka],Nimi])
+      boksiarvo <-paste0(laurin_counter[,Voitto_pct*100],"%")
+      boksivari="purple"
+    } else {
+      boksiteksti<-paste0(pakat[Omistaja==2 & Pakka == martin_counter[,Martin_pakka],Nimi], " voitto% VS ",pakat[Omistaja==1 & Pakka == martin_counter[,Laurin_pakka],Nimi])
+      boksiarvo <-paste0(martin_counter[,vertailu*100],"%")
+      boksivari<-"orange"    
+      
+      }
+    valueBox(boksiarvo, boksiteksti, icon = icon("list"),
+             color = boksivari)
+    
+  })
+  
+  output$vaikein_counteroitava<-renderValueBox({
+    
+    pelatut_parit<-luecsv("Pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
+    #looppaa parit läpi ja eti paras voitto%
+    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka)$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
+    #laurin paras countteri
+    laurin_counter<-pelatut_parit[, .(maxvertailu=max(vertailu)),by=Laurin_pakka]
+    laurin_countteroimaton_pakka<-laurin_counter[,.SD[which.min(maxvertailu)]]
+    
+    pakat<-luecsv("Divari.csv")
+    martin_counter <- pelatut_parit[, .(maxvertailu=max(Voitto_pct)),by=Martin_pakka]
+    martin_countteroimaton_pakka<-martin_counter[,.SD[which.min(maxvertailu)]]
+    
+    
+    
+    if (laurin_countteroimaton_pakka[,maxvertailu]>martin_countteroimaton_pakka[,maxvertailu]) {
+      boksiteksti<-paste0(pakat[Omistaja==1 & Pakka == laurin_countteroimaton_pakka[,Laurin_pakka],Nimi], " voittaa pahimman counterpakan %")
+      boksiarvo <-paste0(round(laurin_countteroimaton_pakka[,maxvertailu*100],0),"%")
+      boksivari="purple"
+    } else {
+      boksiteksti<-paste0(pakat[Omistaja==2 & Pakka == martin_countteroimaton_pakka[,Martin_pakka],Nimi], " voittaa pahimman counterpakan %")
+      boksiarvo <-paste0(round(martin_countteroimaton_pakka[,maxvertailu*100],0),"%")
+      boksivari<-"orange"    
+      
+    }
+    valueBox(boksiarvo, boksiteksti, icon = icon("list"),
+             color = boksivari)
+    
+  })
+  
+  
   output$vb_voittoputki<-renderValueBox({
-    putki<-sarjataulukkoKaikki(FALSE,1,TRUE,NA)$ison_putki
+    putki<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,NA,NA)$ison_putki
     
     valueBox(paste0(putki[,Putki]), paste0("Pisin voittoputki: ",putki[,Nimi]), icon = icon("list"),
              color = "purple")
     
   })
-  
-  
  
 
   

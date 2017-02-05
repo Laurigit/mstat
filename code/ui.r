@@ -29,7 +29,7 @@
 
       fluidRow(column(3,textOutput("peli_id")) ),
       fluidRow(column(3,numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5))),
-      fluidRow(column(6,box(dataTableOutput("data_vs_taulukko"),width=12)))
+      fluidRow(column(12,box(dataTableOutput("data_vs_taulukko"),width=12)))
       )          
       )
     ,
@@ -91,7 +91,8 @@
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
     tabItem(tabName="tab_saavutukset",
-            fluidRow(valueBoxOutput("vb_voittoputki")
+            fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")
+                     
             )
     )
     
