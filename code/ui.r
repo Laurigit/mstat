@@ -94,8 +94,23 @@
             fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")
                      
             )
+    ),
+    tabItem(tabName="pakkaupload",
+            fluidPage(
+              sidebarLayout(
+                sidebarPanel(
+                  fileInput("file1", "Choose CSV File",multiple=TRUE,
+                            accept = c(".json")
+                  ),
+                  tags$hr(),
+                  checkboxInput("header", "Header", TRUE)
+                ),
+                mainPanel(
+                  tableOutput("contents")
+                )
+              ),verbatimTextOutput("text_validointi")
+              )
     )
-    
   )
 )
 
@@ -114,7 +129,8 @@ sidebar <- dashboardSidebar(
     #menuItem("Turnausasetukset",tabName="nimeton",
      menuItem('Divarit ja pickit', tabName = 'tab_combined'),
      #menuSubItem(icon = NULL,actionButton("tallenna_bannit","Tallenna")),
-     menuItem('Peliasetukset', tabName = 'tab_peliasetukest')
+     menuItem('Peliasetukset', tabName = 'tab_peliasetukest'),
+    menuItem("Lataa pakkoja", tabName = "pakkaupload")
      #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
     )
 

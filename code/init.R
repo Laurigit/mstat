@@ -16,6 +16,7 @@ setwd("C:/Users/Lauri/Documents/R/mstat2/code")
 
 source("sarjataulukko.R")
 source("functio_bo_conversio.R")
+source("process_uploaded_decks.R")
 
 
 luecsv<-function(tiedostonimi) {

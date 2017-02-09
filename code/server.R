@@ -633,8 +633,19 @@ output$sarjataulukkovalitsin <- renderUI({
     
   })
  
+observe({
+  ifile <-input$file1
 
-  
+ # omistaja <- substr(1,1,ifile$name)
+  if (!is.null(ifile)) {
+    validointiteksti$teksti<-process_uploaded_decks(ifile,"C:/Users/Lauri/Documents/R/mstat2/pakat/processed/")}
+
+})
+
+validointiteksti <-reactiveValues(teksti="Ei ladattu pakkoja")
+output$text_validointi <- renderText(({
+  paste(validointiteksti$teksti)
+  }))
   
 })
 
