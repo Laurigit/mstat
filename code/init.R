@@ -5,6 +5,7 @@ library(data.table)
 library(lubridate)
 library(DT)
 library(reshape2)
+library(jsonlite)
 #library(shinythemes)
 
 options(max.print=1000000)
@@ -17,7 +18,8 @@ setwd("C:/Users/Lauri/Documents/R/mstat2/code")
 source("sarjataulukko.R")
 source("functio_bo_conversio.R")
 source("process_uploaded_decks.R")
-
+source("omaReadJson.R")
+source("pysyvyys_pct.R")
 
 luecsv<-function(tiedostonimi) {
   tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE))
@@ -39,5 +41,13 @@ paivitaSliderit<-function(input_peli_ID,session) {
 
 aikaero<-function(aika,loppuaika,pvm,loppupvm){
   return((loppupvm-pvm)*60*60*24+loppuaika-aika)
+  
+}
+
+
+#oma_timedate
+oma_timedate<-function(pvm,aika) {
+  tulos<-as.integer(pvm)*24*60*60+as.integer(aika)
+  return(tulos)
   
 }

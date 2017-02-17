@@ -7,9 +7,28 @@ sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FA
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
 pelidata_temp_all<-bo_data_conv(input_bo_mode)
-  
+pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
+#joinaa pysyvyys_pct divariin
+pysyvyys_pct<-pakkaUutuusProsentti(pakat)
+pysyvyys_pct[,':=' (dt_alku=oma_timedate(pvm,kello),dt_loppu=oma_timedate(pvm_end,kello_end))]
+laurin_pakat<-pysyvyys_pct[omistaja=="L",.(Laurin_pakka_form_id=id,Laurin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct)]
+martin_pakat<-pysyvyys_pct[omistaja=="M",.(Martin_pakka_form_id=id,Martin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct)]
+pelidata_dt<-pelidata_temp_all[,':=' (pelidt_alku=oma_timedate(Aloituspvm,Aloitusaika),pelitdt_loppu=oma_timedate(Lopetuspvm,Lopetusaika))]
+
+joiniID_and_pct_lauri<-laurin_pakat[pelidata_dt,on=c("dt_alku<pelidt_alku","dt_loppu>pelitdt_loppu","Laurin_pakka==Laurin_pakka")]
+joiniID_and_pct_lauri<-joiniID_and_pct_lauri[,.(peli_ID,Laurin_pysyvyys_pct=pysyvyys_pct,Laurin_pakka_form_id)]
+#joinaa viela martti
+joiniID_and_pct_martti<-martin_pakat[pelidata_dt,on=c("dt_alku<pelidt_alku","dt_loppu>pelitdt_loppu","Martin_pakka==Martin_pakka")]
+
+joiniID_and_pct_martti<-joiniID_and_pct_martti[,.(peli_ID,Martin_pysyvyys_pct=pysyvyys_pct,Martin_pakka_form_id)]
+#joinaa tulokset
+setkey(joiniID_and_pct_lauri,peli_ID)
+setkey(joiniID_and_pct_martti,peli_ID)
+setkey(pelidata_temp_all,peli_ID)
+pelidata_joined_pakkatiedot<-joiniID_and_pct_lauri[joiniID_and_pct_martti][pelidata_temp_all]
+pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
   #ota pois pelaamattomat pelit
-  pelidata_temp<-pelidata_temp_all[!is.na(Voittaja)]
+  pelidata_temp<-pelidata_joined_pakkatiedot[!is.na(Voittaja)]
   nimipaate<-NULL
   
 
@@ -105,6 +124,9 @@ if(is.na(input_moving_average)) {
   tulos$divarit <-sort(unique(joinedputki[,Divari]))
   
 
+  
+  
+  
   if(!is.na(input_Laurin_pakka)&is.na(input_Martin_pakka)) {
     joinedputki_filt  <- joinedputki[(Omistaja==1 & Pakka==input_Laurin_pakka)]
   

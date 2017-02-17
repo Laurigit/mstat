@@ -1,13 +1,38 @@
 omaReadJson<-function(folder) {
   pakkalista<-    list.files(folder)
-  
+  tulos<-NULL
   pakat<-NULL
   counter <-0
+  pakkametataulu<-NULL
   for (pakka in pakkalista){ 
     counter<-counter+1
- 
-    pakat[[counter]]<-fromJSON(paste(folder,pakka,sep=""))
-    print(pakat[[counter]])
+    pakkanimi<-substr(pakka,1,nchar(pakka)-5)
+    
+    kierrospakka<-fromJSON(paste(folder,pakka,sep=""))
+    #parsi pakkatiedot
+    splitti<-strsplit(pakkanimi,"_")
+    splitti<-splitti[[1]]
+    kierrospakka$omistaja <-splitti[1]
+    kierrospakka$pakkanumero <-as.numeric(splitti[2])
+    kierrospakka$pvm<-as.IDate(splitti[3])
+    kierrospakka$kello<-(as.numeric(splitti[4]))
+    
+    pakat[[counter]]<-kierrospakka
+    tulos$pakat<-pakat
+    uusmetarivi<- data.table(id=counter,omistaja=splitti[1],pakkanumero=as.numeric(splitti[2]),pvm=as.IDate(splitti[3]),kello=as.numeric(splitti[4]))
+    
+    pakkametataulu<-as.data.table(rbind(pakkametataulu,uusmetarivi))
+    #laske voimassaolon päättyminen
+    #pakkametataulu[,':=' (pvm_end=shift(pvm,1,type="lead"))]
+    
   }
-  
+  pakkametataulu[,':=' (pvm_end=shift(pvm,1,type="lead"),kello_end=shift(kello,1,type="lead")),by=.(omistaja,pakkanumero)]
+  #fix na ending to future
+  pakkametataulu[,':=' (pvm_end=ifelse(is.na(pvm_end),as.IDate("2100-01-01"),pvm_end),kello_end=ifelse(is.na(kello_end),1,kello_end))]
+  tulos$meta<-pakkametataulu
+  return(tulos)
 }
+
+pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
+pakat$meta
+folder<-'C:/Users/Lauri/Documents/R/mstat2/pakat/processed/'

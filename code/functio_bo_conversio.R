@@ -11,8 +11,8 @@ kaikkipelit[ , Ottelun_aloittaja:=.SD[which.min(Kierros)], by = Ottelu_ID,.SDcol
 kaikkiottelut <-kaikkipelit[!is.na(Otteluvoittaja),.(Divari=max(Divari),
                                                      Laurin_pakka=max(Laurin_pakka),
                                                      Martin_pakka=max(Martin_pakka),
-                                                     Lauri_voitti=ifelse(Otteluvoittaja==0,1,0),
-                                                     Martti_voitti=ifelse(Otteluvoittaja==0,0,1),
+                                                     Lauri_voitti=max(ifelse(Otteluvoittaja==0,1,0)),
+                                                     Martti_voitti=max(ifelse(Otteluvoittaja==0,0,1)),
                                                      Ottelun_pelit_kpl=max(Kierros),
                                                      BO_mode=max(BO_mode),
                                                      Best_of_N=max(maxKierros),
@@ -24,7 +24,12 @@ kaikkiottelut <-kaikkipelit[!is.na(Otteluvoittaja),.(Divari=max(Divari),
                                                      Laurin_humala=mean(Laurin_humala),
                                                      Martin_humala=mean(Martin_humala),
                                                      Laurin_arvosana=mean(Laurin_arvosana),
-                                                     Martin_arvosana=mean(Martin_arvosana)),
+                                                     Martin_arvosana=mean(Martin_arvosana),
+                                                     Aloituspvm=min(Aloituspvm),
+                                                     Aloitusaika=min(Aloitusaika),
+                                                     Lopetuspvm=max(Lopetuspvm),
+                                                     Lopetusaika=max(Lopetusaika),
+                                                     peli_ID=min(Ottelu_ID)), #vähän purkkaa, mutta käytetään ku joinataan pakkoformeja
                             by=Ottelu_ID]
 
 

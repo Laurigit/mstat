@@ -176,6 +176,7 @@ shinyServer(function(input, output,session) {
        #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
        pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<0.5)|BO_mode==0]
        pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
+      
      kircsv(pelit_jaljella,"pelit.csv")
      updateTabItems(session,"sidebarmenu","tab_uusi_peli")
      
