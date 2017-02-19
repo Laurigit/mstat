@@ -104,12 +104,26 @@ if(is.na(input_moving_average)) {
   joinapakka <- pakkatiedot[append]
   joinapakka[,':='(Voitto_pct=Voitot/Pelit)]
   
+  max_pakkaform_by_laurin_pakka<-pelidata[,.(laurin_pfi=max(Laurin_pakka_form_id)),by=Laurin_pakka]
+  max_pakkaform_by_martin_pakka  <-pelidata[,.(martin_pfi=max(Martin_pakka_form_id)),by=Martin_pakka]                                                 
+  
+  setkey(max_pakkaform_by_laurin_pakka,laurin_pfi)
+  setkey(max_pakkaform_by_martin_pakka,martin_pfi)
+  setkey(pelidata,Laurin_pakka_form_id)
+  pfilauri<-pelidata[max_pakkaform_by_laurin_pakka][,.(Pelit=sum(ifelse(is.na(Voittaja),0,1)),Voitot=sum(Lauri_voitti,na.rm=TRUE),Tappiot=sum(Martti_voitti,na.rm=TRUE),Omistaja=1),by=.(Pakka=Laurin_pakka)]
+  setkey(pelidata,Martin_pakka_form_id)
+  pfimartti<-pelidata[max_pakkaform_by_martin_pakka][,.(Pelit=sum(ifelse(is.na(Voittaja),0,1)),Voitot=sum(Martti_voitti,na.rm=TRUE),Tappiot=sum(Lauri_voitti,na.rm=TRUE),Omistaja=2),by=.(Pakka=Martin_pakka)]
+  append_pfi<-rbind(pfilauri,pfimartti)
+  setkeyv(append_pfi,c("Omistaja","Pakka"))
+  joinpfipakka <- pakkatiedot[append_pfi]
+  pfiresult<-joinpfipakka[,.(Nimi,Voitot,Tappiot)][order(-Tappiot,-Voitot)]
+  tulos$pfi<-pfiresult
   
   #perakkaiset voitot
   perakkaiset_lauri<-pelidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Laurin_pakka]
   perakkaiset_martti<-pelidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Martin_pakka]
-  pl<-perakkaiset_lauri[,.(Putki=ifelse(Voittaja==0,V1,-V1),Pakka=Laurin_pakka,Omistaja=1)]
-  pm<-perakkaiset_martti[,.(Putki=ifelse(Voittaja==1,V1,-V1),Pakka=Martin_pakka,Omistaja=2)]
+  pl<-perakkaiset_lauri[,.(Putki=ifelse(Voittaja==0,V1,ifelse(Voittaja==1,-V1,0)),Pakka=Laurin_pakka,Omistaja=1)]
+  pm<-perakkaiset_martti[,.(Putki=ifelse(Voittaja==1,V1,ifelse(Voittaja==0,-V1,0)),Pakka=Martin_pakka,Omistaja=2)]
   
   #liitaputket
   liitaputki<-rbind(pl,pm)
