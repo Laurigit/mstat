@@ -31,17 +31,30 @@ shinyServer(function(input, output,session) {
     ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
     
     #tarvitaan vain, kun ajetaan manuaalisesti eka kerta
-    #kierroksia<-3
-    #BO_mode<-1
+    #kierroksia<-2
+    #BO_mode<-FALSE
+    #montako peliä on yhdessä ottelussa
+    otteluita<-input$numeric_ottelut
+    #montako ottelua on turnauksessa pakkojen välillä
     kierroksia <- input$numeric_rounds
     BO_mode<-as.numeric(input$checkbox_BO_mode)
     pelit[,Ottelu_ID:=.I+ed_ottelu_id_max]
-    kaikkipelit<-NULL
+    kaikki_ottelut<-NULL
     
+    #lisää ottelut
+    for (i in 1:otteluita){
+      pelikierros <- pelit[,.(Divari,Laurin_pakka,Martin_pakka,Ottelu_No=i,Ottelu_ID,BO_mode)]
+      kaikki_ottelut<-rbind(kaikki_ottelut,pelikierros)
+    }
+    #motanko ottelua per kierros?
+    ottelua_per_kierros<-nrow(kaikki_ottelut)/otteluita
+    
+    #lisää kierrokset
+    kaikkipelit<-NULL
     for (i in 1:kierroksia){
-      pelikierros <- pelit[,.(Divari,Laurin_pakka,Martin_pakka,Kierros=i,Ottelu_ID,BO_mode)]
-      kaikkipelit<-rbind(kaikkipelit,pelikierros)
-     }
+      ottelukierros <- kaikki_ottelut[,.(Divari,Laurin_pakka,Martin_pakka,Kierros=i,Ottelu_ID=(Ottelu_ID+(i-1)*ottelua_per_kierros),Ottelu_No,BO_mode)]
+      kaikkipelit<-rbind(kaikkipelit,ottelukierros)
+    }
       
       #TurnausNo<-1
       turnaus_no<-max(vanhatpelit[,TurnausNo])+1
@@ -50,11 +63,13 @@ shinyServer(function(input, output,session) {
       #edellinen max peli_iD
       ed_peli_id<-max(vanhatpelit[,peli_ID])
   
+      
       #aloittaja
       
       kaikkipelit[, idl := 1:.N, by = Laurin_pakka]
       kaikkipelit[, idm := 1:.N, by = Martin_pakka]
-      kaikkipelit[,Aloittaja:=(idl+idm+TurnausNo+Kierros+Divari)%%2]
+      kaikkipelit[,Aloittaja:=(idl+idm+TurnausNo+Kierros+Divari+Ottelu_No)%%2]
+      
       kaikkipelit[,':='(peli_ID=.I+ed_peli_id,idl=NULL,idm=NULL,Voittaja=NA,Aloitusaika=NA,Aloituspvm=NA,Lopetusaika=NA,Lopetuspvm=NA,Laurin_mulligan=NA,Martin_mulligan=NA,Laurin_arvosana=NA,Martin_arvosana=NA,Laurin_humala=NA,Martin_humala=NA,Laurin_landit=NA,Martin_landit=NA,Vuoroarvio=NA,Laurin_kasikortit=NA,Martin_kasikortit=NA,Lauri_voitti=NA,Martti_voitti=NA,Laurin_lifet=NA,Martin_lifet=NA)]
       #arvosana: 1= pelasin hyvin, en keksi parannettavaa. 0= Hieman löysäilyä. -1= merkittävää hölmöilyä.
       #str(kaikkipelit)
@@ -532,7 +547,7 @@ output$sarjataulukkovalitsin <- renderUI({
 
   output$data_vs_taulukko<-renderDataTable({
     
-    vs_statsit_MA<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta)
+    vs_statsit_MA<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta)$transposed[(Tilasto %in% ("Voitot"))]
 
     vs_statsit_all<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA)
 
@@ -544,23 +559,33 @@ output$sarjataulukkovalitsin <- renderUI({
     join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
     
     #MA_pakak
-    pakka_stats_MA_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta)$transposed
-    pakka_stats_MA_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta)$transposed
+    pakka_stats_MA_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta)$transposed[(Tilasto %in% ("Voitot"))]
+    pakka_stats_MA_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta)$transposed[(Tilasto %in% ("Voitot"))]
+    
+    
+    pfistats<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,NA,NA)$pfi_trans
+    
+    #ota vaan sarakkeet, mitä on muuallakkin käytetty
+    pfi_subsetcols<-pfistats[,names(vs_statsit_all$transposed),with=FALSE]
+    
 
     setkeyv(pakka_stats_MA_lauri,c("Tilasto","selite"))
     setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
     join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
     
-    append<-rbind(vs_statsit_MA$transposed,vs_statsit_all$transposed,join_pakka_stats_all,join_pakka_stats_MA)#,laurin_MA$transposed)
- 
+    append<-rbind(vs_statsit_all$transposed,vs_statsit_MA,join_pakka_stats_all,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
+    #vaihda sarakejärjestys
+    result_table<-append[,c(3,1,2,4),with=FALSE]
     
-    return(append)  
+    return(result_table)  
      
   },    options = list(
     paging = FALSE,
     searching = FALSE,
-    info=FALSE
+    info=FALSE,
+    columnDefs = list(list(className = 'dt-center', targets = 1:2),
+                      list(className = 'dt-left', targets = 3))
     
   ),rownames=FALSE)
   

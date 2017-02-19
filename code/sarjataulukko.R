@@ -117,7 +117,18 @@ if(is.na(input_moving_average)) {
   setkeyv(append_pfi,c("Omistaja","Pakka"))
   joinpfipakka <- pakkatiedot[append_pfi]
   pfiresult<-joinpfipakka[,.(Nimi,Voitot,Tappiot)][order(-Tappiot,-Voitot)]
+  tulos<-NULL
   tulos$pfi<-pfiresult
+  #transponoi
+  cols<-names(pfiresult)[2:length(names(pfiresult))]
+  pfiresult[, (cols):=lapply(.SD, as.double),.SDcols=cols]
+  
+  #convertointi valmis
+  transposed<-melt(pfiresult,id.vars=c("Nimi"),variable.name=c("Tilasto"))
+  all_rows<-data.table(dcast(transposed,Tilasto~Nimi))
+  valitut_sarakkeet<-all_rows[Tilasto %in% c("Voitot","Tappiot")]
+  tulos$pfi_trans<-cbind(selite="pfi",valitut_sarakkeet)
+  
   
   #perakkaiset voitot
   perakkaiset_lauri<-pelidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Laurin_pakka]
@@ -134,7 +145,7 @@ if(is.na(input_moving_average)) {
   
   
   joinedputki<-joinapakka[nykyputki]
-  tulos<-NULL
+  
   tulos$divarit <-sort(unique(joinedputki[,Divari]))
   
 
