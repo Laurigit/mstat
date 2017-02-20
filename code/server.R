@@ -222,6 +222,7 @@ shinyServer(function(input, output,session) {
   #pelin aloitusaika ja lopetus
 alotusaika<-reactiveValues()
  observe({
+   print(paste("Observe altotusaika"))
     test<-r_valittu_peli$peliID+input$tasuri_peli+input$arvo_peli+input$jatka_ottelua #kun joku näistä päivttyy, niin nollaa aika
 
     alotusaika$alotusaika<-as.ITime(now())
@@ -236,8 +237,9 @@ alotusaika<-reactiveValues()
     print(paste("tallennatulosarvo",input$tallenna_tulos))
     
     kaikkipelit<-luecsv("pelit.csv")
-    print(paste("Laurin pakka: ",input$select_laurin_pakka))
-    print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
+    #print(paste("Laurin pakka: ",input$select_laurin_pakka))
+    #print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
+    if(!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
     maxottelu<-max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])
 
     
@@ -274,7 +276,7 @@ alotusaika<-reactiveValues()
       }
    
     } else {
-      print("observeluettu FALSE") 
+ 
     #  updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
      # updateRadioButtons(session,"radio_voittaja",selected=0)
       shinyjs::enable("lauri_voitti")
@@ -300,7 +302,7 @@ alotusaika<-reactiveValues()
       
     }
     
-    
+    }
   })
   observeEvent(input$laurin_mulligan,{
     updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan+1)
@@ -551,8 +553,8 @@ output$sarjataulukkovalitsin <- renderUI({
 
     vs_statsit_all<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA)
 
-    pakka_stats_all_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA)$transposed
-    pakka_stats_all_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA)$transposed
+    pakka_stats_all_lauri<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA)$transposed[!(Tilasto %in% ("Voitot"))]
+    pakka_stats_all_martti<-sarjataulukkoKaikki(FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA)$transposed[!(Tilasto %in% ("Voitot"))]
 
     setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
     setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
@@ -660,6 +662,7 @@ output$sarjataulukkovalitsin <- renderUI({
   })
  
 observe({
+  print(paste("ifile"))
   ifile <-input$file1
 
  # omistaja <- substr(1,1,ifile$name)

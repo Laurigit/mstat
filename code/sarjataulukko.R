@@ -11,16 +11,16 @@ pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
 #joinaa pysyvyys_pct divariin
 pysyvyys_pct<-pakkaUutuusProsentti(pakat)
 pysyvyys_pct[,':=' (dt_alku=oma_timedate(pvm,kello),dt_loppu=oma_timedate(pvm_end,kello_end))]
-laurin_pakat<-pysyvyys_pct[omistaja=="L",.(Laurin_pakka_form_id=id,Laurin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct)]
-martin_pakat<-pysyvyys_pct[omistaja=="M",.(Martin_pakka_form_id=id,Martin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct)]
+laurin_pakat<-pysyvyys_pct[omistaja=="L",.(Laurin_pakka_form_id=id,Laurin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct,hinta_lauri=hinta)]
+martin_pakat<-pysyvyys_pct[omistaja=="M",.(Martin_pakka_form_id=id,Martin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct,hinta_martti=hinta)]
 pelidata_dt<-pelidata_temp_all[,':=' (pelidt_alku=oma_timedate(Aloituspvm,Aloitusaika),pelitdt_loppu=oma_timedate(Lopetuspvm,Lopetusaika))]
 
 joiniID_and_pct_lauri<-laurin_pakat[pelidata_dt,on=c("dt_alku<pelidt_alku","dt_loppu>pelitdt_loppu","Laurin_pakka==Laurin_pakka")]
-joiniID_and_pct_lauri<-joiniID_and_pct_lauri[,.(peli_ID,Laurin_pysyvyys_pct=pysyvyys_pct,Laurin_pakka_form_id)]
+joiniID_and_pct_lauri<-joiniID_and_pct_lauri[,.(peli_ID,Laurin_pysyvyys_pct=pysyvyys_pct,Laurin_pakka_form_id,hinta_lauri)]
 #joinaa viela martti
 joiniID_and_pct_martti<-martin_pakat[pelidata_dt,on=c("dt_alku<pelidt_alku","dt_loppu>pelitdt_loppu","Martin_pakka==Martin_pakka")]
 
-joiniID_and_pct_martti<-joiniID_and_pct_martti[,.(peli_ID,Martin_pysyvyys_pct=pysyvyys_pct,Martin_pakka_form_id)]
+joiniID_and_pct_martti<-joiniID_and_pct_martti[,.(peli_ID,Martin_pysyvyys_pct=pysyvyys_pct,Martin_pakka_form_id,hinta_martti)]
 #joinaa tulokset
 setkey(joiniID_and_pct_lauri,peli_ID)
 setkey(joiniID_and_pct_martti,peli_ID)
@@ -93,8 +93,8 @@ if(is.na(input_moving_average)) {
 
 
   
-  Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=1),by=.(Pakka=Laurin_pakka,Divari)]
-  Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=2),by=.(Pakka=Martin_pakka,Divari)]
+  Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=1,Hinta=mean(hinta_lauri)),by=.(Pakka=Laurin_pakka,Divari)]
+  Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari)]
   append<-rbind(Laurinstats,Martinstats)
   append[,Tappiot:=Pelit-Voitot]
   pakkatiedot<-luecsv("divari.csv")[,.(Omistaja,Pakka,Nimi)]
@@ -104,8 +104,8 @@ if(is.na(input_moving_average)) {
   joinapakka <- pakkatiedot[append]
   joinapakka[,':='(Voitto_pct=Voitot/Pelit)]
   
-  max_pakkaform_by_laurin_pakka<-pelidata[,.(laurin_pfi=max(Laurin_pakka_form_id)),by=Laurin_pakka]
-  max_pakkaform_by_martin_pakka  <-pelidata[,.(martin_pfi=max(Martin_pakka_form_id)),by=Martin_pakka]                                                 
+  max_pakkaform_by_laurin_pakka<-pelidata[,.(laurin_pfi=max(Laurin_pakka_form_id,na.rm=TRUE)),by=Laurin_pakka]
+  max_pakkaform_by_martin_pakka  <-pelidata[,.(martin_pfi=max(Martin_pakka_form_id,na.rm=TRUE)),by=Martin_pakka]                                                 
   
   setkey(max_pakkaform_by_laurin_pakka,laurin_pfi)
   setkey(max_pakkaform_by_martin_pakka,martin_pfi)
@@ -162,7 +162,7 @@ if(is.na(input_moving_average)) {
   }else {
     joinedputki_filt<-joinedputki
   }
-  sarjataulukkotulos<-joinedputki_filt[,.(Nimi,Pelit,Voitot,Tappiot,Voitto_pct=round(Voitto_pct*100,0),Putki)][order(-Voitot)]
+  sarjataulukkotulos<-joinedputki_filt[,.(Nimi,Pelit,Voitot,Tappiot,Voitto_pct=round(Voitto_pct*100,0),Putki,Hinta)][order(-Voitot)]
   
   #jos vs_statsit ei oo päällä, mutta pakkanumerot on annettu, niin palauta vaan niiden kahden pakan tulokset
 

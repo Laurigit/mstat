@@ -19,7 +19,7 @@ omaReadJson<-function(folder) {
     
     pakat[[counter]]<-kierrospakka
     tulos$pakat<-pakat
-    uusmetarivi<- data.table(id=counter,omistaja=splitti[1],pakkanumero=as.numeric(splitti[2]),pvm=as.IDate(splitti[3]),kello=as.numeric(splitti[4]))
+    uusmetarivi<- data.table(id=counter,omistaja=splitti[1],pakkanumero=as.numeric(splitti[2]),pvm=as.IDate(splitti[3]),kello=as.numeric(splitti[4]),hinta=kierrospakka$price$med)
     
     pakkametataulu<-as.data.table(rbind(pakkametataulu,uusmetarivi))
     #laske voimassaolon päättyminen
