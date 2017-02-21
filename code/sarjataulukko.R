@@ -2,7 +2,10 @@
 #sarjataulukko total
 
 
-sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA) {
+
+
+
+sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE) {
   
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
@@ -90,11 +93,17 @@ if(is.na(input_moving_average)) {
   pelidata<-pelidata_vs[(pelit_kpl-min(pelit_kpl,input_moving_average)+1):pelit_kpl]
   nimipaate<-paste("MA",nimipaate,sep="")
 }
+  
+#pfiMA
+  
+if(input_pfiMA==TRUE) {
+  pelidata[,':=' (Lauri_voitti=Lauri_voitti*Laurin_pysyvyys_pct,Martti_voitti=Martti_voitti*Martin_pysyvyys_pct)]
+}
 
 
   
-  Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=1,Hinta=mean(hinta_lauri)),by=.(Pakka=Laurin_pakka,Divari)]
-  Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(ifelse(is.na(Voittaja),0,1)),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari)]
+  Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=1,Hinta=mean(hinta_lauri)),by=.(Pakka=Laurin_pakka,Divari)]
+  Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari)]
   append<-rbind(Laurinstats,Martinstats)
   append[,Tappiot:=Pelit-Voitot]
   pakkatiedot<-luecsv("divari.csv")[,.(Omistaja,Pakka,Nimi)]
