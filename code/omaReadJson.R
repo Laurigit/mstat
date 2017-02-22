@@ -30,6 +30,7 @@ omaReadJson<-function(folder) {
   #fix na ending to future
   pakkametataulu[,':=' (pvm_end=ifelse(is.na(pvm_end),as.IDate("2100-01-01"),pvm_end),kello_end=ifelse(is.na(kello_end),1,kello_end))]
   tulos$meta<-pakkametataulu
+  print("PAKAT PÄIVITETTY")
   return(tulos)
 }
 

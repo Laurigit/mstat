@@ -5,14 +5,19 @@
 
 
 
-sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE) {
+sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
   
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
 pelidata_temp_all<-bo_data_conv(input_bo_mode)
+#print(paste(input_bo_mode,input_turnaus,input_total,input_divari,input_Laurin_pakka,input_Martin_pakka,input_moving_average,input_pfiMA,pfi_data))
+if(is.na(pfi_data)){
 pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
-#joinaa pysyvyys_pct divariin
 pysyvyys_pct<-pakkaUutuusProsentti(pakat)
+}else{
+  pysyvyys_pct<-pfi_data}
+#joinaa pysyvyys_pct divariin
+
 pysyvyys_pct[,':=' (dt_alku=oma_timedate(pvm,kello),dt_loppu=oma_timedate(pvm_end,kello_end))]
 laurin_pakat<-pysyvyys_pct[omistaja=="L",.(Laurin_pakka_form_id=id,Laurin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct,hinta_lauri=hinta)]
 martin_pakat<-pysyvyys_pct[omistaja=="M",.(Martin_pakka_form_id=id,Martin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct,hinta_martti=hinta)]
