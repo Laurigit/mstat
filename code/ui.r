@@ -101,12 +101,7 @@
             fluidPage(
               sidebarLayout(
                 sidebarPanel(
-                  fileInput("file1", "Choose CSV File",multiple=TRUE,
-                            accept = c(".json")
-                  ),
-                  tags$hr(),
-                  checkboxInput("header", "Header", TRUE)
-                ),
+                fileInput("file1", "Valitse pakkoja .json muodossa",multiple=TRUE,accept = c(".json"))),
                 mainPanel(
                   tableOutput("contents")
                 )
@@ -142,7 +137,7 @@ sidebar <- dashboardSidebar(
 #RUNKO  
 dashboardPage(
 
-  dashboardHeader(title = "Simple tabs"),
+  dashboardHeader(title = "Mätkysofta"),
   sidebar,
   uusi_peli
 )

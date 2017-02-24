@@ -474,7 +474,7 @@ output$sarjataulukkovalitsin <- renderUI({
   pelidata <- reactiveFileReader(1000, session, "pelit.csv",luecsv)
   output$sarjataulukot <-renderUI({
     #montakodivaria
-    divarit<-sarjataulukkoKaikki(divariDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,FALSE,pfi_data())$divarit
+    divarit<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,FALSE,pfi_data())$divarit
     fluidPage(
       lapply(divarit,function(i)  {
         plotname <- paste0("plotdyn", i, sep="")
@@ -486,7 +486,7 @@ output$sarjataulukkovalitsin <- renderUI({
   })
   
 
-  divaridata <- reactiveFileReader(1000, session, "divari.csv",luecsv)
+  divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
   output$table_divari2<- renderUI({
     #montakodivaria
 
@@ -519,7 +519,7 @@ output$sarjataulukkovalitsin <- renderUI({
       output[[plotname]] <- renderDataTable({
 
         
-        Data_all<-sarjataulukkoKaikki(divariDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,FALSE,pfi_data())$sarjataulukko
+        Data_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,FALSE,pfi_data())$sarjataulukko
        
         Data<-Data_all
         return(Data)
@@ -551,23 +551,23 @@ output$sarjataulukkovalitsin <- renderUI({
 
   output$data_vs_taulukko<-renderDataTable({
     
-    vs_statsit_MA<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+    vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
     
-    vs_statsit_all<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,FALSE,pfi_data())
+    vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,FALSE,pfi_data())
     
-    pakka_stats_all_lauri<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA,FALSE,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
-    pakka_stats_all_martti<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA,FALSE,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
+    pakka_stats_all_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA,FALSE,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
+    pakka_stats_all_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA,FALSE,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
     
     setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
     setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
     join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
     
     #MA_pakak
-    pakka_stats_MA_lauri<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
-    pakka_stats_MA_martti<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+    pakka_stats_MA_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+    pakka_stats_MA_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
     
     
-    pfistats<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi_trans
+    pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi_trans
     
     #ota vaan sarakkeet, mitä on muuallakkin käytetty
     pfi_subsetcols<-pfistats[,names(vs_statsit_all$transposed),with=FALSE]
@@ -601,7 +601,7 @@ output$sarjataulukkovalitsin <- renderUI({
     
     pelatut_parit<-luecsv("Pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
     #looppaa parit läpi ja eti paras voitto%
-    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
     #laurin paras countteri
     laurin_counter<-pelatut_parit[, .SD[which.max(Voitto_pct)]]
@@ -627,7 +627,7 @@ output$sarjataulukkovalitsin <- renderUI({
     
     pelatut_parit<-luecsv("Pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
     #looppaa parit läpi ja eti paras voitto%
-    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
     #laurin paras countteri
     laurin_counter<-pelatut_parit[, .(maxvertailu=max(vertailu)),by=Laurin_pakka]
@@ -656,7 +656,7 @@ output$sarjataulukkovalitsin <- renderUI({
   
   
   output$vb_voittoputki<-renderValueBox({
-    putki<-sarjataulukkoKaikki(divariDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$ison_putki
+    putki<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$ison_putki
     
     valueBox(paste0(putki[,Putki]), paste0("Pisin voittoputki: ",putki[,Nimi]), icon = icon("list"),
              color = "purple")
@@ -673,7 +673,7 @@ pfi_data<-reactive({
   pakkaUutuusProsentti(pakat)
 })  
     
-  
+
 observe({
   print(paste("ifile"))
   ifile <-input$file1
@@ -683,7 +683,7 @@ observe({
     validointiteksti$teksti<-process_uploaded_decks(ifile,"C:/Users/Lauri/Documents/R/mstat2/pakat/processed/")}
 
 })
-divariDataReact<-reactive({
+peliDataReact<-reactive({
   print("Luettu pelit.csv")
 print(input$tallenna_tulos)
   kaikkipelit<-luecsv("pelit.csv")  

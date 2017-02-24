@@ -1,21 +1,20 @@
 
 #sarjataulukko total
+#peliData2<-kaikkipelit
+pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
 
 
+  
 
-
-
-sarjataulukkoKaikki<-function(peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
+sarjataulukkoKaikki<-function(divariData,peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
   
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
 pelidata_temp_all<-bo_data_conv(input_bo_mode,peliData)
 #print(paste(input_bo_mode,input_turnaus,input_total,input_divari,input_Laurin_pakka,input_Martin_pakka,input_moving_average,input_pfiMA,pfi_data))
-if(is.na(pfi_data)){
-pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
-pysyvyys_pct<-pakkaUutuusProsentti(pakat)
-}else{
-  pysyvyys_pct<-pfi_data}
+
+  pysyvyys_pct<-as.data.table(pfi_data)
+ 
 #joinaa pysyvyys_pct divariin
 
 pysyvyys_pct[,':=' (dt_alku=oma_timedate(pvm,kello),dt_loppu=oma_timedate(pvm_end,kello_end))]
@@ -111,13 +110,12 @@ if(input_pfiMA==TRUE) {
   Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari)]
   append<-rbind(Laurinstats,Martinstats)
   append[,Tappiot:=Pelit-Voitot]
-  pakkatiedot<-luecsv("divari.csv")[,.(Omistaja,Pakka,Nimi)]
+  pakkatiedot<-divariData[,.(Omistaja,Pakka,Nimi)]
   #joinaa Nimi
   setkeyv(pakkatiedot,c("Omistaja","Pakka"))
   setkeyv(append,c("Omistaja","Pakka"))
   joinapakka <- pakkatiedot[append]
   joinapakka[,':='(Voitto_pct=Voitot/Pelit)]
-  
   max_pakkaform_by_laurin_pakka<-pelidata[,.(laurin_pfi=max(Laurin_pakka_form_id,na.rm=TRUE)),by=Laurin_pakka]
   max_pakkaform_by_martin_pakka  <-pelidata[,.(martin_pfi=max(Martin_pakka_form_id,na.rm=TRUE)),by=Martin_pakka]                                                 
   
