@@ -1,5 +1,6 @@
-bo_data_conv <-function(input_bo_mode=FALSE) {
-kaikkipelit<-luecsv("pelit.csv")
+bo_data_conv <-function(input_bo_mode=FALSE,pelidata) {
+#kaikkipelit<-luecsv("pelit.csv")
+kaikkipelit<-pelidata
 kaikkipelit[,':=' (sumlaurinvoito=sum(Lauri_voitti,na.rm=TRUE),summarttivoitti=sum(Martti_voitti,na.rm=TRUE),sumPelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),maxKierros=max(Kierros)),by=Ottelu_ID]
 kaikkipelit[,':=' (Otteluvoittaja=ifelse(sumlaurinvoito/maxKierros>0.5,0,ifelse(summarttivoitti/maxKierros>0.5,1,ifelse(sumPelit/maxKierros>0.5,0.5,NA))),
                    pelikesto=aikaero(Aloitusaika,Lopetusaika,Aloituspvm,Lopetuspvm),

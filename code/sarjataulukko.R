@@ -5,11 +5,11 @@
 
 
 
-sarjataulukkoKaikki<-function(input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
+sarjataulukkoKaikki<-function(peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
   
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
-pelidata_temp_all<-bo_data_conv(input_bo_mode)
+pelidata_temp_all<-bo_data_conv(input_bo_mode,peliData)
 #print(paste(input_bo_mode,input_turnaus,input_total,input_divari,input_Laurin_pakka,input_Martin_pakka,input_moving_average,input_pfiMA,pfi_data))
 if(is.na(pfi_data)){
 pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
