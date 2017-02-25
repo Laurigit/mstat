@@ -102,6 +102,7 @@ if(is.na(input_moving_average)) {
   
 if(input_pfiMA==TRUE) {
   pelidata[,':=' (Lauri_voitti=Lauri_voitti*Laurin_pysyvyys_pct,Martti_voitti=Martti_voitti*Martin_pysyvyys_pct)]
+  nimipaate<-paste("pfiMA",nimipaate,sep="")
 }
 
 

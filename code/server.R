@@ -450,7 +450,7 @@ alotusaika<-reactiveValues()
 output$sarjataulukkovalitsin <- renderUI({
   kaikkipelit<-luecsv("pelit.csv")
   maxturnaus<-max(kaikkipelit[,TurnausNo])
-  fluidRow(numericInput("sarjataulukkokierros","Valitse turnauksen numero",value=maxturnaus))
+  fluidRow(numericInput("sarjataulukkokierros","Turnauksen numero",value=maxturnaus))
 })
   
   
@@ -474,7 +474,7 @@ output$sarjataulukkovalitsin <- renderUI({
   pelidata <- reactiveFileReader(1000, session, "pelit.csv",luecsv)
   output$sarjataulukot <-renderUI({
     #montakodivaria
-    divarit<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,FALSE,pfi_data())$divarit
+    divarit<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())$divarit
     fluidPage(
       lapply(divarit,function(i)  {
         plotname <- paste0("plotdyn", i, sep="")
@@ -519,7 +519,7 @@ output$sarjataulukkovalitsin <- renderUI({
       output[[plotname]] <- renderDataTable({
 
         
-        Data_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,FALSE,pfi_data())$sarjataulukko
+        Data_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,input$radio_pfi_mode,pfi_data())$sarjataulukko
        
         Data<-Data_all
         return(Data)
@@ -551,20 +551,20 @@ output$sarjataulukkovalitsin <- renderUI({
 
   output$data_vs_taulukko<-renderDataTable({
     
-    vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+    vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
     
-    vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,FALSE,pfi_data())
+    vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())
     
-    pakka_stats_all_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,NA,FALSE,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
-    pakka_stats_all_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,input$select_martin_pakka,NA,FALSE,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
+    pakka_stats_all_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,NA,input$radio_pfi_mode,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
+    pakka_stats_all_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,NA,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
     
     setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
     setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
     join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
     
     #MA_pakak
-    pakka_stats_MA_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
-    pakka_stats_MA_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta,FALSE,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+    pakka_stats_MA_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+    pakka_stats_MA_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
     
     
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi_trans

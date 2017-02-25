@@ -28,7 +28,7 @@
       fluidRow(column(3,actionButton("lauri_voitti","Lauri voitti")),column(3,offset=3,actionButton("martti_voitti","Martti voitti"))),
 
       fluidRow(column(3,textOutput("peli_id")) ),
-      fluidRow(column(3,numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5))),
+      
       fluidRow(column(12,box(dataTableOutput("data_vs_taulukko"),width=12)))
       )          
       )
@@ -84,11 +84,10 @@
             )
             ),
           tabItem(tabName="tab_sarjataulukko",
-                    fluidRow(column(3,offset=1,uiOutput("sarjataulukkovalitsin")),
-                             column(4,radioButtons("radio_bo_mode", label = h3("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = TRUE)),
-                             column(4,radioButtons("radio_total_mode",label=h3("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE))),
+                    fluidRow(column(3,offset=1,uiOutput("sarjataulukkovalitsin"))
+                             ),
                     #fluidRow(numericInput("sarjataulukkokierros","Valitse turnauksen numero",value=1)),
-                    #fluidRow(dataTableOutput("sarjataulukko")),
+                    fluidRow(dataTableOutput("sarjataulukko")),
                     fluidRow(uiOutput("sarjataulukot"))
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
@@ -127,7 +126,12 @@ sidebar <- dashboardSidebar(
      menuItem('Divarit ja pickit', tabName = 'tab_combined'),
      #menuSubItem(icon = NULL,actionButton("tallenna_bannit","Tallenna")),
      menuItem('Peliasetukset', tabName = 'tab_peliasetukest'),
-    menuItem("Lataa pakkoja", tabName = "pakkaupload")
+    menuItem("Lataa pakkoja", tabName = "pakkaupload"),
+    radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
+    radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = TRUE,inline=T),
+    radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+    #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
+    numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5)
      #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
     )
 
