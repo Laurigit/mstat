@@ -73,7 +73,7 @@ shinyServer(function(input, output,session) {
       kaikkipelit[,':='(peli_ID=.I+ed_peli_id,idl=NULL,idm=NULL,Voittaja=NA,Aloitusaika=NA,Aloituspvm=NA,Lopetusaika=NA,Lopetuspvm=NA,Laurin_mulligan=NA,Martin_mulligan=NA,Laurin_arvosana=NA,Martin_arvosana=NA,Laurin_humala=NA,Martin_humala=NA,Laurin_landit=NA,Martin_landit=NA,Vuoroarvio=NA,Laurin_kasikortit=NA,Martin_kasikortit=NA,Lauri_voitti=NA,Martti_voitti=NA,Laurin_lifet=NA,Martin_lifet=NA)]
       #arvosana: 1= pelasin hyvin, en keksi parannettavaa. 0= Hieman löysäilyä. -1= merkittävää hölmöilyä.
       #str(kaikkipelit)
-      #kircsv(kaikkipelit,"kierroksen_pelit.csv")
+
       #tee tyhja taulu
       empty_dt<-data.table(kaikkipelit[1==0])
       
@@ -580,7 +580,7 @@ output$sarjataulukkovalitsin <- renderUI({
     
     append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
     #vaihda sarakejärjestys
-    result_table<-append[,c(3,1,2,4),with=FALSE]
+    result_table<-append[,c(3,2,1,4),with=FALSE]
     
     return(result_table)  
      

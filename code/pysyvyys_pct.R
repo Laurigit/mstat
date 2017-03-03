@@ -26,7 +26,7 @@ pakkaUutuusProsentti <-function(pakat) {
     uusinpakka_kortit <-data.table(id=pakat$pakat[[uusinpakka_id]]$list$cards$id,card_count=pakat$pakat[[uusinpakka_id]]$list$cards$count)
     setkey(uusinpakka_kortit,id)
     tulosdata<-NULL
-    for(pakkaid in pakkafilter[,id]) {#ID RIKKI TÄSSÄ; KORJAA
+    for(pakkaid in pakkafilter[,id]) {
   #joinaa uusimman pakan kanssa
     vertailupakka_kortit<-data.table(id=pakat$pakat[[pakkaid]]$list$cards$id,card_count_vertailu=pakat$pakat[[pakkaid]]$list$cards$count)
     setkey(vertailupakka_kortit,id)

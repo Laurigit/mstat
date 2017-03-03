@@ -1,16 +1,27 @@
 
 #sarjataulukko total
 #peliData2<-kaikkipelit
-pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
+#pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
 
-
-  
+peliData<-luecsv("pelit.csv")
+input_bo_mode=FALSE
+input_total=TRUE
+input_pfiMA=FALSE
+input_divari=NA
+input_Laurin_pakka=NA
+input_Martin_pakka=NA
+input_moving_average=NA
+input_turnaus<-1
+pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
+pfi_data<-pakkaUutuusProsentti(pakat)
+divariData<-luecsv("divari.csv")
 
 sarjataulukkoKaikki<-function(divariData,peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
   
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
 pelidata_temp_all<-bo_data_conv(input_bo_mode,peliData)
+
 #print(paste(input_bo_mode,input_turnaus,input_total,input_divari,input_Laurin_pakka,input_Martin_pakka,input_moving_average,input_pfiMA,pfi_data))
 
   pysyvyys_pct<-as.data.table(pfi_data)
@@ -32,6 +43,8 @@ joiniID_and_pct_martti<-joiniID_and_pct_martti[,.(peli_ID,Martin_pysyvyys_pct=py
 setkey(joiniID_and_pct_lauri,peli_ID)
 setkey(joiniID_and_pct_martti,peli_ID)
 setkey(pelidata_temp_all,peli_ID)
+
+
 pelidata_joined_pakkatiedot<-joiniID_and_pct_lauri[joiniID_and_pct_martti][pelidata_temp_all]
 pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
   #ota pois pelaamattomat pelit
@@ -58,21 +71,13 @@ pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
 
 #vs statsit 
   if(!is.na(input_Laurin_pakka)&!is.na(input_Martin_pakka)) {
-   
-    
-    
-
       pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka&Martin_pakka==input_Martin_pakka]
       nimipaate<-paste("VS",nimipaate,sep="")
-
-    
   } else {
     pelidata_vs<-pelidata_divari
   }
-
 #Laurin pakan statsit
   if(!is.na(input_Laurin_pakka) & is.na(input_Martin_pakka)) {
-    
     pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka]
     nimipaate<-paste("Deck",nimipaate,sep="") 
     
@@ -138,7 +143,7 @@ if(input_pfiMA==TRUE) {
   
   #convertointi valmis
   transposed<-melt(pfiresult,id.vars=c("Nimi"),variable.name=c("Tilasto"))
-  all_rows<-data.table(dcast(transposed,Tilasto~Nimi))
+  all_rows<-data.table(dcast(transposed,Tilasto~Nimi,fun.aggregate = sum))
   valitut_sarakkeet<-all_rows[Tilasto %in% c("Voitot","Tappiot")]
   tulos$pfi_trans<-cbind(selite="pfi",valitut_sarakkeet)
   
@@ -217,3 +222,4 @@ if(input_pfiMA==TRUE) {
   #eniten jatkanus tappioputkia
   return(tulos)
 }
+
