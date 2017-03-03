@@ -1,7 +1,3 @@
-pakat
-
-
-
 
 pakkaUutuusProsentti <-function(pakat) {
   pakka_comb<-pakat$meta[,.N,by=.(omistaja,pakkanumero)]
@@ -49,5 +45,3 @@ pakkaUutuusProsentti <-function(pakat) {
   joinaa_pct<-tuloslkaikkipakat[pakat$meta]
   return(joinaa_pct)
 }
-tulos<-pakkaUutuusProsentti(pakat)
-tulos
