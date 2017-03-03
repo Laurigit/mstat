@@ -60,11 +60,9 @@ pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
     #nolladivari = kaikki pelit
     pelidata_all[,Divari:=0]
   
-<<<<<<< HEAD
-  }
 
-=======
->>>>>>> lauri
+}
+
   #filteroi vaan yhden divarin data
   if(!is.na(input_divari) & input_total==FALSE) {
     pelidata_divari<-pelidata_all[Divari==input_divari]
