@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 44b119b6983e6b7a77f4718040caf8bbaccc32a9
 
 pakkaUutuusProsentti <-function(pakat) {
   pakka_comb<-pakat$meta[,.N,by=.(omistaja,pakkanumero)]
