@@ -1,4 +1,4 @@
-source("init.R")
+
 
 
 # Define server logic required to draw a histogram
