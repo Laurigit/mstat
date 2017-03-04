@@ -44,7 +44,3 @@ omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_dat
   print("PAKAT PÄIVITETTY")
   return(tulos)
 }
-
-pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//")
-pakat$meta
-folder<-'C:/Users/Lauri/Documents/R/mstat2/pakat/processed/'

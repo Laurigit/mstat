@@ -1,5 +1,3 @@
-pakat
-
 
 
 
@@ -49,5 +47,4 @@ pakkaUutuusProsentti <-function(pakat) {
   joinaa_pct<-tuloslkaikkipakat[pakat$meta]
   return(joinaa_pct)
 }
-tulos<-pakkaUutuusProsentti(pakat)
-tulos
+

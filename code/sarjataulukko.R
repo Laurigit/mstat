@@ -3,19 +3,19 @@
 #peliData2<-kaikkipelit
 #pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
 
-peliData<-luecsv("pelit.csv")
-pelidata<-peliData
-input_bo_mode=FALSE
-input_total=TRUE
-input_pfiMA=FALSE
-input_divari=NA
-input_Laurin_pakka=NA
-input_Martin_pakka=NA
-input_moving_average=NA
-input_turnaus<-1
-pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
-pfi_data<-pakkaUutuusProsentti(pakat)
-divariData<-luecsv("divari.csv")
+# peliData<-luecsv("pelit.csv")
+# pelidata<-peliData
+# input_bo_mode=FALSE
+# input_total=TRUE
+# input_pfiMA=FALSE
+# input_divari=NA
+# input_Laurin_pakka=NA
+# input_Martin_pakka=NA
+# input_moving_average=NA
+# input_turnaus<-1
+# pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
+# pfi_data<-pakkaUutuusProsentti(pakat)
+# divariData<-luecsv("divari.csv")
 
 sarjataulukkoKaikki<-function(divariData,peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
   
