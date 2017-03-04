@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#read and process json deck
-=======
-# #read and process json deck
->>>>>>> 44b119b6983e6b7a77f4718040caf8bbaccc32a9
+
 # folder_in <- "C:/Users/Lauri/Documents/R/mstat2/pakat/"
 # folder_out <- "C:/Users/Lauri/Documents/R/mstat2/pakat/processed/"
 # filename_in<-"L_1.json"

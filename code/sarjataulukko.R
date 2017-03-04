@@ -5,23 +5,18 @@
 
 # peliData<-luecsv("pelit.csv")
 # pelidata<-peliData
-<<<<<<< HEAD
+
 # input_bo_mode=FALSE
 # input_total=TRUE
-=======
-# input_bo_mode=TRUE
-# input_total=FALSE
->>>>>>> 44b119b6983e6b7a77f4718040caf8bbaccc32a9
+
 # input_pfiMA=FALSE
 # input_divari=NA
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
 # input_moving_average=NA
-<<<<<<< HEAD
+
 # input_turnaus<-1
-=======
-# input_turnaus<-33
->>>>>>> 44b119b6983e6b7a77f4718040caf8bbaccc32a9
+
 # pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
