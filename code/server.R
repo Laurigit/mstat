@@ -1,9 +1,6 @@
 source("init.R")
 
 
-
-
-
 # Define server logic required to draw a histogram
 shinyServer(function(input, output,session) {
 
@@ -483,8 +480,13 @@ output$sarjataulukkovalitsin <- renderUI({
     tilanneteksti <-paste0(kokonaistilanne[,Voitot_Lauri],"-",kokonaistilanne[,Voitot_Martti])
     subtitle<-ifelse(kokonaistilanne[,Voitot_Lauri]>kokonaistilanne[,Voitot_Martti],"Lauri johtaa",
                      ifelse(kokonaistilanne[,Voitot_Lauri]<kokonaistilanne[,Voitot_Martti],"Martti johtaa","Tasan"))
+    turnaustilanne<-turnausVoitot(divaridata(),peliDataReact())$total
+    print(turnaustilanne)
+    turnaustilanneteksti<-paste0(turnaustilanne[,Laurin_TV],"-",turnaustilanne[,Martin_TV])
+    
     fluidPage(
-      fluidRow(valueBox(tilanneteksti,subtitle,icon=icon("trophy",lib = "font-awesome"))),
+      fluidRow(valueBox(tilanneteksti,subtitle,icon=icon("dashboard",lib = "font-awesome")),
+               valueBox(turnaustilanneteksti,"Turnaustilanne",icon=icon("trophy",lib = "font-awesome"))),
   
       lapply(divarit,function(i)  {
         plotname <- paste0("plotdyn", i, sep="")
@@ -609,7 +611,8 @@ output$sarjataulukkovalitsin <- renderUI({
     append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
     #vaihda sarakejärjestys
     result_table<-append[,c(3,2,1,4),with=FALSE]
-    
+    print((result_table[1,selite]))
+    print(sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data()))
     return(result_table)  
      
   },    options = list(
@@ -620,8 +623,14 @@ output$sarjataulukkovalitsin <- renderUI({
                       list(className = 'dt-left', targets = 3)),
     rowCallback = DT::JS(
       'function(row, data) {
-      if (parseFloat(data[0]) > 1)
-      $("td", row).css("background", "PaleTurquoise");}')
+      if ((data[2]) == "VS")
+      $("td", row).css("background", "PaleTurquoise");
+       else if (data[2] == "Deck" )
+          $("td", row).css("background", "PapayaWhip");
+       else if (data[2] == "pfi" )
+          $("td", row).css("background", "PowderBlue");
+ 
+      }')
     
     
     
@@ -703,7 +712,7 @@ pfi_data<-reactive({
 
   print(paste("TÄÄLLÄ PITÄIS TULOSTUA",input$file1))
   
-  pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
+  pakat<-omaReadJson(".//pakat//processed//",input$file1)
   pakkaUutuusProsentti(pakat)
 })  
     
@@ -714,7 +723,7 @@ observe({
 
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
-    validointiteksti$teksti<-process_uploaded_decks(ifile,"C:/Users/Lauri/Documents/R/mstat2/pakat/processed/")}
+    validointiteksti$teksti<-process_uploaded_decks(ifile,".//pakat//processed//")}
 
 })
 peliDataReact<-reactive({
