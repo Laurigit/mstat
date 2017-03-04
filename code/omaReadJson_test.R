@@ -44,7 +44,3 @@ omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_dat
   print("PAKAT PÄIVITETTY")
   return(tulos)
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 44b119b6983e6b7a77f4718040caf8bbaccc32a9
