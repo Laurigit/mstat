@@ -105,7 +105,7 @@
                   tableOutput("contents")
                 )
               ),verbatimTextOutput("text_validointi")
-              )
+              ),fluidRow(box(DT::dataTableOutput("pfi_taulukko"),title=("Nykypakkastatsit"),solidHeader = TRUE,status="primary",width=12))
     )
   )
 )

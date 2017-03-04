@@ -12,8 +12,7 @@ options(max.print=1000000)
 options(DT.fillContainer = FALSE) 
 options(DT.autoHideNavigation = FALSE) 
 #setwd("C:/Users/laurilepisto/Documents/R/shiny/r2")
-#setwd("C:/Users/Lauri/Documents/R/mstat2/code")
-setwd("E:/Pikkuohjelmat/mstat/mstat/code/")
+setwd("C:/Users/Lauri/Documents/R/mstat2/code")
 
 
 source("sarjataulukko.R")

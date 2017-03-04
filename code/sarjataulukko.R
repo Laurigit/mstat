@@ -1,20 +1,21 @@
 
 #sarjataulukko total
+#peliData2<-kaikkipelit
+#pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
 
- # peliData<-luecsv("pelit.csv")
- # input_bo_mode=FALSE
- # input_total=TRUE
- # input_pfiMA=FALSE
- # input_divari=NA
- # input_Laurin_pakka=1
- # input_Martin_pakka=1
- # input_moving_average=NA
- # input_turnaus<-1
- # pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
- # pfi_data<-pakkaUutuusProsentti(pakat)
- # divariData<-luecsv("divari.csv")
-#input_pfiMA=FALSE
-
+peliData<-luecsv("pelit.csv")
+pelidata<-peliData
+input_bo_mode=TRUE
+input_total=FALSE
+input_pfiMA=FALSE
+input_divari=NA
+input_Laurin_pakka=NA
+input_Martin_pakka=NA
+input_moving_average=NA
+input_turnaus<-33
+pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
+pfi_data<-pakkaUutuusProsentti(pakat)
+divariData<-luecsv("divari.csv")
 
 sarjataulukkoKaikki<-function(divariData,peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
   
@@ -60,8 +61,7 @@ pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
     #nolladivari = kaikki pelit
     pelidata_all[,Divari:=0]
   
-
-}
+  }
 
   #filteroi vaan yhden divarin data
   if(!is.na(input_divari) & input_total==FALSE) {
@@ -110,8 +110,12 @@ if(input_pfiMA==TRUE) {
   pelidata[,':=' (Lauri_voitti=Lauri_voitti*Laurin_pysyvyys_pct,Martti_voitti=Martti_voitti*Martin_pysyvyys_pct)]
   nimipaate<-paste("pfiMA",nimipaate,sep="")
 }
-
-
+  tulos<-NULL
+  
+  Lauripelaajastats<-pelidata[,.(Voitot_Lauri=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE)),by=.(Divari)]
+  Martinpelaajastats <- pelidata[,.(Voitot_Martti=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE)),by=.(Divari)]
+  joinpelaajastats<-Lauripelaajastats[Martinpelaajastats,on=c("Divari","Pelit")]
+  tulos$pelaajastats<-joinpelaajastats
   
   Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=1,Hinta=mean(hinta_lauri)),by=.(Pakka=Laurin_pakka,Divari)]
   Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari)]
@@ -136,7 +140,7 @@ if(input_pfiMA==TRUE) {
   setkeyv(append_pfi,c("Omistaja","Pakka"))
   joinpfipakka <- pakkatiedot[append_pfi]
   pfiresult<-joinpfipakka[,.(Nimi,Voitot,Tappiot)][order(-Tappiot,-Voitot)]
-  tulos<-NULL
+
   tulos$pfi<-pfiresult
   #transponoi
   cols<-names(pfiresult)[2:length(names(pfiresult))]
