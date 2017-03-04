@@ -633,13 +633,13 @@ output$sarjataulukkovalitsin <- renderUI({
 
   output$paras_countteri<-renderValueBox({
     
-    pelatut_parit<-luecsv("Pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit<-luecsv("pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
     #looppaa parit läpi ja eti paras voitto%
     pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
     #laurin paras countteri
     laurin_counter<-pelatut_parit[, .SD[which.max(Voitto_pct)]]
-    pakat<-luecsv("Divari.csv")
+    pakat<-luecsv("divari.csv")
     martin_counter <- pelatut_parit[, .SD[which.max(vertailu)]]
     
     if (laurin_counter[,Voitto_pct]>martin_counter[,vertailu]) {
@@ -659,7 +659,7 @@ output$sarjataulukkovalitsin <- renderUI({
   
   output$vaikein_counteroitava<-renderValueBox({
     
-    pelatut_parit<-luecsv("Pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit<-luecsv("pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
     #looppaa parit läpi ja eti paras voitto%
     pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
@@ -667,7 +667,7 @@ output$sarjataulukkovalitsin <- renderUI({
     laurin_counter<-pelatut_parit[, .(maxvertailu=max(vertailu)),by=Laurin_pakka]
     laurin_countteroimaton_pakka<-laurin_counter[,.SD[which.min(maxvertailu)]]
     
-    pakat<-luecsv("Divari.csv")
+    pakat<-luecsv("divari.csv")
     martin_counter <- pelatut_parit[, .(maxvertailu=max(Voitto_pct)),by=Martin_pakka]
     martin_countteroimaton_pakka<-martin_counter[,.SD[which.min(maxvertailu)]]
     
