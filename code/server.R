@@ -467,8 +467,12 @@ output$sarjataulukkovalitsin <- renderUI({
     kaikkipelit<-luecsv("pelit.csv")
     maxturnaus <-max(kaikkipelit[,TurnausNo])
     updateNumericInput(session,"sarjataulukkokierros",value=maxturnaus)})
-  
-  pelidata <- reactiveFileReader(1000, session, "pelit.csv",luecsv)
+
+  # pelidata <- reactiveFileReader(1000, session, "pelit.csv",luecsv)  
+  pelidata <- reactive({
+    luecsv("pelit.csv")
+    print(paste(input$tallenna_tulos, input$tallenna_bannit))
+  })
   output$sarjataulukot <-renderUI({
     #montakodivaria
     sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
@@ -498,7 +502,11 @@ output$sarjataulukkovalitsin <- renderUI({
   })
   
 
-  divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
+  # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
+  divaridata <- reactive({
+    luecsv("divari.csv")
+    print(paste(input$tallenna_bannit))
+  })
   output$table_divari2<- renderUI({
     #montakodivaria
 
@@ -712,7 +720,7 @@ pfi_data<-reactive({
 
   print(paste("TÄÄLLÄ PITÄIS TULOSTUA",input$file1))
   
-  pakat<-omaReadJson(".//pakat//processed//",input$file1)
+  pakat<-omaReadJson("E://Pikkuohjelmat//processed//",input$file1)
   pakkaUutuusProsentti(pakat)
 })  
     
@@ -723,7 +731,7 @@ observe({
 
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
-    validointiteksti$teksti<-process_uploaded_decks(ifile,".//pakat//processed//")}
+    validointiteksti$teksti<-process_uploaded_decks(ifile,"E://Pikkuohjelmat//processed//")}
 
 })
 peliDataReact<-reactive({

@@ -13,7 +13,7 @@ options(DT.fillContainer = FALSE)
 options(DT.autoHideNavigation = FALSE) 
 #setwd("C:/Users/laurilepisto/Documents/R/shiny/r2")
 #setwd("C:/Users/Lauri/Documents/R/mstat2/code")
-#setwd("E:/Pikkuohjelmat/mstat/mstat/code")
+setwd("E:/Pikkuohjelmat/mstat/mstat/code")
 
 
 
@@ -22,8 +22,14 @@ source("functio_bo_conversio.R")
 source("process_uploaded_decks.R")
 source("omaReadJson.R")
 source("pysyvyys_pct.R")
+source("turnausVoitot.R")
 
 luecsv<-function(tiedostonimi) {
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", tiedostonimi), dest = getwd(), sep=";",stringsAsFactors = FALSE))
+
+}
+
+luecsvf<-function(tiedostonimi) {
   tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE))
   return(tulos)
 }
