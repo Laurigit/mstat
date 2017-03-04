@@ -1,7 +1,7 @@
-#read and process json deck
-folder_in <- "C:/Users/Lauri/Documents/R/mstat2/pakat/"
-folder_out <- "C:/Users/Lauri/Documents/R/mstat2/pakat/processed/"
-filename_in<-"L_1.json"
+# #read and process json deck
+# folder_in <- "C:/Users/Lauri/Documents/R/mstat2/pakat/"
+# folder_out <- "C:/Users/Lauri/Documents/R/mstat2/pakat/processed/"
+# filename_in<-"L_1.json"
 process_uploaded_decks<-function(filelist,folder_out) {
 filelist <-data.table(filelist)
   #lue json-tiedosto
