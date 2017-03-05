@@ -14,6 +14,7 @@ shinyServer(function(input, output,session) {
   
   #luo uusi turnaus
   observeEvent(input$luo_peleja,{
+    print("luo pejelä alku")
    
     divarit_dt<-luecsv("divari.csv")
     
@@ -86,6 +87,8 @@ shinyServer(function(input, output,session) {
 
         shinyjs::disable("luo_peleja")
         shinyjs::enable("arvo_peli")
+        
+        print("luo pejelä loppu")
    
   })
       
@@ -93,6 +96,7 @@ shinyServer(function(input, output,session) {
   
   #arvopeli
   observeEvent(input$arvo_peli,{
+    print("arvo peli alku")
     kaikkipelit<-luecsv("pelit.csv")
     pelaamattomat <- unique(kaikkipelit[is.na(Voittaja),Ottelu_ID])
     arpa<-ceiling(runif(1,0,length(pelaamattomat)))
@@ -103,7 +107,7 @@ shinyServer(function(input, output,session) {
     paivitaSliderit(arvottu_peli_id,session)
 
     #print(pfi_data())
-    
+    print("arvo peli loppu")
   
   })
   
@@ -112,6 +116,7 @@ shinyServer(function(input, output,session) {
     #jatka ottelua
     
     observeEvent(input$jatka_ottelua,{
+      print("jatka ottelua alku")
 
       if (!is.na(r_valittu_peli$jatkopeli)) {
     #  
@@ -120,11 +125,13 @@ shinyServer(function(input, output,session) {
       }else {
         print("Ei ole peliä kesken")
       }
+      print("jatka ottelua loppu")
     })
    #seuraa selectinputlistoja
     
         #tallennapeli
   observeEvent(input$tallenna_tulos,{
+    print("tallenna tulos alku")
      uusrivi<- c(
        Aloitusaika=alotusaika$alotusaika,
        Aloituspvm=alotusaika$alotuspvm,
@@ -209,6 +216,7 @@ shinyServer(function(input, output,session) {
      }
      
      updateNumericInput(session,"sarjataulukkokierros",value=0)
+     print("tallenna tulos loppu")
     })  
     
     
@@ -226,12 +234,14 @@ alotusaika<-reactiveValues()
 
     alotusaika$alotusaika<-as.ITime(now())
     alotusaika$alotuspvm<-as.IDate(now())
+    print("observe aloitusaika loppu")
 })
 
- 
+
 
   #seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
   observe({
+    print("seuraa valintalistoja alku")
     #seuraa tallenna buttonia myös 
     print(paste("tallennatulosarvo",input$tallenna_tulos))
     
@@ -302,22 +312,32 @@ alotusaika<-reactiveValues()
     }
     
     }
+    print("seuraa valintalistoja loppu")
   })
   observeEvent(input$laurin_mulligan,{
+    print("laurin mulligan alku")
     updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan+1)
+    print("laurin mulligan loppu")
   })
   observeEvent(input$martin_mulligan,{
+    print("martin mulligan alku")
     updateSliderInput(session, "slider_martin_mulligan", value = input$slider_martin_mulligan+1)
+    print("martin mulligan loppu")
   })
   observeEvent(input$laurin_virhe,{
+    print("laurin virhe alku")
     updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
+    print("laurin virhe loppu")
   })
   
   observeEvent(input$martin_virhe,{
+    print("martin virhe alku")
     updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
+    print("martin virhe loppu")
   })
   
   observeEvent(input$lauri_voitti,{
+    print("lauri voitti alku")
     kaikkipelit<-data.table(luecsv("pelit.csv"))
     #tarkista onko peli pelattu
     if(!is.na(kaikkipelit[peli_ID==  r_valittu_peli$peliID,Voittaja])){
@@ -327,21 +347,27 @@ alotusaika<-reactiveValues()
       updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
       updateRadioButtons(session,"radio_voittaja",selected=0)
     }
+    print("lauri voitti loppu")
   })
   
   observeEvent(input$martti_voitti,{
+    print("martti voitti alku")
     updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
     updateRadioButtons(session,"radio_voittaja",selected=1)
+    print("martti voitti loppu")
   })
   
   
   observeEvent(input$slider_vuoroarvio,{
+    print("slider vuoroarvio alku")
     updateSliderInput(session, "slider_martin_landit", value = input$slider_vuoroarvio)
     updateSliderInput(session, "slider_laurin_landit", value = input$slider_vuoroarvio)
+    print("slider vuoroarvio loppu")
   })
 
   #päivitä divarit
   observeEvent(input$ tallenna_divarit,{
+    print("päivitä divarit alku")
     
     divarit<-luecsv("divari.csv")
     
@@ -356,10 +382,12 @@ alotusaika<-reactiveValues()
     print(divarit)
     kircsv(divarit,"divari.csv")
     #divaridata<-divarit
+    print("päivitä divarit loppu")
   })
   
   #paivitä bannit
   observeEvent(input$ tallenna_bannit,{
+    print("tallenna bannit alku")
     
     divarit<-luecsv("divari.csv")
     divarit[,syntax_cb:=(text=paste0("checkbox",Pakka,Omistaja))]
@@ -392,7 +420,7 @@ alotusaika<-reactiveValues()
     }
   kircsv(divarit,"divari.csv")
     
-    
+  print("tallenna bannit loppu")
   })
 
   #Serveripuolella tehdyt UI-palikat.
@@ -504,13 +532,15 @@ output$sarjataulukkovalitsin <- renderUI({
 
   # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
   divaridata <- reactive({
+    print("divaritada alku")
     tulos <- luecsv("divari.csv")
     print(paste(input$tallenna_bannit))
+    print("divaritada loppu")
     return (tulos)
   })
   output$table_divari2<- renderUI({
     #montakodivaria
-
+    print("montako divaria alku")
     divarit<-divaridata()
     divarit<-divarit[order(Divari)]
     eri_divarit<-unique(divarit[,Divari])
@@ -523,6 +553,7 @@ output$sarjataulukkovalitsin <- renderUI({
 
       })
     )
+    print("montako divaria loppu")
   })
 
 
@@ -543,6 +574,7 @@ output$sarjataulukkovalitsin <- renderUI({
         Data_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,input$radio_pfi_mode,pfi_data())$sarjataulukko
        
         Data<-Data_all
+        print("rivi 574 return")
         return(Data)
         #print(Data)
       },    options = list(
