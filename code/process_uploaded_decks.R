@@ -30,11 +30,15 @@ valid_teksti<-NULL
     
     tiedostopaate <- substr(pakka$name,nchar(pakka$name)-4,nchar(pakka$name))
     tiedostonimi<-paste(tiedostoalku,"_",pvm,"_",sekunnit,tiedostopaate,sep="")
-    syscommand <-paste("copy ", pakka$datapath," ",folder_out,tiedostonimi,sep="")
+ 
+    write.table(read.table(file=pakka$datapath),file=tiedostonimi,row.names=FALSE,col.names = FALSE,quote=FALSE)
+    
+    
+    #syscommand <-paste("copy ", pakka$datapath," ",folder_out,tiedostonimi,sep="")
   
-    repl_slash <-gsub("/","\\\\",syscommand)
+    #repl_slash <-gsub("/","\\\\",syscommand)
 
-    shell(paste(repl_slash),intern=TRUE)
+    #shell(paste(repl_slash),intern=TRUE)
     valid_teksti<-paste(valid_teksti,"ok: ",pakka$name,"\n")
 
     } else {
