@@ -6,6 +6,7 @@ library(lubridate)
 library(DT)
 library(reshape2)
 library(jsonlite)
+library(rdrop2)
 #library(shinythemes)
 
 options(max.print=1000000)
@@ -13,8 +14,14 @@ options(DT.fillContainer = FALSE)
 options(DT.autoHideNavigation = FALSE) 
 #setwd("C:/Users/laurilepisto/Documents/R/shiny/r2")
 #setwd("C:/Users/Lauri/Documents/R/mstat2/code")
-setwd("E:/Pikkuohjelmat/mstat/mstat/code")
-
+#setwd("E:/Pikkuohjelmat/mstat/mstat/code")
+token <- drop_auth()
+saveRDS(token, "droptoken.rds")
+# Upload droptoken to your server
+# read it back with readRDS
+token <- readRDS("droptoken.rds")
+# Then pass the token to each drop_ function
+drop_acc(dtoken = token)
 
 
 source("sarjataulukko.R")
@@ -24,16 +31,28 @@ source("omaReadJson.R")
 source("pysyvyys_pct.R")
 source("turnausVoitot.R")
 
-luecsv<-function(tiedostonimi) {
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", tiedostonimi), dest = getwd(), sep=";",stringsAsFactors = FALSE))
+luecsvalku<-function() {
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE))
+  jsonit <- as.data.table(drop_dir("mstat/processed/"))
+  for(pakka in jsonit[,path]) {
+    print(substring(pakka,2))
+    drop_get(substring(pakka,2), overwrite = TRUE)
+  }
+}
+luecsvalku()
 
+kircsv<-function(datataulu, tiedostonimi) {
+  write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
+  drop_upload(tiedostonimi, "mstat/csv/", overwrite = TRUE)
+  
 }
 
-luecsvf<-function(tiedostonimi) {
+luecsv<-function(tiedostonimi) {
   tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE))
   return(tulos)
 }
-kircsv<-function(datataulu,tiedostonimi) {
+kircsv2<-function(datataulu,tiedostonimi) {
   tulos <- write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
 }
 

@@ -504,8 +504,9 @@ output$sarjataulukkovalitsin <- renderUI({
 
   # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
   divaridata <- reactive({
-    luecsv("divari.csv")
+    tulos <- luecsv("divari.csv")
     print(paste(input$tallenna_bannit))
+    return (tulos)
   })
   output$table_divari2<- renderUI({
     #montakodivaria
@@ -720,7 +721,7 @@ pfi_data<-reactive({
 
   print(paste("TÄÄLLÄ PITÄIS TULOSTUA",input$file1))
   
-  pakat<-omaReadJson("E://Pikkuohjelmat//processed//",input$file1)
+  pakat<-omaReadJson(".//",input$file1)
   pakkaUutuusProsentti(pakat)
 })  
     
@@ -731,7 +732,7 @@ observe({
 
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
-    validointiteksti$teksti<-process_uploaded_decks(ifile,"E://Pikkuohjelmat//processed//")}
+    validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
 
 })
 peliDataReact<-reactive({
