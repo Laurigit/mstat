@@ -34,19 +34,21 @@ source("turnausVoitot.R")
 luecsvalku<-function() {
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
-  jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
-  for(pakka in jsonit[,path]) {
-    print(substring(pakka,2))
-    drop_get(substring(pakka,2), overwrite = TRUE,dtoken = token)
-  }
+  #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
+  #for(pakka in jsonit[,path]) {
+  #  print(substring(pakka,2))
+    drop_get("mstat/processed/json.zip", overwrite = TRUE,dtoken = token)
+    unzip("json.zip")
+  #}
 }
 luecsvalku()
 
 kircsv<-function(datataulu, tiedostonimi) {
   write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
   drop_upload(tiedostonimi, "mstat/csv/", overwrite = TRUE,dtoken = token)
-  
 }
+
+
 
 luecsv<-function(tiedostonimi) {
   tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE))
@@ -54,6 +56,14 @@ luecsv<-function(tiedostonimi) {
 }
 kircsv2<-function(datataulu,tiedostonimi) {
   tulos <- write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
+}
+
+#pakkaa jsonit ja laheta
+zipAndSend<-function(){
+ tiedostot<- as.data.table(dir())
+ tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
+ zip("json.zip",files=tiedostot[paate==".json",V1])
+ drop_upload("json.zip", "mstat/processed/", overwrite = TRUE,dtoken = token)
 }
 
 paivitaSliderit<-function(input_peli_ID,session) {

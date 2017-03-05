@@ -765,6 +765,7 @@ observe({
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
     validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
+  zipAndSend()
 
 })
 peliDataReact<-reactive({
