@@ -34,7 +34,7 @@ source("turnausVoitot.R")
 luecsvalku<-function() {
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
-  jsonit <- as.data.table(drop_dir("mstat/processed/"))
+  jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   for(pakka in jsonit[,path]) {
     print(substring(pakka,2))
     drop_get(substring(pakka,2), overwrite = TRUE,dtoken = token)
