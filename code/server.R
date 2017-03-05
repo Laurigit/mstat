@@ -553,7 +553,7 @@ output$sarjataulukkovalitsin <- renderUI({
 
       })
     )
-    print("montako divaria loppu")
+
   })
 
 
