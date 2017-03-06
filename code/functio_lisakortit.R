@@ -1,14 +1,15 @@
-funcLisakortit<-function(inputPelidata,divariData){
-turnaussaanto<-data.table(read.csv("turnaussaanto.csv",sep=";",fileEncoding="UTF-8-BOM"))
+funcLisakortit<-function(inputPelidata,inputDivariData,inputTurnausSaanto){
+  turnaussaanto<- inputTurnausSaanto
 #levita saannot
 turnauksia<-data.table(TurnausNoSeq=1:1000)
 #setwd("C:/Users/Lauri/Documents/R/mstat2/code/omawd")
 levite<-data.table(expand.grid(1:10000,1:100))
 setnames(levite,c("Var1","Var2"),c("TurnausNo","Divari"))
 joinsaanto <- turnaussaanto[levite,on=c("TurnausNo","Divari")]
+joinsaanto<-joinsaanto[order(TurnausNo,Divari)]
 #korvaa NA:t seuraavalla
-library(zoo)
-joinsaanto[,lisakortit_per_voitto:=na.locf(lisakortit_per_voitto)]
+
+joinsaanto[,lisakortit_per_voitto:=na.locf(lisakortit_per_voitto),by=Divari]
 
 joinLisakortit<-joinsaanto[inputPeliData,on=c("TurnausNo","Divari")]
 #palauta lisakortit

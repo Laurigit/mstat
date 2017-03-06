@@ -7,6 +7,7 @@ library(DT)
 library(reshape2)
 library(jsonlite)
 library(rdrop2)
+library(zoo)
 #library(shinythemes)
 
 options(max.print=1000000)
@@ -43,6 +44,7 @@ luecsvalku<-function() {
   print(getwd())
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "turnaussaanto.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   #for(pakka in jsonit[,path]) {
   #  print(substring(pakka,2))

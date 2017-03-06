@@ -607,7 +607,7 @@ output$sarjataulukkovalitsin <- renderUI({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
     
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata())
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())
     #join
 
     joinLisakortit<-lisakortit[pfistats,on=c("Nimi")]
@@ -778,6 +778,12 @@ peliDataReact<-reactive({
 print(input$tallenna_tulos)
   kaikkipelit<-luecsv("pelit.csv")  
   
+})
+
+turnausSaantoReact<-reactive({
+  print("luettu turnaussaanto.csv")
+  turnaussaanto<-data.table(read.csv("turnaussaanto.csv",sep=";",fileEncoding="UTF-8-BOM"))
+  return(turnaussaanto)
 })
 
 validointiteksti <-reactiveValues(teksti="Ei ladattu pakkoja")
