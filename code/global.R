@@ -30,10 +30,9 @@ source("process_uploaded_decks.R")
 source("omaReadJson.R")
 source("pysyvyys_pct.R")
 source("turnausVoitot.R")
+source("functio_lisakortit.R")
 
-print(getwd())
 dirname <-  './omawd'
-
 if (dir.exists(path=dirname)) {
   setwd(dirname) 
 }

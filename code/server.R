@@ -604,10 +604,14 @@ output$sarjataulukkovalitsin <- renderUI({
   
   
   output$pfi_taulukko <-renderDataTable({
-    print(sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi)
+
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
     
-    pfistats
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata())
+    #join
+
+    joinLisakortit<-lisakortit[pfistats,on=c("Nimi")]
+    return(joinLisakortit)
   },    options = list(
     paging = FALSE,
     searching = FALSE,
@@ -615,7 +619,7 @@ output$sarjataulukkovalitsin <- renderUI({
     rowCallback = DT::JS(
       'function(row, data) {
         // Bold cells for those >= 5 in the first column
-        if (parseFloat(data[2]) >= 4)
+        if (parseFloat(data[5]) >= 4)
            $("td", row).css("background", "Tomato");}')
     
   ),rownames=FALSE)
