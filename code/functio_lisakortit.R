@@ -1,4 +1,4 @@
-funcLisakortit<-function(inputPelidata,inputDivariData,inputTurnausSaanto){
+funcLisakortit<-function(inputPeliData,inputDivariData,inputTurnausSaanto){
   turnaussaanto<- inputTurnausSaanto
 #levita saannot
 turnauksia<-data.table(TurnausNoSeq=1:1000)
