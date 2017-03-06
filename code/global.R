@@ -31,7 +31,17 @@ source("omaReadJson.R")
 source("pysyvyys_pct.R")
 source("turnausVoitot.R")
 
+print(getwd())
+dirname <-  './omawd'
+
+if (dir.exists(path=dirname)) {
+  setwd(dirname) 
+}
+  
+
+
 luecsvalku<-function() {
+  print(getwd())
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
