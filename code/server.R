@@ -631,11 +631,13 @@ output$sarjataulukkovalitsin <- renderUI({
     vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())
     
     pakka_stats_all_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,NA,input$radio_pfi_mode,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
+    laurin_pakkanimi<-colnames(pakka_stats_all_lauri)[3]
     pakka_stats_all_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,NA,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
-    
+    martin_pakkanimi<-colnames(pakka_stats_all_martti)[3]
     setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
     setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
     join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
+    
     
     #MA_pakak
     pakka_stats_MA_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
@@ -655,9 +657,8 @@ output$sarjataulukkovalitsin <- renderUI({
     
     append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
     #vaihda sarakejärjestys
-    result_table<-append[,c(3,2,1,4),with=FALSE]
-    print((result_table[1,selite]))
-    print(sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data()))
+
+    result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
     return(result_table)  
      
   },    options = list(
