@@ -7,17 +7,17 @@
 # pelidata<-peliData
 
 # input_bo_mode=FALSE
-# input_total=TRUE
+# input_total=FALSE
 
 # input_pfiMA=FALSE
-# input_divari=NA
+# input_divari=1
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
 # input_moving_average=NA
 
 # input_turnaus<-1
 
-# pakat<-omaReadJson("C://Users//Lauri//Documents//R//mstat2//pakat//processed//",input$file1)
+# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd",input$file1)
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 

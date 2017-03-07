@@ -71,10 +71,15 @@ kircsv2<-function(datataulu,tiedostonimi) {
 
 #pakkaa jsonit ja laheta
 zipAndSend<-function(){
+  
  tiedostot<- as.data.table(dir())
+ 
  tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
- zip("json.zip",files=tiedostot[paate==".json",V1])
+ json_files<-tiedostot[paate==".json",V1]
+if (length(json_files)>0){
+ zip("json.zip",files=json_files)
  drop_upload("json.zip", "mstat/processed/", overwrite = TRUE,dtoken = token)
+ }
 }
 
 paivitaSliderit<-function(input_peli_ID,session) {

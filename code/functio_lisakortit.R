@@ -1,5 +1,12 @@
+# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd",input$file1)
+# pfi_data<-pakkaUutuusProsentti(pakat)
+# inputDivariData<-luecsv("divari.csv")
+#inputPeliData<-luecsv("pelit.csv")
+#inputTurnausSaanto<-luecsv("turnaussaanto.csv")
+
 funcLisakortit<-function(inputPeliData,inputDivariData,inputTurnausSaanto){
-  turnaussaanto<- inputTurnausSaanto
+  
+turnaussaanto<- inputTurnausSaanto
 #levita saannot
 turnauksia<-data.table(TurnausNoSeq=1:1000)
 #setwd("C:/Users/Lauri/Documents/R/mstat2/code/omawd")

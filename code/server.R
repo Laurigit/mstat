@@ -27,10 +27,11 @@ shinyServer(function(input, output,session) {
     vanhatpelit <-luecsv("pelit.csv")
     #eti edellinen max ottelu_id
     ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
-    
+    if(!is.finite(ed_ottelu_id_max)) {ed_ottelu_id_max<-1}
     #tarvitaan vain, kun ajetaan manuaalisesti eka kerta
-    #kierroksia<-2
+    #kierroksia<-1
     #BO_mode<-FALSE
+    #otteluita<-2
     #montako peliä on yhdessä ottelussa
     otteluita<-input$numeric_ottelut
     #montako ottelua on turnauksessa pakkojen välillä
@@ -56,11 +57,12 @@ shinyServer(function(input, output,session) {
       
       #TurnausNo<-1
       turnaus_no<-max(vanhatpelit[,TurnausNo])+1
+      if(!is.finite(turnaus_no)) {turnaus_no<-1}
       kaikkipelit[,TurnausNo:=turnaus_no]
       
       #edellinen max peli_iD
       ed_peli_id<-max(vanhatpelit[,peli_ID])
-  
+      if(!is.finite(ed_peli_id)) {ed_peli_id<-0}
       
       #aloittaja
       
@@ -606,8 +608,9 @@ output$sarjataulukkovalitsin <- renderUI({
   output$pfi_taulukko <-renderDataTable({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
-    
+    print(pfistats)
     lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())
+    print(lisakortit)
     #join
 
     joinLisakortit<-lisakortit[pfistats,on=c("Nimi")]
