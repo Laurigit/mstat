@@ -27,7 +27,7 @@ shinyServer(function(input, output,session) {
     vanhatpelit <-luecsv("pelit.csv")
     #eti edellinen max ottelu_id
     ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
-    if(!is.finite(ed_ottelu_id_max)) {ed_ottelu_id_max<-1}
+    if(!is.finite(ed_ottelu_id_max)) {ed_ottelu_id_max<-0}
     #tarvitaan vain, kun ajetaan manuaalisesti eka kerta
     #kierroksia<-1
     #BO_mode<-FALSE
