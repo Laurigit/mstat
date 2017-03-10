@@ -2,27 +2,45 @@
 #sarjataulukko total
 #peliData2<-kaikkipelit
 #pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
-
+#setwd("~/R/mstat2/code/omawd")
 # peliData<-luecsv("pelit.csv")
-# pelidata<-peliData
+
 
 # input_bo_mode=FALSE
-# input_total=TRUE
+# input_total=FALSE
 
 # input_pfiMA=FALSE
-# input_divari=NA
-# input_Laurin_pakka=NA
-# input_Martin_pakka=NA
+# input_divari=1
+# input_Laurin_pakka=1
+# input_Martin_pakka=1
 # input_moving_average=NA
 
-#input_pfiMA=TRUE
-# input_turnaus<-1
+#input_pfiMA=FALSE
+# input_turnaus<-3
 
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 
 sarjataulukkoKaikki<-function(divariData,peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
+#pysäytä jos nulleja
+  if(is.null(divariData)|
+     is.null(peliData)|
+     is.null(input_bo_mode)|
+     is.null(input_turnaus)|
+     is.null(input_total)|
+     is.null(input_divari)|
+     is.null(input_Laurin_pakka)|
+     is.null(input_Martin_pakka)|
+     is.null(input_moving_average)|
+     is.null(input_pfiMA)|
+     is.null(pfi_data)) {
+    tulos<-NULL
+    tulos$transposed<-NA
+    return(tulos)
+  }
+    
+  
   
 #jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
   
@@ -74,7 +92,10 @@ pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
   } else {
     pelidata_divari <-pelidata_all
   }
-
+  
+  ##korjaa warningeja pois
+  if(is.null(input_Laurin_pakka)) {input_Laurin_pakka<-NA}
+  if(is.null(input_Martin_pakka)) {input_Martin_pakka<-NA}
 #vs statsit 
   if(!is.na(input_Laurin_pakka)&!is.na(input_Martin_pakka)) {
       pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka&Martin_pakka==input_Martin_pakka]
@@ -82,6 +103,8 @@ pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
   } else {
     pelidata_vs<-pelidata_divari
   }
+  
+  
 #Laurin pakan statsit
   if(!is.na(input_Laurin_pakka) & is.na(input_Martin_pakka)) {
     pelidata_vs<-pelidata_divari[Laurin_pakka==input_Laurin_pakka]
@@ -143,7 +166,9 @@ if(input_pfiMA==TRUE) {
   Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=1,Hinta=mean(hinta_lauri)),by=.(Pakka=Laurin_pakka,Divari,TurnausNo)]
   Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari,TurnausNo)]
   
-  
+  #print(paste("pelidata ennen gmax"))
+  #print(pelidata)
+  #print("pelidata jalkeen gmas")
   max_pakkaform_by_laurin_pakka<-pelidata[,.(laurin_pfi=max(Laurin_pakka_form_id,na.rm=TRUE)),by=Laurin_pakka]
   max_pakkaform_by_martin_pakka  <-pelidata[,.(martin_pfi=max(Martin_pakka_form_id,na.rm=TRUE)),by=Martin_pakka]                                                 
   

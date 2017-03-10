@@ -99,7 +99,7 @@ shinyServer(function(input, output,session) {
   #arvopeli
   observeEvent(input$arvo_peli,{
     print("arvo peli alku")
-    kaikkipelit<-luecsv("pelit.csv")
+    kaikkipelit<-peliDataReact()
     pelaamattomat <- unique(kaikkipelit[is.na(Voittaja),Ottelu_ID])
     arpa<-ceiling(runif(1,0,length(pelaamattomat)))
     arvottu_ottelu_ID<-pelaamattomat[arpa]
@@ -178,7 +178,12 @@ shinyServer(function(input, output,session) {
      #prosentti sitten
      kaikkipelit[,peliprosentti:=pelatut/otteluLKM]
      #palauta pienin keskeneräinen ottelu
-     keskenpeli<-min(kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID])
+     keskeneraiset_pelit<-kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID]
+      if (length(keskeneraiset_pelit)>0) {
+      keskenpeli<-min(kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID])
+      } else {
+       keskenpeli<-Inf
+     }
      if (is.finite(keskenpeli)) {
        
        r_valittu_peli$jatkopeli<-keskenpeli 
@@ -216,6 +221,24 @@ shinyServer(function(input, output,session) {
        shinyjs::disable("tasuri_peli")
        
      }
+     #nollaa inputit
+     
+     updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
+     updateSliderInput(session, "slider_martin_mulligan",  value = 0) 
+     updateSliderInput(session, "slider_laurin_virhe",  value = 1) 
+     updateSliderInput(session, "slider_martin_virhe",  value = 1) 
+     updateSliderInput(session, "slider_laurin_humala",  value = -0.1) 
+     updateSliderInput(session, "slider_martin_humala",  value = -0.1) 
+     updateSliderInput(session, "slider_laurin_landit",  value = 0) 
+     updateSliderInput(session, "slider_martin_landit",  value = 0) 
+     updateSliderInput(session, "slider_laurin_lifet",  value = 0) 
+     updateSliderInput(session, "slider_martin_lifet",  value = 0)
+     updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
+     updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
+     updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
+
+
+     
      
      updateNumericInput(session,"sarjataulukkokierros",value=0)
      print("tallenna tulos loppu")
@@ -258,7 +281,12 @@ alotusaika<-reactiveValues()
     r_valittu_peli$ottelutilanne_text <- kaikkipelit[Ottelu_ID==maxottelu,paste("Tilanne: ",sum(Lauri_voitti,na.rm=TRUE),"-",sum(Martti_voitti,na.rm=TRUE))]
     
     #kato onko peleja jaljella
+    peleja_jaljella<-kaikkipelit[Ottelu_ID==maxottelu & is.na(Voittaja) ,peli_ID]
+    if(length(peleja_jaljella)>0){
     temp_peli<-min(kaikkipelit[Ottelu_ID==maxottelu & is.na(Voittaja) ,peli_ID])
+    } else {
+      temp_peli<-Inf
+    }
     
     r_valittu_peli$peliID<-temp_peli
     
@@ -475,8 +503,7 @@ alotusaika<-reactiveValues()
   #output$testiteksti<-renderText({input$sidebarmenu})
 
 output$sarjataulukkovalitsin <- renderUI({
-  kaikkipelit<-luecsv("pelit.csv")
-  maxturnaus<-max(kaikkipelit[,TurnausNo])
+  maxturnaus<-max(peliDataReact()[,TurnausNo])
   fluidRow(numericInput("sarjataulukkokierros","Turnauksen numero",value=maxturnaus))
 })
   
@@ -494,8 +521,7 @@ output$sarjataulukkovalitsin <- renderUI({
   })
 
   observeEvent(input$sidebarmenu,{
-    kaikkipelit<-luecsv("pelit.csv")
-    maxturnaus <-max(kaikkipelit[,TurnausNo])
+    maxturnaus <-max(peliDataReact()[,TurnausNo])
     updateNumericInput(session,"sarjataulukkokierros",value=maxturnaus)})
 
 
@@ -687,7 +713,7 @@ output$sarjataulukkovalitsin <- renderUI({
 
   output$paras_countteri<-renderValueBox({
     
-    pelatut_parit<-luecsv("pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit<-peliDataReact()[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
     #looppaa parit läpi ja eti paras voitto%
     pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
@@ -713,7 +739,7 @@ output$sarjataulukkovalitsin <- renderUI({
   
   output$vaikein_counteroitava<-renderValueBox({
     
-    pelatut_parit<-luecsv("pelit.csv")[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
+    pelatut_parit<-peliDataReact()[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
     #looppaa parit läpi ja eti paras voitto%
     pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
@@ -795,5 +821,6 @@ output$text_validointi <- renderText(({
   }))
   
 })
+
 
 
