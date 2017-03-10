@@ -16,7 +16,7 @@ shinyServer(function(input, output,session) {
   observeEvent(input$luo_peleja,{
     print("luo pejelä alku")
    
-    divarit_dt<-luecsv("divari.csv")
+    divarit_dt<-divaridata()
     
     pelit_list <- divarit_dt[Picked==1,.(pakkalista=list(Pakka)),by=.(Divari,Omistaja)]
     pelit<-pelit_list[,expand.grid(pakkalista),by=Divari]
@@ -371,7 +371,7 @@ alotusaika<-reactiveValues()
   observeEvent(input$ tallenna_divarit,{
     print("päivitä divarit alku")
     
-    divarit<-luecsv("divari.csv")
+    divarit<-divaridata()
     
     
     divarit[,syntax:=(text=paste0(Pakka,Omistaja))]
@@ -391,7 +391,7 @@ alotusaika<-reactiveValues()
   observeEvent(input$ tallenna_bannit,{
     print("tallenna bannit alku")
     
-    divarit<-luecsv("divari.csv")
+    divarit<-divaridata()
     divarit[,syntax_cb:=(text=paste0("checkbox",Pakka,Omistaja))]
     divarit[,syntax:=(text=paste0(Pakka,Omistaja))]
     
@@ -431,7 +431,7 @@ alotusaika<-reactiveValues()
   
   #tee laurin pakka selectinput
   output$selectInputLauri <- renderUI({
-    pakat<-luecsv("divari.csv")
+    pakat<-divaridata()
     laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
     laurin_idt<-pakat[Omistaja==1,Pakka]
     selectinputListLauri<-setNames(as.list(laurin_idt), c(laurin_pakkanimet))
@@ -440,7 +440,7 @@ alotusaika<-reactiveValues()
   })
   #tee martin pakka selectinput
   output$selectInputMartti <- renderUI({
-    pakat<-luecsv("divari.csv")
+    pakat<-divaridata()
     pakkanimet<-pakat[Omistaja==2,Nimi]
     martin_idt<-pakat[Omistaja==2,Pakka]
     selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
@@ -449,7 +449,7 @@ alotusaika<-reactiveValues()
   })
   #divaricheckbox
   output$checkboxPakat<-renderUI({
-    divarit<-luecsv("divari.csv")
+    divarit<-divaridata()
     lapply(divarit[,rivi_id], function(i) {
       
       checkboxInput(paste0("checkbox", divarit[rivi_id==i,Pakka],divarit[rivi_id==i,Omistaja]),label=paste0(divarit[rivi_id==i,Nimi]),value=divarit[rivi_id==i,Picked])
@@ -459,7 +459,7 @@ alotusaika<-reactiveValues()
   
   #divariNumericinput
   output$combUI<-renderUI({
-    divarit<-luecsv("divari.csv")
+    divarit<-divaridata()
     
     lapply(divarit[,rivi_id], function(i) {
       fluidRow(
@@ -498,11 +498,7 @@ output$sarjataulukkovalitsin <- renderUI({
     maxturnaus <-max(kaikkipelit[,TurnausNo])
     updateNumericInput(session,"sarjataulukkokierros",value=maxturnaus)})
 
-  # pelidata <- reactiveFileReader(1000, session, "pelit.csv",luecsv)  
-  pelidata <- reactive({
-    luecsv("pelit.csv")
-    print(paste(input$tallenna_tulos, input$tallenna_bannit))
-  })
+
   output$sarjataulukot <-renderUI({
     #montakodivaria
     sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
@@ -697,7 +693,7 @@ output$sarjataulukkovalitsin <- renderUI({
     pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
     #laurin paras countteri
     laurin_counter<-pelatut_parit[, .SD[which.max(Voitto_pct)]]
-    pakat<-luecsv("divari.csv")
+    pakat<-divaridata()
     martin_counter <- pelatut_parit[, .SD[which.max(vertailu)]]
     
     if (laurin_counter[,Voitto_pct]>martin_counter[,vertailu]) {
@@ -725,7 +721,7 @@ output$sarjataulukkovalitsin <- renderUI({
     laurin_counter<-pelatut_parit[, .(maxvertailu=max(vertailu)),by=Laurin_pakka]
     laurin_countteroimaton_pakka<-laurin_counter[,.SD[which.min(maxvertailu)]]
     
-    pakat<-luecsv("divari.csv")
+    pakat<-divaridata()
     martin_counter <- pelatut_parit[, .(maxvertailu=max(Voitto_pct)),by=Martin_pakka]
     martin_countteroimaton_pakka<-martin_counter[,.SD[which.min(maxvertailu)]]
     
@@ -782,6 +778,10 @@ print(input$tallenna_tulos)
   kaikkipelit<-luecsv("pelit.csv")  
   
 })
+
+
+
+
 
 turnausSaantoReact<-reactive({
   print("luettu turnaussaanto.csv")
