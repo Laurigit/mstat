@@ -630,9 +630,9 @@ output$sarjataulukkovalitsin <- renderUI({
   output$pfi_taulukko <-renderDataTable({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
-    print(pfistats)
+
     lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())
-    print(lisakortit)
+
     #join
 
     joinLisakortit<-lisakortit[pfistats,on=c("Nimi")]
@@ -777,6 +777,14 @@ output$sarjataulukkovalitsin <- renderUI({
     
   })
 
+  
+   output$pivot_cross <- renderRpivotTable({
+     pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=NA,input_pfiMA=NA)$cross
+     rpivotTable(pivotData, rows="Pakka", col="Vastustajan_pakka", aggregatorName="Sum", 
+                 vals="Voitti", rendererName="Table", width="100%")
+     
+ 
+  })  
 
 
 pfi_data<-reactive({
@@ -796,11 +804,14 @@ observe({
   if (!is.null(ifile)) {
     validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
   zipAndSend()
+  
+  #varmaa vähän purkkaa, mutta päivitetään peliDataReact näin()
+
 
 })
 peliDataReact<-reactive({
   print("Luettu pelit.csv")
-print(input$tallenna_tulos)
+print(paste(input$tallenna_tulos))
   kaikkipelit<-luecsv("pelit.csv")  
   
 })

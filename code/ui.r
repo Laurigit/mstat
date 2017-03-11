@@ -91,6 +91,8 @@
                     fluidRow(uiOutput("sarjataulukot"))
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
+    tabItem(tabName="tab_tilastomurskain",
+            fluidRow( rpivotTableOutput("pivot_cross"))),
     tabItem(tabName="tab_saavutukset",
             fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")
                      
@@ -106,6 +108,7 @@
                 )
               ),verbatimTextOutput("text_validointi")
               ),fluidRow(box(DT::dataTableOutput("pfi_taulukko"),title=("Nykypakkastatsit"),solidHeader = TRUE,status="primary",width=12))
+
     )
   )
 )
@@ -120,6 +123,7 @@ sidebar <- dashboardSidebar(
     
     menuItem("Tallenna peli", icon = icon("th"), tabName = "tab_tallenna_peli",badgeLabel = "new", badgeColor = "green"),
     menuItem("Sarjataulukko", icon = icon("th"), tabName = "tab_sarjataulukko",badgeLabel = "omg", badgeColor = "red"),
+    menuItem("Tilastomurskain",tabName="tab_tilastomurskain"),
     menuItem("Saavutukset",icon=icon("th"),tabName="tab_saavutukset"),
 
     #menuItem("Turnausasetukset",tabName="nimeton",

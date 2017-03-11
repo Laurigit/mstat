@@ -3,13 +3,12 @@
 # setwd("~/R/mstat2/code/omawd")
 # peliData<-luecsv("pelit.csv")
 # input_bo_mode=FALSE
-# input_total=FALSE
-# input_pfiMA=FALSE
-# input_divari=1
+# input_total=TRUE
+# input_pfiMA=TRUE
+# input_divari=NA
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
 # input_moving_average=NA
-# input_pfiMA=FALSE
 # input_turnaus<-3
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
 # pfi_data<-pakkaUutuusProsentti(pakat)

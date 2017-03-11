@@ -8,6 +8,7 @@ library(reshape2)
 library(jsonlite)
 library(rdrop2)
 library(zoo)
+library(rpivotTable)
 #library(shinythemes)
 
 options(max.print=1000000)
@@ -32,6 +33,8 @@ source("omaReadJson.R")
 source("pysyvyys_pct.R")
 source("turnausVoitot.R")
 source("functio_lisakortit.R")
+source("tilastoMurskain.R")
+
 
 dirname <-  './omawd'
 if (dir.exists(path=dirname)) {

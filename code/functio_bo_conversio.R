@@ -1,7 +1,12 @@
 bo_data_conv <-function(input_bo_mode=FALSE,peliData) {
 #kaikkipelit<-luecsv("pelit.csv")
 kaikkipelit<-peliData
-kaikkipelit[,':=' (sumlaurinvoito=sum(Lauri_voitti,na.rm=TRUE),summarttivoitti=sum(Martti_voitti,na.rm=TRUE),sumPelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),maxOtteluNo=max(Ottelu_no)),by=Ottelu_ID]
+kaikkipelit[,':=' (sumlaurinvoito=sum(Lauri_voitti,na.rm=TRUE),
+                   summarttivoitti=sum(Martti_voitti,na.rm=TRUE),
+                   sumPelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),
+                   maxOtteluNo=max(Ottelu_no)),
+            by=Ottelu_ID]
+
 kaikkipelit[,':=' (Otteluvoittaja=ifelse(sumlaurinvoito/maxOtteluNo>0.5,0,ifelse(summarttivoitti/maxOtteluNo>0.5,1,ifelse(sumPelit/maxOtteluNo>0.5,0.5,NA))),
                    pelikesto=aikaero(Aloitusaika,Lopetusaika,Aloituspvm,Lopetuspvm),
                    enemmanMulliganeja=ifelse(Laurin_mulligan>Martin_mulligan,-1,ifelse(Martin_mulligan>Laurin_mulligan,1,0)))]

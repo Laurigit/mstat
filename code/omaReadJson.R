@@ -1,3 +1,4 @@
+
 omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_data reactive why
   pakkalista<-    list.files(folder)
   tulos<-NULL
