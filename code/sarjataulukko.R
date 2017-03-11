@@ -1,23 +1,16 @@
 
 #sarjataulukko total
-#peliData2<-kaikkipelit
-#pfi_data2<-  as.data.table(pakkaUutuusProsentti(pakat))
-#setwd("~/R/mstat2/code/omawd")
+# setwd("~/R/mstat2/code/omawd")
 # peliData<-luecsv("pelit.csv")
-
-
 # input_bo_mode=FALSE
 # input_total=FALSE
-
 # input_pfiMA=FALSE
 # input_divari=1
-# input_Laurin_pakka=1
-# input_Martin_pakka=1
+# input_Laurin_pakka=NA
+# input_Martin_pakka=NA
 # input_moving_average=NA
-
-#input_pfiMA=FALSE
+# input_pfiMA=FALSE
 # input_turnaus<-3
-
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")

@@ -143,8 +143,8 @@ shinyServer(function(input, output,session) {
        Lauri_voitti=(1-as.numeric(input$radio_voittaja)),
        Martti_voitti=as.numeric(input$radio_voittaja),
      
-       Laurin_mulligan=input$laurin_mulligan,
-       Martin_mulligan=input$martin_mulligan,
+       Laurin_mulligan=input$slider_laurin_mulligan,
+       Martin_mulligan=input$slider_martin_mulligan,
        Laurin_arvosana=input$slider_laurin_virhe,
        Martin_arvosana=input$slider_martin_virhe,
        Laurin_humala=input$slider_laurin_humala,
