@@ -33,7 +33,7 @@ source("omaReadJson.R")
 source("pysyvyys_pct.R")
 source("turnausVoitot.R")
 source("functio_lisakortit.R")
-source("tilastoMurskain.R")
+source("tilastomurskain.R")
 source("funcLiitaPelit_ja_Pysyvyys.R")
 
 dirname <-  './omawd'
