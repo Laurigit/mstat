@@ -5,6 +5,7 @@
 
 
   uusi_peli<-dashboardBody(
+   
 
     tabItems(
       tabItem(tabName="tab_uusi_peli",
@@ -92,8 +93,23 @@
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
     tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(3,radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata"),selected="Aikasarja"))),
-            fluidRow( rpivotTableOutput("pivot_cross"))),
+            fluidRow(column(4,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata"),selected="Aikasarja")
+                   #  column(2, verbatimTextOutput("pivotRefresh")),
+                     )),
+                    column(4,textInput("text_tilastoKuvaus",label="Tilaston nimi"),
+                                 actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
+                                 
+                                   actionButton("poista_tilastoAsetus","Poista tilasto")),
+                     column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),
+            fluidRow(column(12,
+                            tags$head(tags$style(HTML("
+                                                   
+                                                      #pivot_cross{    height: 15000px;
+      }"))),
+                        # tags$head(tags$style( type = 'text/css',  '#pivot_cross{ overflow-x: scroll }')),
+              #tags$head(tags$style( type = 'text/css',  '#pivot_cross{height: 1000px;  }'),
+                     #   tags$style( type = 'text/css',  '#pivot_cross{overflow-x: scroll;  }'),
+                          rpivotTableOutput("pivot_cross")))),
     tabItem(tabName="tab_saavutukset",
             fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")
                      

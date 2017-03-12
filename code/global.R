@@ -51,9 +51,15 @@ luecsvalku<-function() {
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   #for(pakka in jsonit[,path]) {
   #  print(substring(pakka,2))
-    drop_get("mstat/processed/json.zip", overwrite = TRUE,dtoken = token)
+    drop_get("mstat/processed/json.zip",overwrite = TRUE,dtoken = token)
     unzip("json.zip")
   #}
+    
+#tilastoasetukset
+    drop_get("mstat/csv/tilastoAsetukset.R", overwrite = TRUE,dtoken = token)
+   
+    
+
 }
 luecsvalku()
 
@@ -127,3 +133,32 @@ kategorisoi<-function(arvoVektori,kategorisointiVektori=NULL,pct_vektori=c(0.2, 
     return(varaTulos)
   }
 }
+
+saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
+
+  assign(RdataTallenna,rdatasetti)
+  print(get(RdataTallenna))
+  print("ladattu")
+  save(list=RdataTallenna,file=RdataTiedostonimi)
+
+  drop_upload(RdataTiedostonimi, "mstat/csv/", overwrite = TRUE,dtoken = token)
+
+  print("tallennettu")
+  #drop_get("mstat/csv/tilastoAsetukset.R",overwrite = TRUE,dtoken = token)
+  #load("tilastoAsetukset.R")
+  print("ladattu taas ja nyt tulostetaan")
+  print(get(RdataTallenna))
+}
+
+list_to_string <- function(obj, listname) {
+  if (is.null(names(obj))) {
+    paste(listname, "[[", seq_along(obj), "]] = ", obj,
+          sep = "", collapse = "\n")
+  } else {
+    paste(listname, "$", names(obj), " = ", obj,
+          sep = "", collapse = "\n")
+  }
+}
+load("tilastoAsetukset.R")
+print(tilastoAsetukset)
+print("Ladattu")

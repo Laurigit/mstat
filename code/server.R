@@ -688,6 +688,7 @@ output$sarjataulukkovalitsin <- renderUI({
      
   },    options = list(
     paging = FALSE,
+  
     searching = FALSE,
     info=FALSE,
     columnDefs = list(list(className = 'dt-center', targets = 1:2),
@@ -777,24 +778,166 @@ output$sarjataulukkovalitsin <- renderUI({
     
   })
 
+
+  defaultStatValue<-reactiveValues(
+   
+  asetukset=list("Nimi","Vastustajan Nimi","Voitti",list(),"Average","Table")
+
+  
+  )
   
    output$pivot_cross <- renderRpivotTable({
      pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
-     print(pivotData)
-     print(paste("RADIODATA",input$radio_tilastoData))
+
+      
+     #1 jos tallennettu asetus valittu, käytä sitä
+     #2 jos edellinen asetus tallennettu, käytä sitä
+     #3 käytä tallennettua asetusta 1, jos sellanen olemassa
+     #4 tyhjä taulu
+     
+     if(!is.null(input$tallennetut_tilastoasetukset_rows_selected)) {
+       #lataa asetukset
+       asetukset<- tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,asetukset][[1]]
+       dataLahto<- tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,datataulu]
+       #paivita valinta
+       updateRadioButtons(session,"radio_tilastoData",selected=dataLahto)
+       cols_use<-asetukset[[1]]
+       rows_use<-asetukset[[2]]
+       vals_use<-asetukset[[3]]
+       exclusions_use<-asetukset[[4]]
+       aggregator_use<-asetukset[[5]]
+       renderName_use<-asetukset[[6]]
+       #tallenna edelliset asetukset
+       defaultStatValue$asetukset<-asetukset
+     } else {
+       cols_use<-defaultStatValue$asetukset[[1]]
+       rows_use<-defaultStatValue$asetukset[[2]]
+       vals_use<-defaultStatValue$asetukset[[3]]
+       exclusions_use<-defaultStatValue$asetukset[[4]]
+       aggregator_use<-defaultStatValue$asetukset[[5]]
+       renderName_use<-defaultStatValue$asetukset[[6]]
+     }
+     
+     #lataa oikea data
      if(input$radio_tilastoData=="Aikasarja") {
        outputData<-pivotData$aikasarja
      } else {
        outputData<-pivotData$cross
      }
 
-     rpivotTable(outputData, rows="Nimi", col="Vastustajan_nimi", aggregatorName="Sum", 
-                 vals="Voitti", rendererName="Table", width="100%")
+     
+     rpivotTable(outputData, col=unlist(cols_use),rows=unlist(rows_use), vals=unlist(vals_use) , exclusions=exclusions_use, aggregatorName=aggregator_use,
+                  rendererName=renderName_use, width="100%", height = "100%",
+                 onRefresh=htmlwidgets::JS("function(config) { Shiny.onInputChange('myPivotData', config); }"))
+     
+  
      
  
-  })  
+  }) 
+   #luo tilasto-asetus-objekti
+   
+   
+   tilastoAsetuksetReact<-reactiveValues(
+    
+     data=tilastoAsetukset
 
+   )
+     observeEvent( input$tallennaTilastoAsetus,{
 
+       #kato onko siellä dataa
+       if(is.null(tilastoAsetuksetReact$data)){
+         tilastoAsetukset<-data.table(
+                                      datataulu=character(),
+                                      kuvaus=character(),
+                                      asetukset=list()
+                                      )
+       }
+      
+     cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+     # Apply a function to all keys, to get corresponding values
+     allvalues <- lapply(cnames, function(name) {
+       item <- input$myPivotData[[name]]
+    
+     })
+   
+      storeList<-NULL
+      storeList[[1]]<-allvalues
+
+      uusrivi<-data.table(
+                         datataulu=input$radio_tilastoData,
+                         kuvaus=input$text_tilastoKuvaus,
+                         asetukset=(storeList)
+     )
+
+      tilastoAsetukset<-rbind(tilastoAsetuksetReact$data,uusrivi)
+
+    #tallenna rdata
+
+      saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.R")
+
+tilastoAsetuksetReact$data<-tilastoAsetukset
+
+   })
+     
+
+   
+     
+     
+#nayta tallennettut asetukset
+     output$tallennetut_tilastoasetukset<- renderDataTable({
+       naytaData<-tilastoAsetuksetReact$data[,.(Tallennettu_asetus=kuvaus)]
+       input$radio_tilastoData
+       return(naytaData)
+       },selection = 'single',options = list(
+         searching = FALSE,
+         info=FALSE,
+         paging=FALSE,
+         scrollY =105
+         ),rownames=FALSE)
+     
+
+     
+     observeEvent( input$myPivotData,{
+       #ota edelliset asetukset talteen
+       cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+       # Apply a function to all keys, to get corresponding values
+       allvalues <- lapply(cnames, function(name) {
+         item <- input$myPivotData[[name]]
+         
+       })
+       defaultStatValue$asetukset<-allvalues
+     })
+     
+     #voi käyttää debugissa, jos pistää UIsta päälle
+   output$pivotRefresh <- renderText({
+     
+     cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+     # Apply a function to all keys, to get corresponding values
+     allvalues <- lapply(cnames, function(name) {
+       item <- input$myPivotData[[name]]
+       if (is.list(item)) {
+         list_to_string(item, name)
+       } else {
+         paste(name, item, sep=" = ")
+       }
+     })
+     paste(allvalues, collapse = "\n")
+   })
+
+#poista tilastoasetus
+   observeEvent(input$poista_tilastoAsetus,{
+     #lue data
+     print(input$tallennetut_tilastoasetukset_rows_selected)
+     print( tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected])
+     tilastoAsetukset<- tilastoAsetuksetReact$data[-input$tallennetut_tilastoasetukset_rows_selected]
+     tilastoAsetuksetReact$data<-tilastoAsetukset
+    print( tilastoAsetuksetReact$data)
+     saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.R")
+
+   })
+   
+   
+   
 pfi_data<-reactive({
 
   print(paste("TÄÄLLÄ PITÄIS TULOSTUA",input$file1))
