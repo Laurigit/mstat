@@ -92,6 +92,7 @@
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
     tabItem(tabName="tab_tilastomurskain",
+            fluidRow(column(3,radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata"),selected="Aikasarja"))),
             fluidRow( rpivotTableOutput("pivot_cross"))),
     tabItem(tabName="tab_saavutukset",
             fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")

@@ -779,8 +779,16 @@ output$sarjataulukkovalitsin <- renderUI({
 
   
    output$pivot_cross <- renderRpivotTable({
-     pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=NA,input_pfiMA=NA)$cross
-     rpivotTable(pivotData, rows="Pakka", col="Vastustajan_pakka", aggregatorName="Sum", 
+     pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
+     print(pivotData)
+     print(paste("RADIODATA",input$radio_tilastoData))
+     if(input$radio_tilastoData=="Aikasarja") {
+       outputData<-pivotData$aikasarja
+     } else {
+       outputData<-pivotData$cross
+     }
+
+     rpivotTable(outputData, rows="Nimi", col="Vastustajan_nimi", aggregatorName="Sum", 
                  vals="Voitti", rendererName="Table", width="100%")
      
  

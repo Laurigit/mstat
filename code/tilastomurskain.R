@@ -12,6 +12,7 @@
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 tilastoMurskain<-function(divariData,peliData,pfi_data,input_bo_mode=FALSE,input_moving_average=NA,input_pfiMA=NA) {
+
 #pysäytä jos nulleja
 if(is.null(divariData)|
    is.null(peliData)|
@@ -30,36 +31,11 @@ if(is.null(divariData)|
 }
 
 
-
-#jos sekä laurin ja martin pakka valittu, tulee vs statsit. Jos vain toinen, niin tulee sen pakan omat statsit
-
-pelidata_temp_all<-peliData
+  pelidata_joined_pakkatiedot<- funcLiitaPelit_ja_Pysyvyys(pfi_data,peliData)
 
 #print(paste(input_bo_mode,input_turnaus,input_total,input_divari,input_Laurin_pakka,input_Martin_pakka,input_moving_average,input_pfiMA,pfi_data))
 
-pysyvyys_pct<-as.data.table(pfi_data)
 
-#joinaa pysyvyys_pct divariin
-
-pysyvyys_pct[,':=' (dt_alku=oma_timedate(pvm,kello),dt_loppu=oma_timedate(pvm_end,kello_end))]
-laurin_pakat<-pysyvyys_pct[omistaja=="L",.(Laurin_pakka_form_id=id,Laurin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct,hinta_lauri=hinta)]
-martin_pakat<-pysyvyys_pct[omistaja=="M",.(Martin_pakka_form_id=id,Martin_pakka=pakkanumero,dt_alku,dt_loppu,pysyvyys_pct,hinta_martti=hinta)]
-pelidata_dt<-pelidata_temp_all[,':=' (pelidt_alku=oma_timedate(Aloituspvm,Aloitusaika),pelitdt_loppu=oma_timedate(Lopetuspvm,Lopetusaika))]
-
-joiniID_and_pct_lauri<-laurin_pakat[pelidata_dt,on=c("dt_alku<pelidt_alku","dt_loppu>pelitdt_loppu","Laurin_pakka==Laurin_pakka")]
-joiniID_and_pct_lauri<-joiniID_and_pct_lauri[,.(peli_ID,Laurin_pysyvyys_pct=pysyvyys_pct,Laurin_pakka_form_id,hinta_lauri)]
-#joinaa viela martti
-joiniID_and_pct_martti<-martin_pakat[pelidata_dt,on=c("dt_alku<pelidt_alku","dt_loppu>pelitdt_loppu","Martin_pakka==Martin_pakka")]
-
-joiniID_and_pct_martti<-joiniID_and_pct_martti[,.(peli_ID,Martin_pysyvyys_pct=pysyvyys_pct,Martin_pakka_form_id,hinta_martti)]
-#joinaa tulokset
-setkey(joiniID_and_pct_lauri,peli_ID)
-setkey(joiniID_and_pct_martti,peli_ID)
-setkey(pelidata_temp_all,peli_ID)
-
-
-pelidata_joined_pakkatiedot<-joiniID_and_pct_lauri[joiniID_and_pct_martti][pelidata_temp_all]
-pelidata_joined_pakkatiedot[,':=' (pelidt_alku=NULL,pelitdt_loppu=NULL)]
 
 #kasaa data
 Lauridata<-pelidata_joined_pakkatiedot[,.(peli_ID,
@@ -147,21 +123,56 @@ pelatutNimet<-vihunpakkanimi[pelatutNimi,on=c("Vastustajan_omistaja","Vastustaja
 
 
 
-kumulative_data<-pelatutNimet[,.(Nimi,Hinta,Divari,TurnausNo,Aloitti,Voitti,Kesto,Arvosana,Vastustajan_arvosana,Vuoroarvio,Pakka,Vastustajan_pakka)]
+kumulative_data<-pelatutNimet[,.(Omistaja,
+                                 Nimi,
+                                 Vastustajan_nimi,
+                                 Divari,
+                                 TurnausNo,
+                                 Aloitti,
+                                 Voitti,
+                                 MA_voitti=rollmean(Voitti,input_moving_average),
+                                 Vuoroarvio,
+                                 Ottelu_no,
+                                 Kierros,
+                                 Hinta,
+                                 Pysyvyys_pct,
+                                 Humala,
+                                 Vastustajan_humala,
+                                 Mulliganit,
+                                 Vastustajan_mulliganit
+                                 )]
 #pakkapelinumero
-kumulative_data[,pakkaPeliNumero:=seq_len(.N),by=.(Pakka)]
+kumulative_data[,pakkaPeliNumero:=seq_len(.N),by=.(Nimi)]
 #paripelinumero
-kumulative_data[,pariPeliNumero:=seq_len(.N),by=.(Pakka,Vastustajan_pakka)]
-#
+kumulative_data[,pariPeliNumero:=seq_len(.N),by=.(Nimi,Vastustajan_nimi)]
+#ota aikadatasta kaikki crossdata-sarakkeet pois
+
+
 tulos<-NULL
-tulos$cumulative<-kumulative_data
-#poista pivotista turhat sarakkeet
+tulos$aikasarja<-kumulative_data
+#poista cross_datasta kaikki aikasarakkeet ja kategorisoi kesto
+
 pelatutNimet[,':=' (peli_ID=NULL,
                     pakka_form_id=NULL,
                     vastustajan_pakka_form_id=NULL,
                     Ottelu_ID=NULL,
                     Ottelu_no=NULL,
-                    BO_mode=NULL)]
+                    BO_mode=NULL,
+                    Historiakerroin=NULL,
+                    Pysyvyys_pct=NULL,
+                    Pakka=NULL,
+                    Vastustajan_pakka=NULL,
+                    Vastustajan_hinta=NULL,
+                    Vastustajan_pysyvyys_pct=NULL,
+                    Hinta=NULL,
+                    Divari=NULL,
+                    Kierros=NULL,
+                    TurnausNo=NULL,
+                    Kesto_cat=kategorisoi(Kesto/60),
+                    Humala_cat=kategorisoi(Humala,c(Humala,Vastustajan_humala)),
+                    Vastustajan_humala=kategorisoi(Vastustajan_humala,c(Humala,Vastustajan_humala))
+                    
+                    )]
 tulos$cross<-pelatutNimet
 return(tulos)
 }
