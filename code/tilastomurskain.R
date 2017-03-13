@@ -6,13 +6,13 @@
 # input_divari=NA
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
-# input_moving_average=NA
+# input_moving_average=5
 # input_turnaus<-3
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 tilastoMurskain<-function(divariData,peliData,pfi_data,input_bo_mode=FALSE,input_moving_average=NA,input_pfiMA=NA) {
-
+print(peliData)
 #pysäytä jos nulleja
 if(is.null(divariData)|
    is.null(peliData)|
@@ -41,6 +41,7 @@ if(is.null(divariData)|
 Lauridata<-pelidata_joined_pakkatiedot[,.(peli_ID,
                                           Omistaja=1,
                                           Vastustajan_omistaja=2,
+                                          Aloituspvm=as.IDate(Aloituspvm,origin="1970-01-01"),
                                           Pysyvyys_pct=Laurin_pysyvyys_pct,
                                           Vastustajan_pysyvyys_pct=Martin_pysyvyys_pct,
                                           Historiakerroin=Laurin_pysyvyys_pct*Martin_pysyvyys_pct,
@@ -76,6 +77,7 @@ Lauridata<-pelidata_joined_pakkatiedot[,.(peli_ID,
 Marttidata<-pelidata_joined_pakkatiedot[,.(peli_ID,
                                           Omistaja=2,
                                           Vastustajan_omistaja=1,
+                                          Aloituspvm=as.IDate(Aloituspvm,origin="1970-01-01"),
                                           Pysyvyys_pct=Martin_pysyvyys_pct,
                                           Vastustajan_pysyvyys_pct=Laurin_pysyvyys_pct,
                                           Historiakerroin=Laurin_pysyvyys_pct*Martin_pysyvyys_pct,
@@ -125,12 +127,13 @@ pelatutNimet<-vihunpakkanimi[pelatutNimi,on=c("Vastustajan_omistaja","Vastustaja
 
 kumulative_data<-pelatutNimet[,.(Omistaja,
                                  Nimi,
+                                 Aloituspvm,
                                  Vastustajan_nimi,
                                  Divari,
                                  TurnausNo,
                                  Aloitti,
                                  Voitti,
-                                 MA_voitti=rollmean(Voitti,input_moving_average),
+                                 MA_voitti=round(rollmean(Voitti,input_moving_average,align=c("left"),fill=c("extend","extend","extend")),2),
                                  Vuoroarvio,
                                  Ottelu_no,
                                  Kierros,
@@ -160,8 +163,6 @@ pelatutNimet[,':=' (peli_ID=NULL,
                     BO_mode=NULL,
                     Historiakerroin=NULL,
                     Pysyvyys_pct=NULL,
-                    Pakka=NULL,
-                    Vastustajan_pakka=NULL,
                     Vastustajan_hinta=NULL,
                     Vastustajan_pysyvyys_pct=NULL,
                     Hinta=NULL,

@@ -547,7 +547,7 @@ output$sarjataulukkovalitsin <- renderUI({
       lapply(divarit,function(i)  {
         plotname <- paste0("plotdyn", i, sep="")
 
-        fluidRow(box( dataTableOutput(plotname),width=12,title=paste0(i,". Divari ",pelaajat[,Voitot_Lauri],"-",pelaajat[,Voitot_Martti]),solidHeader = TRUE,status="primary" ))
+        fluidRow(box( dataTableOutput(plotname),width=12,title=paste0(i,". Divari ",pelaajat[Divari==i,Voitot_Lauri],"-",pelaajat[Divari==i,Voitot_Martti]),solidHeader = TRUE,status="primary" ))
        
       })
     )
@@ -868,7 +868,10 @@ output$sarjataulukkovalitsin <- renderUI({
                          kuvaus=input$text_tilastoKuvaus,
                          asetukset=(storeList)
      )
-
+      #tarkista onko asetusnimi jo olemassa
+      if(length(tilastoAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
+        tilastoAsetuksetReact$data<-tilastoAsetuksetReact$data[kuvaus!=input$text_tilastoKuvaus]
+      }
       tilastoAsetukset<-rbind(tilastoAsetuksetReact$data,uusrivi)
 
     #tallenna rdata
