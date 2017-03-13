@@ -5,7 +5,17 @@
 
 
   uusi_peli<-dashboardBody(
-   
+    tags$head(
+      tags$style(
+        HTML("
+             #myScrollBox{ 
+             overflow-y: scroll; 
+             overflow-x: hidden; 
+             height:740px;
+             }
+             ")
+        )
+        ),
 
     tabItems(
       tabItem(tabName="tab_uusi_peli",
@@ -101,15 +111,10 @@
                                  
                                    actionButton("poista_tilastoAsetus","Poista tilasto")),
                      column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),
-            fluidRow(column(12,
-                            tags$head(tags$style(HTML("
-                                                   
-                                                      #pivot_cross{    height: 15000px;
-      }"))),
-                        # tags$head(tags$style( type = 'text/css',  '#pivot_cross{ overflow-x: scroll }')),
-              #tags$head(tags$style( type = 'text/css',  '#pivot_cross{height: 1000px;  }'),
-                     #   tags$style( type = 'text/css',  '#pivot_cross{overflow-x: scroll;  }'),
-                          rpivotTableOutput("pivot_cross")))),
+            fluidRow(
+              div(id="myScrollBox",
+                  rpivotTableOutput("pivot_cross")
+            ))),
     tabItem(tabName="tab_saavutukset",
             fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")
                      

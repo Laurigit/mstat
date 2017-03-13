@@ -142,7 +142,8 @@ kumulative_data<-pelatutNimet[,.(Omistaja,
                                  Humala,
                                  Vastustajan_humala,
                                  Mulliganit,
-                                 Vastustajan_mulliganit
+                                 Vastustajan_mulliganit,
+                                 peli_ID
                                  )]
 #pakkapelinumero
 kumulative_data[,pakkaPeliNumero:=seq_len(.N),by=.(Nimi)]
