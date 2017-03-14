@@ -103,13 +103,13 @@
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
     tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(4,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata"),selected="Aikasarja")),
+            fluidRow(column(4,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Turnaus"),selected="Aikasarja")),
                             radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
                    #  column(2, verbatimTextOutput("pivotRefresh")),
               
                     column(4,textInput("text_tilastoKuvaus",label="Tilaston nimi"),
                                  actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
-                           actionButton("laskeSaavutukset", "Laske saavutukset"),
+                          
                            actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
                            
                            
@@ -121,8 +121,15 @@
                   rpivotTableOutput("pivot_cross")
             ))),
     tabItem(tabName="tab_saavutukset",
-            fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava"))
-                     
+            #fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava"))
+            fluidRow( actionButton("laskeSaavutukset", "Laske saavutukset")),
+            fluidRow(DT::dataTableOutput("aSummaryTable")),
+
+            fluidRow(rpivotTableOutput("pivot_saavutus"))
+            # fluidPage(
+            #   DT::dataTableOutput('aSummaryTable'),
+            #   rpivotTableOutput('RESULTS')
+            # )
                      
             
     ),

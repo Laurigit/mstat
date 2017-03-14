@@ -821,8 +821,10 @@ output$sarjataulukkovalitsin <- renderUI({
      #lataa oikea data
      if(input$radio_tilastoData=="Aikasarja") {
        outputData<-pivotData$aikasarja
-     } else {
+     } else if (input$radio_tilastoData=="Ristidata"){
        outputData<-pivotData$cross
+     } else {
+       outputData<-pivotData$turnaus
      }
 
      
@@ -998,33 +1000,67 @@ observeEvent(input$laskeSaavutukset,{
      }
    
    
+   
+   
      output$pivot_saavutus<- renderRpivotTable({
       rpivotTable(outputData, col=unlist(cols_use),rows=unlist(rows_use), vals=unlist(vals_use) , exclusions=exclusions_use, aggregatorName=aggregator_use,
                    rendererName=renderName_use,
                    onRefresh=htmlwidgets::JS("function(config) {
-                                             Shiny.onInputChange('saavutusPivotData', document.getElementById('RESULTS').innerHTML);}")
+                                             Shiny.onInputChange('saavutusPivotData', document.getElementById('pivot_saavutus').innerHTML);}")
                 )
     })
-  
+
   }
-  # input$saavutusPivotData %>%
-  #   read_html %>%
-  #   html_table(fill = TRUE) %>%
-  #   # Turns out there are two tables in an rpivotTable, we want the second
-  #   print(.[[2]])
+
 
 })
+observe(
+  print(summarydf())
+)
+
 
 summarydf <- eventReactive(input$saavutusPivotData,{
-  print("eventReactive")
-  input$saavutusPivotData %>% 
-    read_html %>% 
-    html_table(fill = TRUE) %>% 
+  input$saavutusPivotData %>%
+    read_html %>%
+    html_table(fill = TRUE) %>%
     # Turns out there are two tables in an rpivotTable, we want the second
-   
-  #print(.[[2]])
   .[[2]]
 })
+
+output$aSummaryTable <- DT::renderDataTable({
+  datatable(summarydf(), rownames = FALSE)
+})
+
+
+
+
+# # Clean the html and store as reactive
+# summarydf <- eventReactive(input$myData,{
+#   input$myData %>% 
+#     read_html %>% 
+#     html_table(fill = TRUE) %>% 
+#     # Turns out there are two tables in an rpivotTable, we want the second
+#     .[[2]]
+#   
+# })
+# 
+# # show df as DT::datatable
+# output$aSummaryTable <- DT::renderDataTable({
+#   datatable(summarydf(), rownames = FALSE)
+# })
+
+# Whenever the config is refreshed, call back with the content of the table
+# output$RESULTS <- renderRpivotTable({
+#   rpivotTable(
+#     tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)$aikasarja,
+#     onRefresh =
+#       htmlwidgets::JS("function(config) {
+#                            Shiny.onInputChange('myData', document.getElementById('RESULTS').innerHTML);
+#                         }")
+#   )
+# })
+
+
 
 
 observeEvent( input$tallennaSaavutusAsetus,{
@@ -1057,6 +1093,8 @@ observeEvent( input$tallennaSaavutusAsetus,{
   }
   saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uusrivi)
   #tallenna rdata
+  print("TALLENNA SAAVUTUS")
+  print(saavutusAsetukset)
   saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
   saavutusAsetuksetReact$data<-saavutusAsetukset
 })

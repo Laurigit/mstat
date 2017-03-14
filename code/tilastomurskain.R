@@ -1,9 +1,7 @@
 # setwd("~/R/mstat2/code/omawd")
 # peliData<-luecsv("pelit.csv")
 # input_bo_mode=FALSE
-# input_total=TRUE
 # input_pfiMA=TRUE
-# input_divari=NA
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
 # input_moving_average=5
@@ -12,7 +10,7 @@
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 tilastoMurskain<-function(divariData,peliData,pfi_data,input_bo_mode=FALSE,input_moving_average=NA,input_pfiMA=NA) {
-print(peliData)
+
 #pysäytä jos nulleja
 if(is.null(divariData)|
    is.null(peliData)|
@@ -121,9 +119,14 @@ pelatutNimi<-omapakkanimi[pelatutpelit, on=c("Omistaja","Pakka")]
 pelatutNimet<-vihunpakkanimi[pelatutNimi,on=c("Vastustajan_omistaja","Vastustajan_pakka")]
 
 
+turnaus_data<-data.table(pelatutNimet[,.(Voitot=sum(Voitti),
+                                         Hinta=mean(Hinta),
+                                         MulliganKPI=sum(ifelse(Mulliganit>Vastustajan_mulliganit,-1,ifelse(Mulliganit<Vastustajan_mulliganit,1,0)))),
+                                      by=.(Divari,Nimi,TurnausNo)])
 
-
-
+turnaus_data[,sijoitus:=rank(-Voitot),by=.(Divari,TurnausNo)]
+tulos<-NULL
+tulos$turnaus<-turnaus_data
 
 kumulative_data<-pelatutNimet[,.(Omistaja,
                                  Nimi,
@@ -152,7 +155,7 @@ kumulative_data[,pariPeliNumero:=seq_len(.N),by=.(Nimi,Vastustajan_nimi)]
 #ota aikadatasta kaikki crossdata-sarakkeet pois
 
 
-tulos<-NULL
+
 tulos$aikasarja<-kumulative_data
 #poista cross_datasta kaikki aikasarakkeet ja kategorisoi kesto
 
