@@ -109,6 +109,9 @@
                     column(4,textInput("text_tilastoKuvaus",label="Tilaston nimi"),
                                  actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
                            actionButton("laskeSaavutukset", "Laske saavutukset"),
+                           actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
+                           
+                           
                                  
                                    actionButton("poista_tilastoAsetus","Poista tilasto")),
                      column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),

@@ -1022,6 +1022,45 @@ observeEvent(input$laskeSaavutukset,{
 
 
 
+observeEvent( input$tallennaSaavutusAsetus,{
+  #kato onko siellä dataa
+  if(is.null(saavutusAsetuksetReact$data)){
+    saavutusAsetukset<-data.table(
+      datataulu=character(),
+      kuvaus=character(),
+      asetukset=list(),
+      minVaiMax=character()
+    )
+  }
+  cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+  # Apply a function to all keys, to get corresponding values
+  allvalues <- lapply(cnames, function(name) {
+    item <- input$myPivotData[[name]]
+  })
+  storeList<-NULL
+  storeList[[1]]<-allvalues
+  
+  uusrivi<-data.table(
+    datataulu=input$radio_tilastoData,
+    kuvaus=input$text_tilastoKuvaus,
+    asetukset=(storeList),
+    minVaiMax=input$radio_minMax
+  )
+  #tarkista onko asetusnimi jo olemassa
+  if(length(saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
+    saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[kuvaus!=input$text_tilastoKuvaus]
+  }
+  saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uusrivi)
+  #tallenna rdata
+  saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
+  saavutusAsetuksetReact$data<-saavutusAsetukset
+})
+
+saavutusAsetuksetReact<-reactiveValues(
+  data=saavutusAsetukset
+)
+
+
 turnausSaantoReact<-reactive({
   print("luettu turnaussaanto.csv")
   turnaussaanto<-data.table(read.csv("turnaussaanto.csv",sep=";",fileEncoding="UTF-8-BOM"))

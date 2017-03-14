@@ -40,7 +40,7 @@ dirname <-  './omawd'
 if (dir.exists(path=dirname)) {
   setwd(dirname) 
 }
-  
+
 
 
 luecsvalku<-function() {
@@ -51,15 +51,15 @@ luecsvalku<-function() {
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   #for(pakka in jsonit[,path]) {
   #  print(substring(pakka,2))
-    drop_get("mstat/processed/json.zip",overwrite = TRUE,dtoken = token)
-    unzip("json.zip")
+  drop_get("mstat/processed/json.zip",overwrite = TRUE,dtoken = token)
+  unzip("json.zip")
   #}
-    
-#tilastoasetukset
-    drop_get("mstat/csv/tilastoAsetukset.R", overwrite = TRUE,dtoken = token)
-   
-    
-
+  
+  #tilastoasetukset
+  drop_get("mstat/csv/tilastoAsetukset.R", overwrite = TRUE,dtoken = token)
+  drop_get("mstat/csv/saavutusAsetukset.R", overwrite = TRUE,dtoken = token)
+  
+  
 }
 luecsvalku()
 
@@ -81,14 +81,14 @@ kircsv2<-function(datataulu,tiedostonimi) {
 #pakkaa jsonit ja laheta
 zipAndSend<-function(){
   
- tiedostot<- as.data.table(dir())
- 
- tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
- json_files<-tiedostot[paate==".json",V1]
-if (length(json_files)>0){
- zip("json.zip",files=json_files)
- drop_upload("json.zip", "mstat/processed/", overwrite = TRUE,dtoken = token)
- }
+  tiedostot<- as.data.table(dir())
+  
+  tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
+  json_files<-tiedostot[paate==".json",V1]
+  if (length(json_files)>0){
+    zip("json.zip",files=json_files)
+    drop_upload("json.zip", "mstat/processed/", overwrite = TRUE,dtoken = token)
+  }
 }
 
 paivitaSliderit<-function(input_peli_ID,session) {
@@ -127,7 +127,7 @@ kategorisoi<-function(arvoVektori,kategorisointiVektori=NULL,pct_vektori=c(0.2, 
     maxHavainto<-max(kategorisointiVektori)
     tulos<-cut(arvoVektori,breaks=sort(unique(c(minHavainto,as.numeric(kvantiilit),maxHavainto))),include.lowest=TRUE)
     return (tulos)
-
+    
   } else {
     varaTulos<-cut(arvoVektori,sort(unique(kategorisointiVektori)),include.lowest=TRUE)
     return(varaTulos)
@@ -135,14 +135,14 @@ kategorisoi<-function(arvoVektori,kategorisointiVektori=NULL,pct_vektori=c(0.2, 
 }
 
 saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
-
+  
   assign(RdataTallenna,rdatasetti)
   print(get(RdataTallenna))
   print("ladattu")
   save(list=RdataTallenna,file=RdataTiedostonimi)
-
+  
   drop_upload(RdataTiedostonimi, "mstat/csv/", overwrite = TRUE,dtoken = token)
-
+  
   print("tallennettu")
   #drop_get("mstat/csv/tilastoAsetukset.R",overwrite = TRUE,dtoken = token)
   #load("tilastoAsetukset.R")
@@ -160,5 +160,6 @@ list_to_string <- function(obj, listname) {
   }
 }
 load("tilastoAsetukset.R")
-print(tilastoAsetukset)
+load("saavutusAsetukset.R")
+
 print("Ladattu")
