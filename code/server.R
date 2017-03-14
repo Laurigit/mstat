@@ -972,6 +972,52 @@ print(paste(input$tallenna_tulos))
 
 observeEvent(input$laskeSaavutukset,{
   print("toiii")
+  print("nappulapainettu")
+  for (i in 1:nrow(saavutusAsetuksetReact$data)) {
+
+    kierrosData<-saavutusAsetuksetReact$data[i]
+
+    asetukset<- kierrosData[,asetukset][[1]]
+    dataLahto<- kierrosData[,datataulu]
+    sorttaus <- kierrosData[,minVaiMax]
+
+
+    cols_use<-asetukset[[1]]
+    rows_use<-asetukset[[2]]
+    vals_use<-asetukset[[3]]
+    exclusions_use<-asetukset[[4]]
+    aggregator_use<-asetukset[[5]]
+    renderName_use<-asetukset[[6]]
+  
+   pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
+     print(pivotData)
+     if(dataLahto=="Aikasarja") {
+       outputData<-pivotData$aikasarja
+     } else {
+       outputData<-pivotData$cross
+     }
+   
+   
+     output$pivot_saavutus<- renderRpivotTable({
+      rpivotTable(outputData, col=unlist(cols_use),rows=unlist(rows_use), vals=unlist(vals_use) , exclusions=exclusions_use, aggregatorName=aggregator_use,
+                   rendererName=renderName_use,
+                   onRefresh=htmlwidgets::JS("function(config) {
+                                             Shiny.onInputChange('saavutusPivotData', document.getElementById('RESULTS').innerHTML);}")
+                )
+    })
+  
+  }
+  # input$saavutusPivotData %>% 
+  #   read_html %>% 
+  #   html_table(fill = TRUE) %>% 
+  #   # Turns out there are two tables in an rpivotTable, we want the second
+  #   print(.[[2]])
+  # 
+  # 
+  
+  
+  
+  
 })
 
 
