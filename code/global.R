@@ -9,6 +9,7 @@ library(jsonlite)
 library(rdrop2)
 library(zoo)
 library(rpivotTable)
+library(rvest)
 #library(shinythemes)
 
 options(max.print=1000000)

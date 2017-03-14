@@ -971,7 +971,7 @@ print(paste(input$tallenna_tulos))
 })
 
 observeEvent(input$laskeSaavutukset,{
-  print("toiii")
+
   print("nappulapainettu")
   for (i in 1:nrow(saavutusAsetuksetReact$data)) {
 
@@ -990,7 +990,7 @@ observeEvent(input$laskeSaavutukset,{
     renderName_use<-asetukset[[6]]
   
    pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
-     print(pivotData)
+  
      if(dataLahto=="Aikasarja") {
        outputData<-pivotData$aikasarja
      } else {
@@ -1007,19 +1007,24 @@ observeEvent(input$laskeSaavutukset,{
     })
   
   }
-  # input$saavutusPivotData %>% 
-  #   read_html %>% 
-  #   html_table(fill = TRUE) %>% 
+  # input$saavutusPivotData %>%
+  #   read_html %>%
+  #   html_table(fill = TRUE) %>%
   #   # Turns out there are two tables in an rpivotTable, we want the second
   #   print(.[[2]])
-  # 
-  # 
-  
-  
-  
-  
+
 })
 
+summarydf <- eventReactive(input$saavutusPivotData,{
+  print("eventReactive")
+  input$saavutusPivotData %>% 
+    read_html %>% 
+    html_table(fill = TRUE) %>% 
+    # Turns out there are two tables in an rpivotTable, we want the second
+   
+  #print(.[[2]])
+  .[[2]]
+})
 
 
 observeEvent( input$tallennaSaavutusAsetus,{
