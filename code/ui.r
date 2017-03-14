@@ -108,6 +108,7 @@
                      )),
                     column(4,textInput("text_tilastoKuvaus",label="Tilaston nimi"),
                                  actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
+                           actionButton("laskeSaavutukset", "Laske saavutukset"),
                                  
                                    actionButton("poista_tilastoAsetus","Poista tilasto")),
                      column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),
@@ -116,9 +117,10 @@
                   rpivotTableOutput("pivot_cross")
             ))),
     tabItem(tabName="tab_saavutukset",
-            fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava")
+            fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava"))
                      
-            )
+                     
+            
     ),
     tabItem(tabName="pakkaupload",
             fluidPage(

@@ -970,7 +970,9 @@ print(paste(input$tallenna_tulos))
   
 })
 
-
+observeEvent(input$laskeSaavutukset,{
+  print("toiii")
+})
 
 
 
