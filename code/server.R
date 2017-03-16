@@ -582,8 +582,49 @@ output$sarjataulukkovalitsin <- renderUI({
 
 
   
+saavutusTaulu<-reactive({
+  saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
+  uiInputit<-c(input$paivita_saavutus,  input$poista_Saavutus,  input$tallennaSaavutusAsetus)#hämätään shinä, että se päivittäis tän
+  for(kierros in 1:nrow(saavutusAsetukset)) {
+    kierrosData<-saavutusAsetukset[kierros]
     
-  for (i in 0:10) {
+    funktioTulos<-laskeSaavtusAsetuksista(kierrosData,peliDataReact(),divaridata(),pfi_data(),uiInputit)
+    kierrosTulos <-funktioTulos$oikea
+    print(paste("INPUTIT",funktioTulos$inputit))
+    saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
+    
+  }
+  
+
+
+  print("saavutustaulu ajettu")
+  print(saavutusTaulu)
+  print("saavutustaulun tulos ylla")
+  return(saavutusTaulu)
+  }
+)
+    
+  
+# saavutusUI<-
+#   for(kierros in 0:20) {
+#     local({
+#       kierrosData<-saavutusTaulu()[kierros]
+#       infoBoxName <- paste0("infoDynamic", kierros, sep="")
+#       output[[infoBoxName]] <- renderInfoBox({
+#         infoBox(
+#           kierroData[,teksti], icon = icon("list"),
+#           color = kierroData[,color], fill = TRUE
+#         )
+#       })
+# 
+#     })
+#   }
+
+
+
+
+
+  for (i in 0:5) {
 
     # Need local so that each item gets its own number. Without it, the value
     # of i in the renderPlot() will be the same across all instances, because
@@ -591,21 +632,16 @@ output$sarjataulukkovalitsin <- renderUI({
     local({
       my_i <- i
       plotname <- paste0("plotdyn", my_i, sep="")
-
       output[[plotname]] <- renderDataTable({
-
-        
         Data_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,input$radio_pfi_mode,pfi_data())$sarjataulukko
-       
         Data<-Data_all
-        print("rivi 574 return")
         return(Data)
         #print(Data)
       },    options = list(
         paging = FALSE,
         searching = FALSE,
         info=FALSE
-        
+
         )
       )
       plotname_divari <- paste0("plotdyndivari", my_i, sep="")
@@ -620,13 +656,54 @@ output$sarjataulukkovalitsin <- renderUI({
         paging = FALSE,
         searching = FALSE,
         info=FALSE
-        
+
       )
       )
     })
   }
   
+output$saavutus_UI<-renderUI({
+ 
+  tekstiData<-saavutusTaulu()[source=="Paras"]
+  # print("render UI ssavutus_UI")
+  # print(infoBoxData)
+  # looppi_kerrat<-nrow(infoBoxData)-1
+  # 
+
+  looppi<-1:nrow(tekstiData)-1
+  fluidPage(
+  lapply(looppi, function(i) {
+    rivi<-i+1
+    looppiData<-tekstiData[rivi]
+    box(HTML(looppiData[,teksti]),background = looppiData[,color])
+
+    
+  }),
+  box(HTML(paste("Pävityskierros",input$paivita_saavutus,input$poista_saavutusAsetus,input$tallennaSaavutusAsetus)))
+  )
+})
+  # 
+  # 
+  #    for(i in 0:1) {
+  # #     #looppi joka rakentaa infoboxit, alkaa nollasta
+  # # 
+  # #     print("i printtaus")
+  # #   print(paste0("infoDynamic", i, sep=""))
+  #      plotname33 <- paste0("infoDynamic", i, sep="")
+  #     box(
+  #      textOutput(plotname33)
+  #     )
+  #    }
+  #   
+  # 
+  #   })
+  # 
+    
   
+
+
+
+
   output$pfi_taulukko <-renderDataTable({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
@@ -898,8 +975,17 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
          info=FALSE,
          paging=FALSE,
          scrollY =105
-         ),rownames=FALSE)
+         ),rownames=FALSE)#,colnames=NULL)
      
+     output$tallennetut_saavutusAsetukset<- renderDataTable({
+       input$paivita_saavutus
+       input$poista_Saavutus
+       input$tallennaSaavutusAsetus
+       naytaData<-saavutusAsetuksetReact$data[,.(Kuvaus=kuvaus,Esitysmuoto,Palkintonimi,datataulu,minVaiMax)]
+       return(naytaData)
+     },selection = 'single',options = list(
+       info=FALSE
+     ),rownames=FALSE)#,colnames=NULL)
 
      
      observeEvent( input$myPivotData,{
@@ -941,6 +1027,50 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
 
    })
    
+   #poista saavutusAsetus
+   observeEvent(input$poista_saavutusAsetus,{
+     print(saavutusAsetuksetReact$data)
+     saavutusAsetuksetReact$data<- saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
+     print(saavutusAsetuksetReact$data)
+     saavutusAsetukset<-saavutusAsetuksetReact$data
+     saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
+     
+   })
+   
+   #paivita saavutusAsetus
+   observeEvent(input$paivita_saavutus,{
+     #vanha rivi talteen
+
+     vanhat_asetukset<-saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected,.(datataulu,asetukset)]
+     print(vanhat_asetukset)
+     uusrivi<-data.table(
+       minVaiMax=input$radio_minMax_saavutus,
+       Esitysmuoto=input$radio_muotoilu,
+       Palkintonimi=input$txt_palkinto,
+       kuvaus=input$txt_palkinto_kuvaus
+     )
+     #liita uudet ja vanhat
+     print(uusrivi)
+     uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
+      print(uus_ja_vanha_rivi)
+
+     #tarkista onko asetusrivi olemassa
+     if(nrow(saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected])>0){
+       #poista vanha rivi
+       saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
+       print(saavutusAsetuksetReact)
+       saavutusAsetuksetReact$data<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
+       saavutusAsetukset<-saavutusAsetuksetReact$data
+       saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
+       print(saavutusAsetuksetReact)
+     }else{
+       print("ei riviä valittuna, mitaan ei muutettu")
+     }
+     
+
+     
+   })
+   
    
    
 pfi_data<-reactive({
@@ -972,93 +1102,8 @@ print(paste(input$tallenna_tulos))
   
 })
 
-observeEvent(input$laskeSaavutukset,{
-
-  print("nappulapainettu")
-  for (i in 1:nrow(saavutusAsetuksetReact$data)) {
-
-    kierrosData<-saavutusAsetuksetReact$data[i]
-
-    asetukset<- kierrosData[,asetukset][[1]]
-    dataLahto<- kierrosData[,datataulu]
-    sorttaus <- kierrosData[,minVaiMax]
 
 
-    cols_use<-asetukset[[1]]
-    rows_use<-asetukset[[2]]
-    vals_use<-asetukset[[3]]
-    exclusions_use<-asetukset[[4]]
-    aggregator_use<-asetukset[[5]]
-    renderName_use<-asetukset[[6]]
-  
-   pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
-  
-     if(dataLahto=="Aikasarja") {
-       outputData<-pivotData$aikasarja
-     } else {
-       outputData<-pivotData$cross
-     }
-   
-   
-   
-   
-     output$pivot_saavutus<- renderRpivotTable({
-      rpivotTable(outputData, col=unlist(cols_use),rows=unlist(rows_use), vals=unlist(vals_use) , exclusions=exclusions_use, aggregatorName=aggregator_use,
-                   rendererName=renderName_use,
-                   onRefresh=htmlwidgets::JS("function(config) {
-                                             Shiny.onInputChange('saavutusPivotData', document.getElementById('pivot_saavutus').innerHTML);}")
-                )
-    })
-
-  }
-
-
-})
-observe(
-  print(summarydf())
-)
-
-
-summarydf <- eventReactive(input$saavutusPivotData,{
-  input$saavutusPivotData %>%
-    read_html %>%
-    html_table(fill = TRUE) %>%
-    # Turns out there are two tables in an rpivotTable, we want the second
-  .[[2]]
-})
-
-output$aSummaryTable <- DT::renderDataTable({
-  datatable(summarydf(), rownames = FALSE)
-})
-
-
-
-
-# # Clean the html and store as reactive
-# summarydf <- eventReactive(input$myData,{
-#   input$myData %>% 
-#     read_html %>% 
-#     html_table(fill = TRUE) %>% 
-#     # Turns out there are two tables in an rpivotTable, we want the second
-#     .[[2]]
-#   
-# })
-# 
-# # show df as DT::datatable
-# output$aSummaryTable <- DT::renderDataTable({
-#   datatable(summarydf(), rownames = FALSE)
-# })
-
-# Whenever the config is refreshed, call back with the content of the table
-# output$RESULTS <- renderRpivotTable({
-#   rpivotTable(
-#     tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)$aikasarja,
-#     onRefresh =
-#       htmlwidgets::JS("function(config) {
-#                            Shiny.onInputChange('myData', document.getElementById('RESULTS').innerHTML);
-#                         }")
-#   )
-# })
 
 
 
@@ -1087,11 +1132,24 @@ observeEvent( input$tallennaSaavutusAsetus,{
     asetukset=(storeList),
     minVaiMax=input$radio_minMax
   )
+  print(uusrivi)
   #tarkista onko asetusnimi jo olemassa
-  if(length(saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
+  if(nrow(saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
+    print("TÄTKTEÄ")
+    print(saavutusAsetuksetReact$data)
+    vanhat_asetukset<-saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus,.(Palkintonimi,Esitysmuoto)]
+    #liita uudet ja vanhat
+    uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
+    print(uus_ja_vanha_rivi)
     saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[kuvaus!=input$text_tilastoKuvaus]
+    print(saavutusAsetuksetReact$data)
+    saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
+  }else{
+    #lisätään tyhjat sarakkeet puuttuviin tietoihin
+    uusrivi[,':=' (Palkintonimi="",Esitysmuoto="Decimal")]
+    saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uusrivi)
   }
-  saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uusrivi)
+
   #tallenna rdata
   print("TALLENNA SAAVUTUS")
   print(saavutusAsetukset)
