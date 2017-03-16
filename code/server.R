@@ -1186,6 +1186,8 @@ observeEvent( input$tallennaSaavutusAsetus,{
   print(saavutusAsetukset)
   saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
   saavutusAsetuksetReact$data<-saavutusAsetukset
+  #tyhjennä tekstikenttä
+  updateTextInput(session,"text_tilastoKuvaus",value="")
 })
 
 saavutusAsetuksetReact<-reactiveValues(
