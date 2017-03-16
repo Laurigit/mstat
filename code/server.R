@@ -584,13 +584,12 @@ output$sarjataulukkovalitsin <- renderUI({
   
 saavutusTaulu<-reactive({
   saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
-  uiInputit<-c(input$paivita_saavutus,  input$poista_Saavutus,  input$tallennaSaavutusAsetus)#hämätään shinä, että se päivittäis tän
-  for(kierros in 1:nrow(saavutusAsetukset)) {
-    kierrosData<-saavutusAsetukset[kierros]
+  for(kierros in 1:nrow(saavutusAsetuksetReact$data)) {
+    kierrosData<-saavutusAsetuksetReact$data[kierros]
     
-    funktioTulos<-laskeSaavtusAsetuksista(kierrosData,peliDataReact(),divaridata(),pfi_data(),uiInputit)
-    kierrosTulos <-funktioTulos$oikea
-    print(paste("INPUTIT",funktioTulos$inputit))
+    kierrosTulos<-laskeSaavtusAsetuksista(kierrosData,peliDataReact(),divaridata(),pfi_data())
+
+
     saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
     
   }
@@ -678,8 +677,7 @@ output$saavutus_UI<-renderUI({
     box(HTML(looppiData[,teksti]),background = looppiData[,color])
 
     
-  }),
-  box(HTML(paste("Pävityskierros",input$paivita_saavutus,input$poista_saavutusAsetus,input$tallennaSaavutusAsetus)))
+  })
   )
 })
   # 
@@ -1071,7 +1069,15 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
      
    })
    
-   
+   #seuraa saavutusasetusten rivivalintaa
+   observeEvent(input$tallennetut_saavutusAsetukset_rows_selected,{
+     #lueData
+     riviData<-saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected]
+     updateRadioButtons(session,"radio_minMax_saavutus",selected=riviData[,minVaiMax])
+     updateRadioButtons(session,"radio_muotoilu",selected=riviData[,Esitysmuoto])
+     updateTextInput(session,"txt_palkinto",value=riviData[,Palkintonimi])
+     updateTextInput(session,"txt_palkinto_kuvaus",value=riviData[,kuvaus])
+   })
    
 pfi_data<-reactive({
 

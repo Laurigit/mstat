@@ -76,7 +76,7 @@
             tabItem(tabName="tab_combined",
                     fluidPage(
                       #fluidRow(box(DT::dataTableOutput("table_divari2"))),
-                      fluidRow(uiOutput("table_divari2")),
+                      fluidRow(uiOutput("plotdyndivari")),
                       fluidRow(uiOutput("combUI")),
                       fluidRow(actionButton("tallenna_bannit","Tallenna"))
                     )
@@ -103,18 +103,19 @@
                   #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
           ),
     tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(4,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Turnaus"),selected="Aikasarja")),
-                            radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
+            fluidRow(column(2,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Turnaus"),selected="Aikasarja"))),
+                     column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
+                            
                    #  column(2, verbatimTextOutput("pivotRefresh")),
               
-                    column(4,textInput("text_tilastoKuvaus",label="Tilaston nimi"),
+                    column(4,textInput("text_tilastoKuvaus",label="Tilaston/Saavutuksen nimi"),
                                  actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
                           
                            actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
                            
                            
                                  
-                                   actionButton("poista_tilastoAsetus","Poista tilasto")),
+                            actionButton("poista_tilastoAsetus","Poista tilasto")),
                      column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),
             fluidRow(
               div(id="myScrollBox",
@@ -122,10 +123,9 @@
             ))),
     tabItem(tabName="tab_saavutukset",
             #fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava"))
-            fluidRow( actionButton("laskeSaavutukset", "Laske saavutukset")),
-            fluidRow(DT::dataTableOutput("aSummaryTable")),
+           # fluidRow( actionButton("laskeSaavutukset", "Laske saavutukset"))
+            uiOutput("saavutus_UI")
 
-            fluidRow(rpivotTableOutput("pivot_saavutus"))
             # fluidPage(
             #   DT::dataTableOutput('aSummaryTable'),
             #   rpivotTableOutput('RESULTS')
@@ -144,9 +144,24 @@
               ),verbatimTextOutput("text_validointi")
               ),fluidRow(box(DT::dataTableOutput("pfi_taulukko"),title=("Nykypakkastatsit"),solidHeader = TRUE,status="primary",width=12))
 
+    ),
+    tabItem(tabName="tab_saavutusasetukset",
+            fluidPage(
+              fluidRow(column(3,radioButtons("radio_minMax_saavutus","Voittajan valinta",choices=c("min", "max"),selected = "max")),
+                       column(3,radioButtons("radio_muotoilu","Numeron muotoilu",choices = c("Decimal","Integer","%","€"),selected="%")),
+                       column(3, actionButton("paivita_saavutus","Paivita saavutus"),
+                              actionButton("poista_saavutusAsetus","Poista saavutus")),
+                       column(3,textInput("txt_palkinto","Palkinnon nimi"),
+                              textInput("txt_palkinto_kuvaus","Palkinnon kuvaus"))),
+              fluidRow( column(6,dataTableOutput("tallennetut_saavutusAsetukset")))
+            )
     )
-  )
-)
+               
+
+             
+            
+
+))
 
     
    
@@ -166,6 +181,7 @@ sidebar <- dashboardSidebar(
      #menuSubItem(icon = NULL,actionButton("tallenna_bannit","Tallenna")),
      menuItem('Peliasetukset', tabName = 'tab_peliasetukest'),
     menuItem("Lataa pakkoja", tabName = "pakkaupload"),
+    menuItem("Saavutusasetukset", tabName= "tab_saavutusasetukset"),
     radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
     radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = TRUE,inline=T),
     radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),

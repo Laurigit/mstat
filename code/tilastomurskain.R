@@ -4,13 +4,14 @@
 # input_pfiMA=TRUE
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
+
 # input_moving_average=5
 # input_turnaus<-3
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
-tilastoMurskain<-function(divariData,peliData,pfi_data,input_bo_mode=FALSE,input_moving_average=NA,input_pfiMA=NA) {
-
+tilastoMurskain<-function(divariData,peliData,pfi_data,input_bo_mode=FALSE,input_moving_average=5,input_pfiMA=NA) {
+#save(list=c("divariData","peliData","pfi_data"),file="pelidataa.Rdata")
 #pysäytä jos nulleja
 if(is.null(divariData)|
    is.null(peliData)|
@@ -72,6 +73,7 @@ Lauridata<-pelidata_joined_pakkatiedot[,.(peli_ID,
                                           Lifet=Laurin_lifet,
                                           Vastustajan_lifet=Martin_lifet
                                           )]
+
 Marttidata<-pelidata_joined_pakkatiedot[,.(peli_ID,
                                           Omistaja=2,
                                           Vastustajan_omistaja=1,
@@ -118,17 +120,31 @@ pelatutNimi<-omapakkanimi[pelatutpelit, on=c("Omistaja","Pakka")]
 #joinVastustajan nimi
 pelatutNimet<-vihunpakkanimi[pelatutNimi,on=c("Vastustajan_omistaja","Vastustajan_pakka")]
 
+pelatutNimet[,':=' (Omistaja=ifelse(Omistaja==1,"Lauri","Martti"),
+                    Vastustajan_omistaja=ifelse(Omistaja==1,"Lauri","Martti")
+                    )]
+
+#laske monesko pakkojen välinen peli per turnaus
+pelatutNimet[,':=' (pakkaPeliNoTurnaus=seq_len(.N)),by=.(Pakka,Vastustajan_pakka,TurnausNo)]
+pelatutNimet[,':=' (MulliganKPI=ifelse(Mulliganit>Vastustajan_mulliganit,-1,ifelse(Mulliganit<Vastustajan_mulliganit,1,0)))]
+
+
 
 turnaus_data<-data.table(pelatutNimet[,.(Voitot=sum(Voitti),
                                          Hinta=mean(Hinta),
-                                         MulliganKPI=sum(ifelse(Mulliganit>Vastustajan_mulliganit,-1,ifelse(Mulliganit<Vastustajan_mulliganit,1,0)))),
+                                         MulliganKPI=sum(MulliganKPI)),
                                       by=.(Divari,Nimi,TurnausNo)])
 
-turnaus_data[,sijoitus:=rank(-Voitot),by=.(Divari,TurnausNo)]
+turnaus_data[,divariSijoitus:=rank(-Voitot),by=.(Divari,TurnausNo)]
+turnaus_data[,turnausSijoitus:=rank(-Voitot+Divari*1000),by=.(TurnausNo)]
+
+turnaus_data[,':=' (turnausVoittaja=ifelse(turnausSijoitus==1,1,0))]
+
 tulos<-NULL
 tulos$turnaus<-turnaus_data
 
 kumulative_data<-pelatutNimet[,.(Omistaja,
+                                 Vastustajan_omistaja,
                                  Nimi,
                                  Aloituspvm,
                                  Vastustajan_nimi,
@@ -138,14 +154,12 @@ kumulative_data<-pelatutNimet[,.(Omistaja,
                                  Voitti,
                                  MA_voitti=round(rollmean(Voitti,input_moving_average,align=c("left"),fill=c("extend","extend","extend")),2),
                                  Vuoroarvio,
-                                 Ottelu_no,
-                                 Kierros,
+                                 pakkaPeliNoTurnaus,
                                  Hinta,
                                  Pysyvyys_pct,
                                  Humala,
                                  Vastustajan_humala,
                                  Mulliganit,
-                                 Vastustajan_mulliganit,
                                  peli_ID
                                  )]
 #pakkapelinumero
@@ -175,7 +189,9 @@ pelatutNimet[,':=' (peli_ID=NULL,
                     TurnausNo=NULL,
                     Kesto_cat=kategorisoi(Kesto/60),
                     Humala_cat=kategorisoi(Humala,c(Humala,Vastustajan_humala)),
-                    Vastustajan_humala=kategorisoi(Vastustajan_humala,c(Humala,Vastustajan_humala))
+                    Vastustajan_humala=kategorisoi(Vastustajan_humala,c(Humala,Vastustajan_humala)),
+                    Life_cat=cut(Lifet,breaks=c(-1,0,4,9,14,19,20,21),include.lowest=TRUE),
+                    Vastustajan_cat=cut(Vastustajan_lifet,breaks=c(-1,0,4,9,14,19,20,21),include.lowest=TRUE)
                     
                     )]
 tulos$cross<-pelatutNimet

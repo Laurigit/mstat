@@ -36,6 +36,7 @@ source("turnausVoitot.R")
 source("functio_lisakortit.R")
 source("tilastoMurskain.R")
 source("funcLiitaPelit_ja_Pysyvyys.R")
+source("saavutusLaskenta.R")
 
 dirname <-  './omawd'
 if (dir.exists(path=dirname)) {
@@ -162,5 +163,5 @@ list_to_string <- function(obj, listname) {
 }
 load("tilastoAsetukset.R")
 load("saavutusAsetukset.R")
-
+print(saavutusAsetukset)
 print("Ladattu")
