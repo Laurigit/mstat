@@ -20,6 +20,7 @@
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_data){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
   minVaiMax<-saavutusKierrosAsetus[,minVaiMax]
+  minVaiMax_rivi<-saavutusKierrosAsetus[,minVaiMax_rivi]
   lahtoData<-saavutusKierrosAsetus[,datataulu]
   saavutusNimi<-saavutusKierrosAsetus[,kuvaus]
   Palkintonimi<-saavutusKierrosAsetus[,Palkintonimi]
@@ -71,31 +72,35 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
     valittuData[,dummy:="Dummy"]
     cols<-"dummy"
   }
-  pivotDataOut<-as.data.table(dcast(data=valittuData,formula= as.formula(paste(paste(rows, collapse="+"), "~" ,cols)),value.var=vals,fun.aggregate=get(aggt_to_dcast)))
+  pivotDataOut<-as.data.table(dcast(data=valittuData,
+                                    formula= as.formula(paste(paste(rows, collapse="+"), "~" ,paste(cols,collapse="+"))),
+                                                        value.var=vals,fun.aggregate=get(aggt_to_dcast)))
   #remove Nmi and Omistaja
   getColsNames<-names(pivotDataOut)
   remove<- c(vals,cols,rows,"dummy")
   numeric_cols<-getColsNames[!getColsNames %in% remove]
   
   
-  
+  #rivimaksimit ja minimit
   pivotDataOut[, `:=`(
                     min = min(.SD, na.rm=TRUE),
                     max = max(.SD, na.rm=TRUE)),.SDcols=numeric_cols,by=1:nrow(pivotDataOut)] 
+  pivotDataOut[,riviTulos:=get(minVaiMax_rivi)]
+  print(pivotDataOut)
   
   print(pivotDataOut)
   if(minVaiMax=="max") {
-  Paras<-pivotDataOut[which.max(max)][,source:="Paras"]
-  Huonoin<- pivotDataOut[which.min(max)][,source:="Huonoin"]
-  Keskiarvo<-pivotDataOut[,mean(max)]
+  Paras<-pivotDataOut[which.max(riviTulos)][,source:="Paras"]
+  Huonoin<- pivotDataOut[which.min(riviTulos)][,source:="Huonoin"]
+  Keskiarvo<-pivotDataOut[,mean(riviTulos)]
   } else {
-  Paras<-pivotDataOut[which.min(min)][,source:="Paras"]
-  Huonoin<- pivotDataOut[which.max(min)][,source:="Huonoin"]
-  Keskiarvo<-pivotDataOut[,mean(min)]
+  Paras<-pivotDataOut[which.min(riviTulos)][,source:="Paras"]
+  Huonoin<- pivotDataOut[which.max(riviTulos)][,source:="Huonoin"]
+  Keskiarvo<-pivotDataOut[,mean(riviTulos)]
   }
   append_PH<-rbind(Paras,Huonoin)
   append_PH[,Keskiarvo:=Keskiarvo]
-  append_PH[ ,':='(min= NULL,max=NULL,result=get(minVaiMax))]
+  append_PH[ ,':='(min= NULL,max=NULL,result=riviTulos)]
   append_PH[,c(numeric_cols):=NULL]
   #join kuvaus
   kuvaus<-cbind(append_PH,saavutusNimi)

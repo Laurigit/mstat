@@ -104,7 +104,7 @@
           ),
     tabItem(tabName="tab_tilastomurskain",
             fluidRow(column(2,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Turnaus"),selected="Aikasarja"))),
-                     column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
+                     #column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
                             
                    #  column(2, verbatimTextOutput("pivotRefresh")),
               
@@ -147,7 +147,8 @@
     ),
     tabItem(tabName="tab_saavutusasetukset",
             fluidPage(
-              fluidRow(column(3,radioButtons("radio_minMax_saavutus","Voittajan valinta",choices=c("min", "max"),selected = "max")),
+              fluidRow(column(2,radioButtons("radio_minMax_saavutus","Voittajan valinta",choices=c("min", "max"),selected = "max")),
+                       column(2,radioButtons("radio_minMax_saavutus_rivi","Rivitavoite",choices=c("min", "max"),selected = "max")),
                        column(3,radioButtons("radio_muotoilu","Numeron muotoilu",choices = c("Decimal","Integer","%","€"),selected="%")),
                        column(3, actionButton("paivita_saavutus","Paivita saavutus"),
                               actionButton("poista_saavutusAsetus","Poista saavutus")),

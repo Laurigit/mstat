@@ -864,6 +864,7 @@ output$saavutus_UI<-renderUI({
    output$pivot_cross <- renderRpivotTable({
      pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
 
+     
       
      #1 jos tallennettu asetus valittu, käytä sitä
      #2 jos edellinen asetus tallennettu, käytä sitä
@@ -874,6 +875,8 @@ output$saavutus_UI<-renderUI({
        #lataa asetukset
        asetukset<- tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,asetukset][[1]]
        dataLahto<- tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,datataulu]
+       #sorttaus<-tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,sorttaus]
+       
        #paivita valinta
        updateRadioButtons(session,"radio_tilastoData",selected=dataLahto)
        cols_use<-asetukset[[1]]
@@ -891,8 +894,21 @@ output$saavutus_UI<-renderUI({
        exclusions_use<-defaultStatValue$asetukset[[4]]
        aggregator_use<-defaultStatValue$asetukset[[5]]
        renderName_use<-defaultStatValue$asetukset[[6]]
+       #kato miten sortataan
+       #sorttaus<-input$radio_minMax
      }
      
+     
+     #konvertoi sorttaus oikeeseen muotoon (EI TOIMINUT, pivottiin ei vaikuttanut mitenkaan)
+     # if(sorttaus=="max") {
+     #   sortAsetus<-"value_z_to_a"
+     # } else if (sorttaus =="min") {
+     #   sortAsetus<-"value_a_to_z"
+     # } else {
+     #   sortAsetus<-"key_a_to_z"
+     # }
+     # print(sortAsetus)
+     # 
      #lataa oikea data
      if(input$radio_tilastoData=="Aikasarja") {
        outputData<-pivotData$aikasarja
@@ -903,7 +919,13 @@ output$saavutus_UI<-renderUI({
      }
 
      
-     rpivotTable(outputData, col=unlist(cols_use),rows=unlist(rows_use), vals=unlist(vals_use) , exclusions=exclusions_use, aggregatorName=aggregator_use,
+     rpivotTable(outputData, 
+                 col=unlist(cols_use),
+                 rows=unlist(rows_use), 
+                 vals=unlist(vals_use), 
+                 exclusions=exclusions_use, 
+                 aggregatorName=aggregator_use,
+                 rowOrder= "value_z_to_a",
                   rendererName=renderName_use, width="100%", height = "100%",
                  onRefresh=htmlwidgets::JS("function(config) { Shiny.onInputChange('myPivotData', config); }"))
      
@@ -979,7 +1001,7 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
        input$paivita_saavutus
        input$poista_Saavutus
        input$tallennaSaavutusAsetus
-       naytaData<-saavutusAsetuksetReact$data[,.(Kuvaus=kuvaus,Esitysmuoto,Palkintonimi,datataulu,minVaiMax)]
+       naytaData<-saavutusAsetuksetReact$data[,.(Kuvaus=kuvaus,Esitysmuoto,Palkintonimi,datataulu,minVaiMax,minVaiMax_rivi)]
        return(naytaData)
      },selection = 'single',options = list(
        info=FALSE
@@ -1040,9 +1062,10 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
      #vanha rivi talteen
 
      vanhat_asetukset<-saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected,.(datataulu,asetukset)]
-     print(vanhat_asetukset)
+
      uusrivi<-data.table(
        minVaiMax=input$radio_minMax_saavutus,
+       minVaiMax_rivi=input$radio_minMax_saavutus_rivi,
        Esitysmuoto=input$radio_muotoilu,
        Palkintonimi=input$txt_palkinto,
        kuvaus=input$txt_palkinto_kuvaus
@@ -1065,7 +1088,7 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
        print("ei riviä valittuna, mitaan ei muutettu")
      }
      
-
+  
      
    })
    
@@ -1074,6 +1097,7 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
      #lueData
      riviData<-saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected]
      updateRadioButtons(session,"radio_minMax_saavutus",selected=riviData[,minVaiMax])
+     updateRadioButtons(session,"radio_minMax_saavutus_rivi",selected=riviData[,minVaiMax])
      updateRadioButtons(session,"radio_muotoilu",selected=riviData[,Esitysmuoto])
      updateTextInput(session,"txt_palkinto",value=riviData[,Palkintonimi])
      updateTextInput(session,"txt_palkinto_kuvaus",value=riviData[,kuvaus])
@@ -1121,7 +1145,9 @@ observeEvent( input$tallennaSaavutusAsetus,{
       datataulu=character(),
       kuvaus=character(),
       asetukset=list(),
-      minVaiMax=character()
+      minVaiMax=character(),
+      minVaiMax_rivi=character(),
+      Palkintonimi=character()
     )
   }
   cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
@@ -1135,15 +1161,14 @@ observeEvent( input$tallennaSaavutusAsetus,{
   uusrivi<-data.table(
     datataulu=input$radio_tilastoData,
     kuvaus=input$text_tilastoKuvaus,
-    asetukset=(storeList),
-    minVaiMax=input$radio_minMax
+    asetukset=(storeList)
   )
   print(uusrivi)
   #tarkista onko asetusnimi jo olemassa
   if(nrow(saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
     print("TÄTKTEÄ")
     print(saavutusAsetuksetReact$data)
-    vanhat_asetukset<-saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus,.(Palkintonimi,Esitysmuoto)]
+    vanhat_asetukset<-saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus,.(Palkintonimi,Esitysmuoto,minVaiMax,minVaiMax_rivi)]
     #liita uudet ja vanhat
     uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
     print(uus_ja_vanha_rivi)
@@ -1152,7 +1177,7 @@ observeEvent( input$tallennaSaavutusAsetus,{
     saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
   }else{
     #lisätään tyhjat sarakkeet puuttuviin tietoihin
-    uusrivi[,':=' (Palkintonimi="",Esitysmuoto="Decimal")]
+    uusrivi[,':=' (Palkintonimi="",Esitysmuoto="Decimal",minVaiMax="max",minVaiMax_rivi="max")]
     saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uusrivi)
   }
 
