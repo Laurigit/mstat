@@ -75,8 +75,7 @@
     
             tabItem(tabName="tab_combined",
                     fluidPage(
-                      #fluidRow(box(DT::dataTableOutput("table_divari2"))),
-                      fluidRow(uiOutput("plotdyndivari")),
+                      fluidRow(uiOutput("table_divari2")),
                       fluidRow(uiOutput("combUI")),
                       fluidRow(actionButton("tallenna_bannit","Tallenna"))
                     )
