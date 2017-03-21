@@ -623,7 +623,7 @@ saavutusTaulu<-reactive({
 
 
 
-  for (i in 0:5) {
+  for (i in 0:10) {
 
     # Need local so that each item gets its own number. Without it, the value
     # of i in the renderPlot() will be the same across all instances, because
@@ -1127,7 +1127,7 @@ observe({
 })
 peliDataReact<-reactive({
   print("Luettu pelit.csv")
-print(paste(input$tallenna_tulos))
+print(paste(input$tallenna_tulos),input$luo_peleja)
   kaikkipelit<-luecsv("pelit.csv")  
   
 })
