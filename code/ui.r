@@ -169,19 +169,19 @@
 sidebar <- dashboardSidebar(
  
   sidebarMenu(id="sidebarmenu",
-    menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("dashboard")),
+    menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
     
-    menuItem("Tallenna peli", icon = icon("th"), tabName = "tab_tallenna_peli",badgeLabel = "new", badgeColor = "green"),
-    menuItem("Sarjataulukko", icon = icon("th"), tabName = "tab_sarjataulukko",badgeLabel = "omg", badgeColor = "red"),
-    menuItem("Tilastomurskain",tabName="tab_tilastomurskain"),
-    menuItem("Saavutukset",icon=icon("th"),tabName="tab_saavutukset"),
+    menuItem("Tallenna peli", icon = icon("th"), tabName = "tab_tallenna_peli"),
+    menuItem("Sarjataulukko", icon = icon("dashboard"), tabName = "tab_sarjataulukko"),
+    menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName="tab_tilastomurskain"),
+    menuItem("Saavutukset",icon=icon("bullseye"),tabName="tab_saavutukset"),
 
     #menuItem("Turnausasetukset",tabName="nimeton",
-     menuItem('Divarit ja pickit', tabName = 'tab_combined'),
+     menuItem('Divarit ja pickit', icon=icon("signal") ,tabName = 'tab_combined'),
      #menuSubItem(icon = NULL,actionButton("tallenna_bannit","Tallenna")),
-     menuItem('Peliasetukset', tabName = 'tab_peliasetukest'),
-    menuItem("Lataa pakkoja", tabName = "pakkaupload"),
-    menuItem("Saavutusasetukset", tabName= "tab_saavutusasetukset"),
+     menuItem('Peliasetukset',  icon=icon("server"),tabName = 'tab_peliasetukest'),
+    menuItem("Lataa pakkoja", icon=icon("cloud-upload") ,tabName = "pakkaupload"),
+    menuItem("Saavutusasetukset",icon=icon("key"), tabName= "tab_saavutusasetukset"),
     radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
     radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = TRUE,inline=T),
     radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),

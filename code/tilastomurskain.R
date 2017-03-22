@@ -142,10 +142,15 @@ pelatutNimet<-pelatutNimet[order(rivi)][,rivi:=NULL]
 #perakkaiset voitot
 perakkaiset_lauri<-pelatutNimet[,.(sequence(rle(as.character(Voitti))$lengths),Voitti,peli_ID),by=.(Nimi)]
 putket<-perakkaiset_lauri[,.(Putki=ifelse(Voitti==1,V1,-V1),Nimi,peli_ID)]
+perakkaiset_vs<-pelatutNimet[,.(sequence(rle(as.character(Voitti))$lengths),Voitti,peli_ID),by=.(Nimi,Vastustajan_nimi)]
+putket_vs<-perakkaiset_vs[,.(Putki_VS=ifelse(Voitti==1,V1,-V1),Nimi,Vastustajan_nimi,peli_ID)]
 #join putki
+pelatutNimet<-putket_vs[pelatutNimet,on=c("peli_ID","Nimi","Vastustajan_nimi")]
 pelatutNimet<-putket[pelatutNimet,on=c("peli_ID","Nimi")]
+#jion putki_VS
 
-
+#pfi
+pelatutNimet[,':=' (Voitti_PFI=Voitti*Historiakerroin)]
 
 
 turnaus_data<-data.table(pelatutNimet[,.(Voitot=sum(Voitti),
@@ -171,6 +176,7 @@ kumulative_data<-pelatutNimet[,.(Omistaja,
                                  Aloitti,
                                  Voitti,
                                  Putki,
+                                 Putki_VS,
                                  MA_voitti=round(rollmean(Voitti,input_moving_average,align=c("left"),fill=c("extend","extend","extend")),2),
                                  Vuoroarvio,
                                  pakkaPeliNoTurnaus,
@@ -180,7 +186,8 @@ kumulative_data<-pelatutNimet[,.(Omistaja,
                                  Vastustajan_humala,
                                  Mulliganit,
                                  peli_ID,
-                                 pariPeliNumero
+                                 pariPeliNumero,
+                                 pakka_form_id
                                  )]
 #pakkapelinumero
 kumulative_data[,pakkaPeliNumero:=seq_len(.N),by=.(Nimi)]
