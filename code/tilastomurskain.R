@@ -40,6 +40,7 @@ Lauridata<-pelidata_joined_pakkatiedot[,.(peli_ID,
                                           Omistaja=1,
                                           Vastustajan_omistaja=2,
                                           Aloituspvm=as.IDate(Aloituspvm,origin="1970-01-01"),
+                                          Aloitusaika,
                                           Pysyvyys_pct=Laurin_pysyvyys_pct,
                                           Vastustajan_pysyvyys_pct=Martin_pysyvyys_pct,
                                           Historiakerroin=Laurin_pysyvyys_pct*Martin_pysyvyys_pct,
@@ -77,6 +78,7 @@ Marttidata<-pelidata_joined_pakkatiedot[,.(peli_ID,
                                           Omistaja=2,
                                           Vastustajan_omistaja=1,
                                           Aloituspvm=as.IDate(Aloituspvm,origin="1970-01-01"),
+                                          Aloitusaika,
                                           Pysyvyys_pct=Martin_pysyvyys_pct,
                                           Vastustajan_pysyvyys_pct=Laurin_pysyvyys_pct,
                                           Historiakerroin=Laurin_pysyvyys_pct*Martin_pysyvyys_pct,
@@ -113,7 +115,7 @@ Marttidata<-pelidata_joined_pakkatiedot[,.(peli_ID,
 omapakkanimi<-divariData[,.(Omistaja,Pakka,Nimi)]
 vihunpakkanimi<-divariData[,.(Vastustajan_omistaja=Omistaja,Vastustajan_pakka=Pakka,Vastustajan_nimi=Nimi)]
 appendKasa<-rbind(Lauridata,Marttidata)
-pelatutpelit<-appendKasa[!is.na(Voitti)]
+pelatutpelit<-appendKasa[!is.na(Voitti)][order(Aloituspvm,Aloitusaika)]
 #joinNimi
 pelatutNimi<-omapakkanimi[pelatutpelit, on=c("Omistaja","Pakka")]
 #joinVastustajan nimi
@@ -135,6 +137,15 @@ pelatutNimet[,':=' (pakkaPeliNoTurnaus=ceiling(pakkaPeliNoTurnaus/2))]
 pelatutNimet[,':=' (MulliganKPI=ifelse(Mulliganit>Vastustajan_mulliganit,-1,ifelse(Mulliganit<Vastustajan_mulliganit,1,0)))]
 #sorttaa takasi
 pelatutNimet<-pelatutNimet[order(rivi)][,rivi:=NULL]
+
+#putki
+#perakkaiset voitot
+perakkaiset_lauri<-pelatutNimet[,.(sequence(rle(as.character(Voitti))$lengths),Voitti,peli_ID),by=.(Nimi)]
+putket<-perakkaiset_lauri[,.(Putki=ifelse(Voitti==1,V1,-V1),Nimi,peli_ID)]
+#join putki
+pelatutNimet<-putket[pelatutNimet,on=c("peli_ID","Nimi")]
+
+
 
 
 turnaus_data<-data.table(pelatutNimet[,.(Voitot=sum(Voitti),
@@ -159,6 +170,7 @@ kumulative_data<-pelatutNimet[,.(Omistaja,
                                  TurnausNo,
                                  Aloitti,
                                  Voitti,
+                                 Putki,
                                  MA_voitti=round(rollmean(Voitti,input_moving_average,align=c("left"),fill=c("extend","extend","extend")),2),
                                  Vuoroarvio,
                                  pakkaPeliNoTurnaus,
@@ -194,6 +206,7 @@ pelatutNimet[,':=' (peli_ID=NULL,
                     Divari=NULL,
                     Kierros=NULL,
                     TurnausNo=NULL,
+                    Aloitusaika=NULL,
                     Kesto_cat=kategorisoi(Kesto/60),
                     Humala_cat=kategorisoi(Humala,c(Humala,Vastustajan_humala)),
                     Vastustajan_humala=kategorisoi(Vastustajan_humala,c(Humala,Vastustajan_humala)),

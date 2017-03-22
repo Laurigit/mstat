@@ -4,24 +4,24 @@ omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_dat
   pakat<-NULL
   counter <-0
   pakkametataulu<-NULL
-  kierros_count<-42
+  kierros_count<-100
+  lauri_counter<-0
+  martti_counter<-0
   for (pakka in 1:kierros_count){ 
     counter<-counter+1
     pakkanimi<-substr(pakka,1,nchar(pakka)-5)
     
     #kierrospakka<-fromJSON(paste(folder,pakka,sep=""))
     kierrospakka<-NULL
-    #parsi pakkatiedot
-    splitti<-strsplit(pakkanimi,"_")
-    splitti<-splitti[[1]]
-    kierrospakka$omistaja <-splitti[1]
-    kierrospakka$pakkanumero <-as.numeric(splitti[2])
-    kierrospakka$pvm<-as.IDate(splitti[3])
-    kierrospakka$kello<-(as.numeric(splitti[4]))
     
     kierrospakka$omistaja <-ifelse(pakka<kierros_count/2,"L","M")
+    if (kierrospakka$omistaja=="L") {lauri_counter<-lauri_counter+1} else {martti_counter<-martti_counter+1}
     kierrospakka$pakkanumero <-pakka %% 7+1
-    kierrospakka$pvm<-as.IDate(paste0("2016-",ceiling(runif(1,min=0,max=12)),"-",ceiling(runif(1,min=1,max=28))))
+    if(lauri_counter <8 & kierrospakka$omistaja =="L" | martti_counter<8 & kierrospakka$omistja=="M" ) {
+      kierrospakka$pvm<-as.IDate("2014-12-20")
+    } else {
+      kierrospakka$pvm<-as.IDate(runif(1,min=10,max=700)+16426,origin="1970-01-01")
+    }
     kierrospakka$kello<-as.ITime("05:01:01")
     kierrospakka$list$cards<-data.table(count=ceiling(runif(20,min=0,max=4)),id=ceiling(runif(20,min=0,max=40)))
     kierrospakka$price$med<-ceiling(runif(1,min=10,max=200))

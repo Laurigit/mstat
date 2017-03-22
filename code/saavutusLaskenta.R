@@ -125,12 +125,12 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
   kuvaus[,':=' (txtResult=convEsitys(Esitysmuoto,result),txtKa=convEsitys(Esitysmuoto,Keskiarvo))]
   
   if("Nimi" %in% colnames(kuvaus)) {
-    kuvaus[,teksti:=paste0("<h4>",Palkintonimi,"-Palkinto: ", Nimi,"<br/>",
-                           saavutusNimi,": ",txtResult,"<h4/>", "<br/>",
+    kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><b><br/>", Nimi,"</b><br/>",
+                           saavutusNimi,": <b>",txtResult," </b> <h4/>", "<br/>",
                            "Keskiarvo: ", txtKa)]
   } else {
-    kuvaus[,teksti:=paste0("<h4>",Palkintonimi,"-Palkinto: ", Omistaja, "<br/>",
-                           saavutusNimi,": ",txtResult,"<h4/>")]
+    kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",
+                           saavutusNimi,": <b>",txtResult,"</b><h4/>")]
   }
 
 
