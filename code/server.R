@@ -201,8 +201,9 @@ shinyServer(function(input, output,session) {
        #laske otteluiden voittoprosentti
        kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
        kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
+       print(kaikkipelit)
        #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
-       pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<0.5)|BO_mode==0]
+       pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
        pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
       
      kircsv(pelit_jaljella,"pelit.csv")
@@ -674,6 +675,7 @@ output$saavutus_UI<-renderUI({
   lapply(looppi, function(i) {
     rivi<-i+1
     looppiData<-tekstiData[rivi]
+  
     box(HTML(looppiData[,teksti]),background = looppiData[,color])
 
     

@@ -10,13 +10,13 @@
 #   kierrosData<-saavutusAsetukset[kierros]
 #   print(kierros)
 #   kierrosTulos<-laskeSaavtusAsetuksista(kierrosData,peliData,divariData,pfi_data)
-#   print(kierrosTulos)
+#   # print(kierrosTulos)
 #   saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
 # 
 # }
 # saavutusTaulu
-
-
+# 
+# tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_data){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
   minVaiMax<-saavutusKierrosAsetus[,minVaiMax]
@@ -60,6 +60,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
   valittuData<-valittuData[eval(syntax_start)]
   }
   }
+  if (nrow(valittuData)>0) {
   
   
   omaCountUnique<-function(inData){
@@ -86,9 +87,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
                     min = min(.SD, na.rm=TRUE),
                     max = max(.SD, na.rm=TRUE)),.SDcols=numeric_cols,by=1:nrow(pivotDataOut)] 
   pivotDataOut[,riviTulos:=get(minVaiMax_rivi)]
-  print(pivotDataOut)
-  
-  print(pivotDataOut)
+
   if(minVaiMax=="max") {
   Paras<-pivotDataOut[which.max(riviTulos)][,source:="Paras"]
   Huonoin<- pivotDataOut[which.min(riviTulos)][,source:="Huonoin"]
@@ -132,8 +131,11 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
     kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",
                            saavutusNimi,": <b>",txtResult,"</b><h4/>")]
   }
-
+print(kuvaus)
 
 return(kuvaus)
+  } else {
+  return(NULL)
+}
 }
 
