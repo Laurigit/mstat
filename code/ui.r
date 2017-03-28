@@ -38,7 +38,14 @@ uusi_peli<-dashboardBody(
                                                       max = 6, value = 0))
               ),
               fluidRow(column(3,actionButton("lauri_voitti","Lauri voitti")),
-                       column(3,textOutput("peliKesto")),
+                       column(3,textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
+                                 font-size: 25px;
+                                                                                 font-style: bold;
+                                                                                 }"
+                         )
+                       )
+                       ),
+                       
                        
                        column(3,actionButton("martti_voitti","Martti voitti"))),
               
