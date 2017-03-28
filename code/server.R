@@ -135,8 +135,6 @@ shinyServer(function(input, output,session) {
   observeEvent(input$tallenna_tulos,{
     print("tallenna tulos alku")
      uusrivi<- c(
-       Aloitusaika=alotusaika$alotusaika,
-       Aloituspvm=alotusaika$alotuspvm,
        Lopetusaika=as.ITime(now()),
        Lopetuspvm=as.IDate(now()),
        Voittaja=as.numeric(input$radio_voittaja),
@@ -253,17 +251,37 @@ shinyServer(function(input, output,session) {
      
 #observe- seuraa muuttujien arvoja
   #pelin aloitusaika ja lopetus
-alotusaika<-reactiveValues()
- observe({
-   print(paste("Observe altotusaika"))
-    test<-r_valittu_peli$peliID+input$tasuri_peli+input$arvo_peli+input$jatka_ottelua #kun joku näistä päivttyy, niin nollaa aika
 
-    alotusaika$alotusaika<-as.ITime(now())
-    alotusaika$alotuspvm<-as.IDate(now())
+ observeEvent(input$button_aloitusaika,{
+   print(paste("Observe altotusaika"))
+    
+
+    kaikkipelit<-data.table(luecsv("pelit.csv"))
+    kaikkipelit[peli_ID==r_valittu_peli$peliID, ':=' (Aloitusaika=as.ITime(now()),Aloituspvm=as.IDate(now()))]
+    print(kaikkipelit)
+    
+    kircsv(kaikkipelit,"pelit.csv")
+    
+    
+    
     print("observe aloitusaika loppu")
 })
 
 
+ output$peliKesto <- renderText({
+   invalidateLater(1000, session)
+   pelidata<-luecsv("pelit.csv")
+   pelialkuAika<-as.integer(pelidata[peli_ID==r_valittu_peli$peliID,Aloitusaika])
+   pelialkuPVM<-as.integer(pelidata[peli_ID==r_valittu_peli$peliID,Aloituspvm])
+   
+   sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now())),pelialkuPVM,as.integer(as.IDate(now())))
+   minuutit<-floor(sekunnit_yht/60)
+   sekunnit<-sekunnit_yht-60*minuutit
+   paste(minuutit,":",sekunnit)
+         
+ })
+ 
+ 
 
   #seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
   observe({
@@ -276,9 +294,6 @@ alotusaika<-reactiveValues()
     #print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
     if(!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
     maxottelu<-max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])
-
-    
-    
     r_valittu_peli$ottelutilanne_text <- kaikkipelit[Ottelu_ID==maxottelu,paste("Tilanne: ",sum(Lauri_voitti,na.rm=TRUE),"-",sum(Martti_voitti,na.rm=TRUE))]
     
     #kato onko peleja jaljella
