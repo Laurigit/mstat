@@ -73,7 +73,7 @@ kircsv<-function(datataulu, tiedostonimi) {
 
 
 luecsv<-function(tiedostonimi) {
-  tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE))
+  tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE,fileEncoding="UTF-8-BOM"))
   return(tulos)
 }
 kircsv2<-function(datataulu,tiedostonimi) {
