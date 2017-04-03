@@ -66,14 +66,14 @@ luecsvalku<-function() {
 luecsvalku()
 
 kircsv<-function(datataulu, tiedostonimi) {
-  write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
+  write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE,dec=",")
   drop_upload(tiedostonimi, "mstat/csv/", overwrite = TRUE,dtoken = token)
 }
 
 
 
 luecsv<-function(tiedostonimi) {
-  tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE,fileEncoding="UTF-8-BOM"))
+  tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE,dec=",",fileEncoding="UTF-8-BOM"))
   return(tulos)
 }
 kircsv2<-function(datataulu,tiedostonimi) {
