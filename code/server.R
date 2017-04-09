@@ -134,13 +134,15 @@ shinyServer(function(input, output,session) {
         #tallennapeli
   observeEvent(input$tallenna_tulos,{
     print("tallenna tulos alku")
+      tempData<-luecsv("temp_data_storage.csv")
      uusrivi<- c(
+       Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
+       Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
        Lopetusaika=as.ITime(now()),
        Lopetuspvm=as.IDate(now()),
        Voittaja=as.numeric(input$radio_voittaja),
        Lauri_voitti=(1-as.numeric(input$radio_voittaja)),
        Martti_voitti=as.numeric(input$radio_voittaja),
-     
        Laurin_mulligan=input$slider_laurin_mulligan,
        Martin_mulligan=input$slider_martin_mulligan,
        Laurin_arvosana=input$slider_laurin_virhe,
@@ -155,7 +157,10 @@ shinyServer(function(input, output,session) {
        Laurin_kasikortit=input$slider_laurin_kasikortit,
        Martin_kasikortit=input$slider_martin_kasikorit
        )
+     #tyhjennä tempdata
+     tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
      
+     kircsv(tyhjataulu,"temp_data_storage.csv")
    
      
      kaikkipelit<-data.table(luecsv("pelit.csv"))
@@ -235,52 +240,93 @@ shinyServer(function(input, output,session) {
      updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
      updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
      updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
-
-
-     
-     
      updateNumericInput(session,"sarjataulukkokierros",value=0)
      print("tallenna tulos loppu")
     })  
+
     
-    
-    
+
   
-    
-   
-     
-#observe- seuraa muuttujien arvoja
-  #pelin aloitusaika ja lopetus
+observe({
+  req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan)
+  print(paste("Observe altotusaika"))
+  tempData<-luecsv("temp_data_storage.csv")
+  if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
+  alotusaika<-as.ITime(now())
+    alotuspvm<-as.IDate(now())
+    laurin_pakka<-input$select_laurin_pakka
+    martin_pakka<-input$select_martin_pakka
+    laurin_mull<-input$slider_laurin_mulligan
+    martin_mull<-input$slider_martin_mulligan
+    laheta<-TRUE
+    kesken<-FALSE
+    muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
+    arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
+    tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
+    kircsv2(tempData,"temp_data_storage.csv")
+  } else {
+    tempData[muuttuja=="kesken",arvo:=FALSE]
+    kircsv2(tempData,"temp_data_storage.csv")
+  }
+})
 
- observeEvent(input$button_aloitusaika,{
-   print(paste("Observe altotusaika"))
-    
+output$peliKesto <- renderText({
 
-    kaikkipelit<-data.table(luecsv("pelit.csv"))
-    kaikkipelit[peli_ID==r_valittu_peli$peliID, ':=' (Aloitusaika=as.ITime(now()),Aloituspvm=as.IDate(now()))]
-    print(kaikkipelit)
-    
-    kircsv(kaikkipelit,"pelit.csv")
-    
-    
-    
-    print("observe aloitusaika loppu")
+   invalidateLater(1000, session)
+  tempData<-luecsv("temp_data_storage.csv")
+  print(tempData)
+  if (nrow(tempData)>4) {
+  pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
+  pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
+  sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now())),pelialkuPVM,as.integer(as.IDate(now())))
+  minuutit<-floor(sekunnit_yht/60)
+  sekunnit<-sekunnit_yht-60*minuutit
+  #print(paste("sekunnit",sekunnit,"lahetetty:",lahetaTempData$lahetetty,"laheta:",lahetaTempData$laheta))
+  if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
+    tempData[muuttuja=="laheta",arvo:="FALSE"]
+    tempData[muuttuja=="kesken",arvo:="TRUE"]
+    kircsv(tempData,"temp_data_storage.csv")
+    print("lähetetty")
+    tempData[muuttuja=="kesken",arvo:="FALSE"]
+    kircsv2(tempData,"temp_data_storage.csv")
+
+  }
+  paste(minuutit,":",sekunnit)
+  }
+})
+
+output$mulliganiSliderit<-renderUI({
+  pelitiedot<-luecsv("temp_data_storage.csv")
+  if(nrow(pelitiedot)==0) {
+    laurin_pre_mulligan<-0
+    martin_pre_mulligan<-0
+  } else {
+    laurin_pre_mulligan<-pelitiedot[muuttuja=="Laurin_mulligan",arvo]
+    martin_pre_mulligan<-pelitiedot[muuttuja=="Martin_mulligan",arvo]
+  }
+  
+  fluidRow(column(3, sliderInput("slider_laurin_mulligan", label = h4("Laurin mulliganit"), min = 0, 
+                                 max = 6, value =laurin_pre_mulligan)),
+           
+           column(3,offset=3, sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
+                                          max = 6, value = martin_pre_mulligan))
+  )
 })
 
 
- output$peliKesto <- renderText({
-   invalidateLater(1000, session)
-   pelidata<-luecsv("pelit.csv")
-   pelialkuAika<-as.integer(pelidata[peli_ID==r_valittu_peli$peliID,Aloitusaika])
-   pelialkuPVM<-as.integer(pelidata[peli_ID==r_valittu_peli$peliID,Aloituspvm])
-   
-   sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now())),pelialkuPVM,as.integer(as.IDate(now())))
-   minuutit<-floor(sekunnit_yht/60)
-   sekunnit<-sekunnit_yht-60*minuutit
-   paste(minuutit,":",sekunnit)
-         
- })
- 
+
+
+#  observeEvent(input$button_aloitusaika,{
+#    print(paste("Observe altotusaika"))
+#     kaikkipelit<-data.table(luecsv("pelit.csv"))
+#     kaikkipelit[peli_ID==r_valittu_peli$peliID, ':=' (Aloitusaika=as.ITime(now()),Aloituspvm=as.IDate(now()))]
+#     print(kaikkipelit)
+#     kircsv(kaikkipelit,"pelit.csv")
+#     print("observe aloitusaika loppu")
+# })
+
+
+
  
 
   #seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
@@ -476,19 +522,33 @@ shinyServer(function(input, output,session) {
   #tee laurin pakka selectinput
   output$selectInputLauri <- renderUI({
     pakat<-divaridata()
+    keskenPeliData<-luecsv("temp_data_storage.csv")
+    #tarkista, onko peli kesken
+    print(keskenPeliData)
     laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
     laurin_idt<-pakat[Omistaja==1,Pakka]
     selectinputListLauri<-setNames(as.list(laurin_idt), c(laurin_pakkanimet))
-    selectInput("select_laurin_pakka","Laurin pakka",choices = selectinputListLauri)
+    if(nrow(keskenPeliData)>1) {
+      preSelect <- keskenPeliData[muuttuja=="Laurin_pakka",arvo]
+    } else {
+      preSelect <- 1
+    }
+    selectInput("select_laurin_pakka","Laurin pakka",choices = selectinputListLauri,selected=preSelect)
     
   })
   #tee martin pakka selectinput
   output$selectInputMartti <- renderUI({
     pakat<-divaridata()
+    keskenPeliData<-luecsv("temp_data_storage.csv")
     pakkanimet<-pakat[Omistaja==2,Nimi]
     martin_idt<-pakat[Omistaja==2,Pakka]
     selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
-    selectInput("select_martin_pakka","Martin pakka",choices = selectinputList)
+    if(nrow(keskenPeliData)>1) {
+      preSelect <- keskenPeliData[muuttuja=="Martin_pakka",arvo]
+    } else {
+      preSelect <- 1
+    }
+    selectInput("select_martin_pakka","Martin pakka",choices = selectinputList,selected=preSelect)
     
   })
   #divaricheckbox
@@ -742,7 +802,7 @@ output$saavutus_UI<-renderUI({
   ),rownames=FALSE)
 
   output$data_vs_taulukko<-renderDataTable({
-    
+    req(input$radio_bo_mode,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode)
     vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
     
     vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())
@@ -1139,7 +1199,6 @@ observe({
   zipAndSend()
   
   #varmaa vähän purkkaa, mutta päivitetään peliDataReact näin()
-
 
 })
 peliDataReact<-reactive({

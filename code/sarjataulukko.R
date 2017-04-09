@@ -4,7 +4,7 @@
 # peliData<-luecsv("pelit.csv")
 # input_bo_mode=FALSE
 # input_total=TRUE
-# input_pfiMA=TRUE
+# input_pfiMA=FALSE
 # input_divari=NA
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA

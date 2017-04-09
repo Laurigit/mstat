@@ -11,7 +11,7 @@ library(zoo)
 library(rpivotTable)
 library(rvest)
 #library(shinythemes)
-
+options(shiny.error=browser)
 options(max.print=1000000)
 options(DT.fillContainer = FALSE) 
 options(DT.autoHideNavigation = FALSE) 
@@ -49,12 +49,16 @@ luecsvalku<-function() {
   print(getwd())
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "temp_data_storage.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "turnaussaanto.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   #for(pakka in jsonit[,path]) {
   #  print(substring(pakka,2))
   drop_get("mstat/processed/json.zip",overwrite = TRUE,dtoken = token)
+
+
   unzip("json.zip")
+
   #}
   
   #tilastoasetukset
@@ -77,20 +81,23 @@ luecsv<-function(tiedostonimi) {
   return(tulos)
 }
 kircsv2<-function(datataulu,tiedostonimi) {
-  tulos <- write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE)
+  tulos <- write.table(x=datataulu,file=tiedostonimi,sep=";",dec=",",row.names = FALSE)
 }
 
 #pakkaa jsonit ja laheta
 zipAndSend<-function(){
-  
+
   tiedostot<- as.data.table(dir())
   
   tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
   json_files<-tiedostot[paate==".json",V1]
   if (length(json_files)>0){
-    zip("json.zip",files=json_files)
+    
+      zip("json.zip",files=json_files)
+    
     drop_upload("json.zip", "mstat/processed/", overwrite = TRUE,dtoken = token)
   }
+
 }
 
 paivitaSliderit<-function(input_peli_ID,session) {
@@ -161,7 +168,9 @@ list_to_string <- function(obj, listname) {
           sep = "", collapse = "\n")
   }
 }
+
+
+
 load("tilastoAsetukset.R")
 load("saavutusAsetukset.R")
-print(saavutusAsetukset)
 print("Ladattu")

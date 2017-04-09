@@ -31,12 +31,8 @@ uusi_peli<-dashboardBody(
               fluidRow(column(3,uiOutput("selectInputLauri")),column(3,h3(textOutput("text_aloittaja"))),column(3,uiOutput("selectInputMartti"))),
               fluidRow(column(3,actionButton("laurin_mulligan","Laurin Mulligan")),column(3,h3(textOutput("text_tilanne"))),column(3,actionButton("martin_mulligan","Martin Mulligan"))),
               
-              fluidRow(column(3, sliderInput("slider_laurin_mulligan", label = h4("Laurin mulliganit"), min = 0, 
-                                             max = 6, value = 0)),
-                       
-                       column(3,offset=3, sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
-                                                      max = 6, value = 0))
-              ),
+             uiOutput("mulliganiSliderit")
+             ,
               fluidRow(column(3,actionButton("lauri_voitti","Lauri voitti")),
                        column(3,textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
                                  font-size: 25px;
