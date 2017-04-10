@@ -1181,13 +1181,16 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
    })
    
 pfi_data<-reactive({
-
-  print(paste("TÄÄLLÄ PITÄIS TULOSTUA",input$file1))
-  
   pakat<-omaReadJson(".//",input$file1)
   pakkaUutuusProsentti(pakat)
 })  
     
+anyFileUpload<-observe({
+  req(input$anyfile)
+  print(input$anyfile)
+  drop_upload(input$anyfile$name, "mstat/csv/", overwrite = TRUE,dtoken = token)
+  
+})
 
 
 observe({

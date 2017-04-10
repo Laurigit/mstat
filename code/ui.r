@@ -141,16 +141,15 @@ uusi_peli<-dashboardBody(
     ),
     tabItem(tabName="pakkaupload",
             fluidPage(
-              sidebarLayout(
-                sidebarPanel(
-                  fileInput("file1", "Valitse pakkoja .json muodossa",multiple=TRUE,accept = c(".json"))),
-                mainPanel(
-                  tableOutput("contents")
-                )
-              ),verbatimTextOutput("text_validointi")
-            ),fluidRow(box(DT::dataTableOutput("pfi_taulukko"),title=("Nykypakkastatsit"),solidHeader = TRUE,status="primary",width=12))
+              
+                  fluidRow(column(3,fileInput("file1", "Valitse pakkoja .json muodossa",multiple=TRUE,accept = c(".json"))),
+                           column(3,offset=3,fileInput("anyfile", "lähetä mikä tahansa tiedosto",multiple=TRUE))),
+                  
+                fluidRow(tableOutput("contents")),
+                fluidRow(verbatimTextOutput("text_validointi")),
+                fluidRow(box(DT::dataTableOutput("pfi_taulukko"),title=("Nykypakkastatsit"),solidHeader = TRUE,status="primary",width=12))
             
-    ),
+    )),
     tabItem(tabName="tab_saavutusasetukset",
             fluidPage(
               fluidRow(column(2,radioButtons("radio_minMax_saavutus","Voittajan valinta",choices=c("min", "max"),selected = "max")),
