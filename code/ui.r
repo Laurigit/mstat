@@ -24,9 +24,9 @@ uusi_peli<-dashboardBody(
               shinyjs::useShinyjs(),
               
               fluidRow(column(3,actionButton("arvo_peli","Arvo peli")),
-                       column(3,actionButton("button_aloitusaika","Aloita!")),
+                       
                        #column(3,actionButton("tasuri_peli","Tasuripeli")),
-                       column(3,actionButton("jatka_ottelua","Jatka ottelua"))
+                       column(3,offset=3,actionButton("jatka_ottelua","Jatka ottelua"))
               ),
               fluidRow(column(3,uiOutput("selectInputLauri")),column(3,h3(textOutput("text_aloittaja"))),column(3,uiOutput("selectInputMartti"))),
               fluidRow(column(3,actionButton("laurin_mulligan","Laurin Mulligan")),column(3,h3(textOutput("text_tilanne"))),column(3,actionButton("martin_mulligan","Martin Mulligan"))),

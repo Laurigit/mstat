@@ -831,11 +831,21 @@ output$saavutus_UI<-renderUI({
     setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
     join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),includeCurrentTurnaus = FALSE)
+    #filtteröi mukaan vaan pelin pakat
+    lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
+    lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)+37),Lisakortit=NULL)]
+    #transponoi
     
+    lisakortit_trans<-data.table(dcast(lisakortit_pelipakat,Tilasto+selite~Nimi,value.var="Kortti_lkm"))
+    lisakortit_final<-lisakortit_trans[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
+
     append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
     #vaihda sarakejärjestys
-
     result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
+    #lisää vielä lisäkorttitilasto
+    result_table<-rbind(result_table,lisakortit_final)
+
     return(result_table)  
      
   },    options = list(
