@@ -189,7 +189,7 @@ sidebar <- dashboardSidebar(
               menuItem("Lataa pakkoja", icon=icon("cloud-upload") ,tabName = "pakkaupload"),
               menuItem("Saavutusasetukset",icon=icon("key"), tabName= "tab_saavutusasetukset"),
               radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
-              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = TRUE,inline=T),
+              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
               numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5)
