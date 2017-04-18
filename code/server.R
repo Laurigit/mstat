@@ -274,7 +274,6 @@ output$peliKesto <- renderText({
 
    invalidateLater(1000, session)
   tempData<-luecsv("temp_data_storage.csv")
-  print(tempData)
   if (nrow(tempData)>4) {
   pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
   pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
@@ -783,7 +782,7 @@ output$saavutus_UI<-renderUI({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
 
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())$data
 
     #join
 
@@ -831,7 +830,9 @@ output$saavutus_UI<-renderUI({
     setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
     join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),includeCurrentTurnaus = FALSE)
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())$current_lisakortit
+    print(paste("Lisäkortit",lisakortit))
+    print(lisakortit$current_lisakortit)
     #filtteröi mukaan vaan pelin pakat
     lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
     lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)+37),Lisakortit=NULL)]
