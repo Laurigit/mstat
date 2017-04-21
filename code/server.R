@@ -98,7 +98,7 @@ shinyServer(function(input, output,session) {
       #print(vanhatpelit)
       #lisää uudet
       kaikkipelit<-rbind(vanhatpelit,kaikkipelit)
-      print(kaikkipelit)
+     
       kircsv(kaikkipelit,"pelit.csv")
     }
       #päivitä nappulastatukset
@@ -220,7 +220,7 @@ shinyServer(function(input, output,session) {
        #laske otteluiden voittoprosentti
        kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
        kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
-       print(kaikkipelit)
+      
        #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
        pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
        pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
@@ -636,7 +636,7 @@ output$sarjataulukkovalitsin <- renderUI({
     sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
     divarit<-sarjadata$divarit
     pelaajat<-sarjadata$pelaajastats
-    print(pelaajat)
+    
     kokonaistilanne<-pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
     print(kokonaistilanne)
     tilanneteksti <-paste0(kokonaistilanne[,Voitot_Lauri],"-",kokonaistilanne[,Voitot_Martti])
@@ -862,8 +862,7 @@ output$saavutus_UI<-renderUI({
     join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
     lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())$current_lisakortit
-    print(paste("Lisäkortit",lisakortit))
-    print(lisakortit$current_lisakortit)
+
     #filtteröi mukaan vaan pelin pakat
     lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
     lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)+37),Lisakortit=NULL)]
@@ -1327,7 +1326,44 @@ output$text_validointi <- renderText(({
   paste(validointiteksti$teksti)
   }))
   
+
+#osuus, joka katsoo mitä UI-palikkaa on viimeksi muokattu
+
+
+values <- reactiveValues(
+  lastUpdated = NULL
+)
+
+observe({
+  
+  lapply(names(input), function(x) {
+    observe({
+      input[[x]]
+      values$lastUpdated <- x
+    })
+  })
+})
+
+observeEvent(input$action_add,{
+  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
+    steppi <- 0.1
+  } else {
+    steppi <- 1
+  }
+  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]+steppi)
+})
+
+observeEvent(input$action_reduce,{
+  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
+    steppi <- 0.1
+  } else {
+    steppi <- 1
+  }
+  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]-steppi)
 })
 
 
 
+
+
+})
