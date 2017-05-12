@@ -1,4 +1,4 @@
-folder<-"C:/Users/Lauri/Documents/R/mstat2/code/omawd/"
+
 omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_data reactive why
   pakkalista<-    list.files(folder)
   tulos<-NULL

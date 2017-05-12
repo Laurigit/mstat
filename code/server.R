@@ -15,48 +15,31 @@ shinyServer(function(input, output,session) {
   #luo uusi turnaus
   observeEvent(input$luo_peleja,{
     print("luo pejelä alku")
-
-    #divarit_dt<-luecsv("divari.csv")
+   
     divarit_dt<-divaridata()
-    kaikkiDivarit<-divarit_dt[order(Divari)][Picked==1,.N,by=Divari][,N:=NULL]
+    
+    pelit_list <- divarit_dt[Picked==1,.(pakkalista=list(Pakka)),by=.(Divari,Omistaja)]
+    pelit<-pelit_list[,expand.grid(pakkalista),by=Divari]
+    setnames(pelit,c("Var1","Var2"),c("Laurin_pakka","Martin_pakka"))
+    
+    
+    #lue edellinen turnausnumero
+    vanhatpelit <-luecsv("pelit.csv")
+    #eti edellinen max ottelu_id
+    ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
+    if(!is.finite(ed_ottelu_id_max)) {ed_ottelu_id_max<-0}
     #tarvitaan vain, kun ajetaan manuaalisesti eka kerta
     #kierroksia<-1
     #BO_mode<-FALSE
     #otteluita<-2
     #montako peliä on yhdessä ottelussa
-    #TurnausNo<-1
-    vanhatpelit <-luecsv("pelit.csv")
-    turnaus_no<-max(vanhatpelit[,TurnausNo])+1
-    for(divariKierros in kaikkiDivarit[,Divari]) {
-    otteluita<-input[[paste0("numeric_ottelut",divariKierros)]]
-    #otteluita<-5-divariKierros
-     # print(paste("otteluita",otteluita))
-
+    otteluita<-input$numeric_ottelut
     #montako ottelua on turnauksessa pakkojen välillä
-    kierroksia <- input[[paste0("numeric_rounds",divariKierros)]]
-    #kierroksia<-divariKierros
-    BO_mode<-as.numeric(input[[paste0("checkbox_BO_mode",divariKierros)]])
-    #BO_mode<-TRUE
-    # otteluita <-1
-    # kierroksia <-2
-    # BO_mode<-FALSE
-    divariKierrosData<-divarit_dt[Divari==divariKierros]
-
-    pelit_list <- divariKierrosData[Picked==1,.(pakkalista=list(Pakka)),by=.(Divari,Omistaja)]
-    pelit<-pelit_list[,expand.grid(pakkalista),by=Divari]
-    setnames(pelit,c("Var1","Var2"),c("Laurin_pakka","Martin_pakka"))
-
-    #lue edellinen turnausnumero
-    vanhatpelit <-luecsv("pelit.csv")
-    
-    #eti edellinen max ottelu_id
-    ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
-    if(!is.finite(ed_ottelu_id_max)) {ed_ottelu_id_max<-0}
-
-
+    kierroksia <- input$numeric_rounds
+    BO_mode<-as.numeric(input$checkbox_BO_mode)
     pelit[,Ottelu_ID:=.I+ed_ottelu_id_max]
     kaikki_ottelut<-NULL
-
+    
     #lisää ottelut
     for (i in 1:otteluita){
       pelikierros <- pelit[,.(Divari,Laurin_pakka,Martin_pakka,Ottelu_no=i,Ottelu_ID,BO_mode)]
@@ -64,48 +47,49 @@ shinyServer(function(input, output,session) {
     }
     #motanko ottelua per kierros?
     ottelua_per_kierros<-nrow(kaikki_ottelut)/otteluita
-
+    
     #lisää kierrokset
     kaikkipelit<-NULL
     for (i in 1:kierroksia){
       ottelukierros <- kaikki_ottelut[,.(Divari,Laurin_pakka,Martin_pakka,Kierros=i,Ottelu_ID=(Ottelu_ID+(i-1)*ottelua_per_kierros),Ottelu_no,BO_mode)]
       kaikkipelit<-rbind(kaikkipelit,ottelukierros)
     }
-
       
+      #TurnausNo<-1
+      turnaus_no<-max(vanhatpelit[,TurnausNo])+1
       if(!is.finite(turnaus_no)) {turnaus_no<-1}
       kaikkipelit[,TurnausNo:=turnaus_no]
-
+      
       #edellinen max peli_iD
       ed_peli_id<-max(vanhatpelit[,peli_ID])
       if(!is.finite(ed_peli_id)) {ed_peli_id<-0}
-
+      
       #aloittaja
-
+      
       kaikkipelit[, idl := 1:.N, by = Laurin_pakka]
       kaikkipelit[, idm := 1:.N, by = Martin_pakka]
       kaikkipelit[,Aloittaja:=(idl+idm+TurnausNo+Kierros+Divari+Ottelu_no)%%2]
-
+      
       kaikkipelit[,':='(peli_ID=.I+ed_peli_id,idl=NULL,idm=NULL,Voittaja=NA,Aloitusaika=NA,Aloituspvm=NA,Lopetusaika=NA,Lopetuspvm=NA,Laurin_mulligan=NA,Martin_mulligan=NA,Laurin_arvosana=NA,Martin_arvosana=NA,Laurin_humala=NA,Martin_humala=NA,Laurin_landit=NA,Martin_landit=NA,Vuoroarvio=NA,Laurin_kasikortit=NA,Martin_kasikortit=NA,Lauri_voitti=NA,Martti_voitti=NA,Laurin_lifet=NA,Martin_lifet=NA)]
       #arvosana: 1= pelasin hyvin, en keksi parannettavaa. 0= Hieman löysäilyä. -1= merkittävää hölmöilyä.
       #str(kaikkipelit)
 
       #tee tyhja taulu
       empty_dt<-data.table(kaikkipelit[1==0])
-
+      
       vanhatpelit<-rbind(empty_dt,vanhatpelit)
-      #kircsv(vanhatpelit,"pelit.csv")
+  
       #print(vanhatpelit)
       #lisää uudet
       kaikkipelit<-rbind(vanhatpelit,kaikkipelit)
-     
+      print(kaikkipelit)
       kircsv(kaikkipelit,"pelit.csv")
-    }
+      
       #päivitä nappulastatukset
 
         shinyjs::disable("luo_peleja")
         shinyjs::enable("arvo_peli")
-
+        
         print("luo pejelä loppu")
    
   })
@@ -121,7 +105,7 @@ shinyServer(function(input, output,session) {
     arvottu_ottelu_ID<-pelaamattomat[arpa]
     #eti ottelun pienin pelaamaton peli
    
-    arvottu_peli_id <- kaikkipelit[Ottelu_ID==arvottu_ottelu_ID & is.na(Voittaja) , .SD[which.min(Ottelu_no)],.SDcols=c("peli_ID")][,peli_ID]
+    arvottu_peli_id <- kaikkipelit[Ottelu_ID==arvottu_ottelu_ID & is.na(Voittaja) , .SD[which.min(Kierros)],.SDcols=c("peli_ID")][,peli_ID]
     paivitaSliderit(arvottu_peli_id,session)
 
     #print(pfi_data())
@@ -220,7 +204,7 @@ shinyServer(function(input, output,session) {
        #laske otteluiden voittoprosentti
        kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
        kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
-      
+       print(kaikkipelit)
        #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
        pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
        pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
@@ -264,7 +248,7 @@ shinyServer(function(input, output,session) {
 
   
 observe({
-  req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
+  req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan)
   print(paste("Observe altotusaika"))
   tempData<-luecsv("temp_data_storage.csv")
   if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
@@ -290,6 +274,7 @@ output$peliKesto <- renderText({
 
    invalidateLater(1000, session)
   tempData<-luecsv("temp_data_storage.csv")
+  print(tempData)
   if (nrow(tempData)>4) {
   pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
   pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
@@ -576,21 +561,6 @@ output$mulliganiSliderit<-renderUI({
     })
   })
   
-  output$peliAsetuksetUI<-renderUI({
-    divarit<-divaridata()
-    divarit<-divarit[Picked==1,.N,by=.(Divari)][order(Divari)]
-    
-    lapply(divarit[,Divari], function(i) {
-      fluidRow(
-      #column(3,textOutput(paste0("textPeliasetusDivari",i),paste0("Divari: ",i)))
-      column(3,checkboxInput(paste0("checkbox_BO_mode",i),paste0("Best-of-mode päällä. Divari: ",i))),
-      column(5,numericInput(paste0("numeric_rounds",i),paste0("Montako runkosarjakierrosta. Divari: ",i), value = 1)),
-      column(4,numericInput(paste0("numeric_ottelut",i),paste0("Montako pelia per ottelu. Divari: ",i), value = 1))
-      )
-    })
-    
-  })
-  
   #divariNumericinput
   output$combUI<-renderUI({
     divarit<-divaridata()
@@ -636,7 +606,7 @@ output$sarjataulukkovalitsin <- renderUI({
     sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
     divarit<-sarjadata$divarit
     pelaajat<-sarjadata$pelaajastats
-    
+    print(pelaajat)
     kokonaistilanne<-pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
     print(kokonaistilanne)
     tilanneteksti <-paste0(kokonaistilanne[,Voitot_Lauri],"-",kokonaistilanne[,Voitot_Martti])
@@ -813,7 +783,7 @@ output$saavutus_UI<-renderUI({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
 
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),FALSE,pfi_data())$data
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())
 
     #join
 
@@ -861,22 +831,11 @@ output$saavutus_UI<-renderUI({
     setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
     join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),TRUE,pfi_data())$current_lisakortit
-
-    #filtteröi mukaan vaan pelin pakat
-    lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
-    lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)+37),Lisakortit=NULL)]
-    #transponoi
     
-    lisakortit_trans<-data.table(dcast(lisakortit_pelipakat,Tilasto+selite~Nimi,value.var="Kortti_lkm"))
-    lisakortit_final<-lisakortit_trans[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
-
     append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
     #vaihda sarakejärjestys
-    result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
-    #lisää vielä lisäkorttitilasto
-    result_table<-rbind(result_table,lisakortit_final)
 
+    result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
     return(result_table)  
      
   },    options = list(
@@ -1222,22 +1181,13 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
    })
    
 pfi_data<-reactive({
-  print("TPALAT PAKAT")
-  print("TPALAT PAKAT")
+
+  print(paste("TÄÄLLÄ PITÄIS TULOSTUA",input$file1))
+  
   pakat<-omaReadJson(".//",input$file1)
-  print("TPALAT PAKAT")
- # print(pakat)
-  tulos<-pakkaUutuusProsentti(pakat)
-  print(tulos)
-  tulos
+  pakkaUutuusProsentti(pakat)
 })  
     
-anyFileUpload<-observe({
-  req(input$anyfile)
-  print(input$anyfile)
-  drop_upload(input$anyfile$name, "mstat/csv/", overwrite = TRUE,dtoken = token)
-  
-})
 
 
 observe({
@@ -1332,44 +1282,7 @@ output$text_validointi <- renderText(({
   paste(validointiteksti$teksti)
   }))
   
-
-#osuus, joka katsoo mitä UI-palikkaa on viimeksi muokattu
-
-
-values <- reactiveValues(
-  lastUpdated = NULL
-)
-
-observe({
-  
-  lapply(names(input), function(x) {
-    observe({
-      input[[x]]
-      values$lastUpdated <- x
-    })
-  })
-})
-
-observeEvent(input$action_add,{
-  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
-    steppi <- 0.1
-  } else {
-    steppi <- 1
-  }
-  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]+steppi)
-})
-
-observeEvent(input$action_reduce,{
-  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
-    steppi <- 0.1
-  } else {
-    steppi <- 1
-  }
-  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]-steppi)
 })
 
 
 
-
-
-})
