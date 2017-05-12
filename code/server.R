@@ -813,7 +813,7 @@ output$saavutus_UI<-renderUI({
 
     pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
 
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())$data
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),FALSE,pfi_data())$data
 
     #join
 
@@ -861,7 +861,7 @@ output$saavutus_UI<-renderUI({
     setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
     join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
     
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact())$current_lisakortit
+    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),TRUE,pfi_data())$current_lisakortit
 
     #filtteröi mukaan vaan pelin pakat
     lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
@@ -1222,8 +1222,14 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
    })
    
 pfi_data<-reactive({
+  print("TPALAT PAKAT")
+  print("TPALAT PAKAT")
   pakat<-omaReadJson(".//",input$file1)
-  pakkaUutuusProsentti(pakat)
+  print("TPALAT PAKAT")
+ # print(pakat)
+  tulos<-pakkaUutuusProsentti(pakat)
+  print(tulos)
+  tulos
 })  
     
 anyFileUpload<-observe({
