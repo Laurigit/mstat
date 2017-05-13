@@ -33,17 +33,21 @@ uusi_peli<-dashboardBody(
               
              uiOutput("mulliganiSliderit")
              ,
-              fluidRow(column(3,actionButton("lauri_voitti","Lauri voitti")),
-                       column(3,textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
+              fluidRow(column(2, offset = 1, actionButton("lauri_voitti","Lauri voitti")),
+                       column(1, actionButton("laurin_virhe_uusipeli","Laurin virhe")
+                       ),
+                       column(1,textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
                                  font-size: 25px;
-                                                                                 font-style: bold;
-                                                                                 }"
+                                 font-style: bold;
+                                 }"
                          )
                        )
                        ),
+                       column(1, actionButton("martin_virhe_uusipeli","Martin virhe")
+                       ),
                        
                        
-                       column(3,actionButton("martti_voitti","Martti voitti"))),
+                       column(2, offset = 1, actionButton("martti_voitti","Martti voitti"))),
               
               fluidRow(column(3,(textOutput("peli_id")))),
               
