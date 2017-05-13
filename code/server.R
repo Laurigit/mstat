@@ -129,9 +129,17 @@ shinyServer(function(input, output,session) {
       }
       print("jatka ottelua loppu")
     })
-   #seuraa selectinputlistoja
+   
+    #nollaa temp data
+    observeEvent(input$nollaa_temp_data, {
+      tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
+      
+      kircsv(tyhjataulu,"temp_data_storage.csv")
+      
+    })
     
-        #tallennapeli
+    
+    #tallennapeli
   observeEvent(input$tallenna_tulos,{
     print("tallenna tulos alku")
       tempData<-luecsv("temp_data_storage.csv")
@@ -248,10 +256,15 @@ shinyServer(function(input, output,session) {
 
   
 observe({
-  req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan)
-  print(paste("Observe altotusaika"))
+  print(paste(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos))
+  print(!is.null(input$select_laurin_pakka ))
+  if(!is.null(input$select_laurin_pakka )) {
+  #req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
+  print(paste("Observe altotusaika!!!!!!!!!!!"))
   tempData<-luecsv("temp_data_storage.csv")
+  print(tempData)
   if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
+    print("peli ei ollut kesken")
   alotusaika<-as.ITime(now())
     alotuspvm<-as.IDate(now())
     laurin_pakka<-input$select_laurin_pakka
@@ -265,8 +278,10 @@ observe({
     tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
     kircsv2(tempData,"temp_data_storage.csv")
   } else {
+    print("peli ei ollut kesken")
     tempData[muuttuja=="kesken",arvo:=FALSE]
     kircsv2(tempData,"temp_data_storage.csv")
+  }
   }
 })
 
@@ -274,7 +289,6 @@ output$peliKesto <- renderText({
 
    invalidateLater(1000, session)
   tempData<-luecsv("temp_data_storage.csv")
-  print(tempData)
   if (nrow(tempData)>4) {
   pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
   pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
@@ -282,6 +296,13 @@ output$peliKesto <- renderText({
   minuutit<-floor(sekunnit_yht/60)
   sekunnit<-sekunnit_yht-60*minuutit
   #print(paste("sekunnit",sekunnit,"lahetetty:",lahetaTempData$lahetetty,"laheta:",lahetaTempData$laheta))
+  if(is.na(tempData[muuttuja=="laheta",arvo])) {
+    print("muuttuja oli NA")
+    tempData[,arvo:=as.character(arvo)]
+    tempData[muuttuja=="laheta",arvo:="TRUE"]
+    tempData[muuttuja=="kesken",arvo:="FALSE"]
+  }
+  
   if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
     tempData[muuttuja=="laheta",arvo:="FALSE"]
     tempData[muuttuja=="kesken",arvo:="TRUE"]
