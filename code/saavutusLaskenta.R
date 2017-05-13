@@ -16,7 +16,7 @@
 # }
 # saavutusTaulu
 # 
-# tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
+#  tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_data){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
   minVaiMax<-saavutusKierrosAsetus[,minVaiMax]
@@ -106,20 +106,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
   #omistaja kasittely
   kuvaus[,color:=ifelse(Omistaja=="Martti","yellow","purple")]
   
-  #konvertoi resultin esitysmuoto
-  convEsitys<-function(Esitysmuoto,inputNumero){
-    if(Esitysmuoto=="%") {
-      tulos <-paste0(round(inputNumero,2)*100,"%")
-    } else if (Esitysmuoto=="Decimal") {
-      tulos<-round(inputNumero,2)
-    } else if(Esitysmuoto=="€") {
-      tulos<-paste(round(inputNumero,0),"€")
-    } else if (Esitysmuoto=="Integer") {
-      tulos<-round(inputNumero,0)
-    }
-    return((tulos))
-   
-  }
+
   #korjaa esitysmuoto
   kuvaus[,':=' (txtResult=convEsitys(Esitysmuoto,result),txtKa=convEsitys(Esitysmuoto,Keskiarvo))]
   
@@ -139,3 +126,17 @@ return(kuvaus)
 }
 }
 
+#konvertoi resultin esitysmuoto
+convEsitys<-function(Esitysmuoto,inputNumero){
+  if(Esitysmuoto=="%") {
+    tulos <-paste0(round(inputNumero,2)*100,"%")
+  } else if (Esitysmuoto=="Decimal") {
+    tulos<-round(inputNumero,2)
+  } else if(Esitysmuoto=="e") {
+    tulos<-paste(round(inputNumero,0),"e")
+  } else if (Esitysmuoto=="Integer") {
+    tulos<-round(inputNumero,0)
+  }
+  return((tulos))
+  
+}

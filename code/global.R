@@ -50,6 +50,8 @@ luecsvalku<-function() {
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "temp_data_storage.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
+  print("temp data storage")
+  print(tulos)
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "turnaussaanto.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   #for(pakka in jsonit[,path]) {
