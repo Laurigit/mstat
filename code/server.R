@@ -322,8 +322,10 @@ output$mulliganiSliderit<-renderUI({
   
   fluidRow(column(3, sliderInput("slider_laurin_mulligan", label = h4("Laurin mulliganit"), min = 0, 
                                  max = 6, value =laurin_pre_mulligan)),
+
            
-           column(3,offset=3, sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
+           
+           column(3, offset=3, sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
                                           max = 6, value = martin_pre_mulligan))
   )
 })
@@ -436,8 +438,18 @@ output$mulliganiSliderit<-renderUI({
     updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
     print("laurin virhe loppu")
   })
+  observeEvent(input$laurin_virhe_uusipeli,{
+    print("laurin virhe alku")
+    updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
+    print("laurin virhe loppu")
+  })
   
   observeEvent(input$martin_virhe,{
+    print("martin virhe alku")
+    updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
+    print("martin virhe loppu")
+  })
+  observeEvent(input$martin_virhe_uusipeli,{
     print("martin virhe alku")
     updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
     print("martin virhe loppu")
