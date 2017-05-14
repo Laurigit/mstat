@@ -272,7 +272,7 @@ shinyServer(function(input, output,session) {
 
   
 observe({
-  print(paste(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos))
+  print(paste(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos,input$nollaa_aika))
   print(!is.null(input$select_laurin_pakka ))
   if(!is.null(input$select_laurin_pakka )) {
   #req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
