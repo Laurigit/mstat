@@ -169,8 +169,9 @@ if(input_pfiMA==TRUE) {
   
   
   #perakkaiset voitot
-  perakkaiset_lauri<-pelidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Laurin_pakka]
-  perakkaiset_martti<-pelidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Martin_pakka]
+  putkidata<-pelidata[order(Aloituspvm,Aloitusaika)]
+  perakkaiset_lauri<-putkidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Laurin_pakka]
+  perakkaiset_martti<-putkidata[!is.na(Voittaja),.(sequence(rle(as.character(Voittaja))$lengths),Voittaja),by=Martin_pakka]
   pl<-perakkaiset_lauri[,.(Putki=ifelse(Voittaja==0,V1,ifelse(Voittaja==1,-V1,0)),Pakka=Laurin_pakka,Omistaja=1)]
   pm<-perakkaiset_martti[,.(Putki=ifelse(Voittaja==1,V1,ifelse(Voittaja==0,-V1,0)),Pakka=Martin_pakka,Omistaja=2)]
   

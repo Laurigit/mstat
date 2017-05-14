@@ -162,8 +162,8 @@ shinyServer(function(input, output,session) {
      uusrivi<- c(
        Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
        Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
-       Lopetusaika=as.ITime(now()),
-       Lopetuspvm=as.IDate(now()),
+       Lopetusaika=as.ITime(now(tz="Europe/Helsinki")),
+       Lopetuspvm=as.IDate(now(tz="Europe/Helsinki")),
        Voittaja=as.numeric(input$radio_voittaja),
        Lauri_voitti=(1-as.numeric(input$radio_voittaja)),
        Martti_voitti=as.numeric(input$radio_voittaja),
@@ -281,8 +281,8 @@ observe({
   print(tempData)
   if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
     print("peli ei ollut kesken")
-  alotusaika<-as.ITime(now())
-    alotuspvm<-as.IDate(now())
+  alotusaika<-as.ITime(now(tz="Europe/Helsinki"))
+    alotuspvm<-as.IDate(now(tz="Europe/Helsinki"))
     laurin_pakka<-input$select_laurin_pakka
     martin_pakka<-input$select_martin_pakka
     laurin_mull<-input$slider_laurin_mulligan
@@ -309,7 +309,7 @@ output$peliKesto <- renderText({
   if (nrow(tempData)>4) {
   pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
   pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
-  sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now())),pelialkuPVM,as.integer(as.IDate(now())))
+  sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now(tz="Europe/Helsinki"))),pelialkuPVM,as.integer(as.IDate(now(tz="Europe/Helsinki"))))
   minuutit<-floor(sekunnit_yht/60)
   sekunnit<-sekunnit_yht-60*minuutit
   #print(paste("sekunnit",sekunnit,"lahetetty:",lahetaTempData$lahetetty,"laheta:",lahetaTempData$laheta))
@@ -359,7 +359,7 @@ output$mulliganiSliderit<-renderUI({
 #  observeEvent(input$button_aloitusaika,{
 #    print(paste("Observe altotusaika"))
 #     kaikkipelit<-data.table(luecsv("pelit.csv"))
-#     kaikkipelit[peli_ID==r_valittu_peli$peliID, ':=' (Aloitusaika=as.ITime(now()),Aloituspvm=as.IDate(now()))]
+#     kaikkipelit[peli_ID==r_valittu_peli$peliID, ':=' (Aloitusaika=as.ITime(now(tz="Europe/Helsinki")),Aloituspvm=as.IDate(now(tz="Europe/Helsinki")))]
 #     print(kaikkipelit)
 #     kircsv(kaikkipelit,"pelit.csv")
 #     print("observe aloitusaika loppu")
