@@ -4,7 +4,7 @@
 # inputPeliData<-luecsv("pelit.csv")
 # inputTurnausSaanto<-luecsv("turnaussaanto.csv")
 
-funcLisakortit<-function(inputPeliData,inputDivariData,inputTurnausSaanto,includeCurrentTurnaus=TRUE){
+funcLisakortit<-function(inputPeliData,inputDivariData,inputTurnausSaanto,includeCurrentTurnaus=TRUE,pfi_data){
   
 turnaussaanto<- inputTurnausSaanto
 #levita saannot

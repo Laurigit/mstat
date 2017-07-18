@@ -14,7 +14,13 @@ uusi_peli<-dashboardBody(
            height:740px;
            }
            ")
-      )
+      ),
+    
+    tags$style(type = "text/css", "
+      .irs-slider {width: 30px; height: 30px; top: 22px;}
+    ")
+    
+    
       ),
   
   tabItems(
@@ -26,6 +32,7 @@ uusi_peli<-dashboardBody(
               fluidRow(column(3,actionButton("arvo_peli","Arvo peli")),
                        
                        #column(3,actionButton("tasuri_peli","Tasuripeli")),
+                       column(3,actionButton("nollaa_aika","Nollaa aika")),
                        column(3,offset=3,actionButton("jatka_ottelua","Jatka ottelua"))
               ),
               fluidRow(column(3,uiOutput("selectInputLauri")),column(3,h3(textOutput("text_aloittaja"))),column(3,uiOutput("selectInputMartti"))),
@@ -33,17 +40,21 @@ uusi_peli<-dashboardBody(
               
              uiOutput("mulliganiSliderit")
              ,
-              fluidRow(column(3,actionButton("lauri_voitti","Lauri voitti")),
-                       column(3,textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
+              fluidRow(column(2, actionButton("lauri_voitti","Lauri voitti")),
+                       column(2, actionButton("laurin_virhe_uusipeli","Laurin virhe")
+                       ),
+                       column(2, textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
                                  font-size: 25px;
-                                                                                 font-style: bold;
-                                                                                 }"
+                                 font-style: bold;
+                                 }"
                          )
                        )
                        ),
+                       column(2, actionButton("martin_virhe_uusipeli","Martin virhe")
+                       ),
                        
                        
-                       column(3,actionButton("martti_voitti","Martti voitti"))),
+                       column(1, actionButton("martti_voitti","Martti voitti"))),
               
               fluidRow(column(3,(textOutput("peli_id")))),
               
@@ -53,29 +64,30 @@ uusi_peli<-dashboardBody(
     ,
     tabItem(tabName="tab_tallenna_peli",
             fluidPage(
-              fluidRow(column(3,sliderInput("slider_laurin_virhe",label=h4("Laurin arvosana"),min=-1,max=1,value=1),actionButton("laurin_virhe","Laurin virhe")),
-                       column(3,      radioButtons("radio_voittaja", label = h3("Voittaja"),
+              fluidRow(column(4,sliderInput("slider_laurin_virhe",label=h4("Laurin arvosana"),min=-1,max=1,value=1),actionButton("laurin_virhe","Laurin virhe")),
+                       column(4,      radioButtons("radio_voittaja", label = h3("Voittaja"),
                                                    choices = list("Lauri voitti" = 0, "Martti voitti" = 1), 
                                                    selected = 1)  
                               
                        ),
-                       column(3,sliderInput("slider_martin_virhe",label=h4("Martin arvosana"),min=-1,max=1,value=1),actionButton("martin_virhe","Martin virhe"))
+                       column(4,sliderInput("slider_martin_virhe",label=h4("Martin arvosana"),min=-1,max=1,value=1),actionButton("martin_virhe","Martin virhe"))
               ),
-              fluidRow(column(3,sliderInput("slider_laurin_landit",label=h4("Lauri landit"),min=0,max=10,value=0)),
-                       column(3,sliderInput("slider_vuoroarvio",label=h4("Vuoroarvaus"),min=0,max=10,value=0)),
-                       column(3,sliderInput("slider_martin_landit",label=h4("Martin landit"),min=0,max=10,value=0))
+              fluidRow(column(4,sliderInput("slider_laurin_landit",label=h4("Lauri landit"),min=0,max=10,value=0)),
+                       column(4,sliderInput("slider_vuoroarvio",label=h4("Vuoroarvaus"),min=0,max=10,value=0)),
+                       column(4,sliderInput("slider_martin_landit",label=h4("Martin landit"),min=0,max=10,value=0))
               ),
-              fluidRow(column(3,sliderInput("slider_laurin_kasikortit",label=h4("Laurin kasikortit"),min=-1,max=7,value=-1)),
-                       column(3),
-                       column(3, sliderInput("slider_martin_kasikorit",label=h4("Martin kasikortit"),min=-1,max=7,value=-1))),
-              fluidRow(column(3,sliderInput("slider_laurin_lifet",label=h4("Laurin lifet"),min=0,max=21,value=0)),
-                       column(3),
-                       column(3, sliderInput("slider_martin_lifet",label=h4("Martin lifet"),min=0,max=21,value=0))),
-              fluidRow(column(3,sliderInput("slider_laurin_humala",label=h4("Laurin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1)),
-                       column(3),
-                       column(3,sliderInput("slider_martin_humala",label=h4("Martin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1))),
-              fluidRow(actionButton("tallenna_tulos","Tallenna tulos"))
-              
+              fluidRow(column(6,sliderInput("slider_laurin_kasikortit",label=h4("Laurin kasikortit"),min=-1,max=7,value=-1)),
+                       
+                       column(6, sliderInput("slider_martin_kasikorit",label=h4("Martin kasikortit"),min=-1,max=7,value=-1))),
+              fluidRow(column(6,sliderInput("slider_laurin_lifet",label=h4("Laurin lifet"),min=0,max=21,value=0)),
+                       
+                       column(6, sliderInput("slider_martin_lifet",label=h4("Martin lifet"),min=0,max=21,value=0))),
+              fluidRow(column(6,sliderInput("slider_laurin_humala",label=h4("Laurin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1)),
+                       
+                       column(6,sliderInput("slider_martin_humala",label=h4("Martin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1))),
+              fluidRow(column(6,actionButton("tallenna_tulos","Tallenna tulos")),
+                       column(3,actionButton("action_reduce",label="",icon("arrow-left"),width='100%')),
+                       column(3,actionButton("action_add",label="",icon("arrow-right"),width='100%')))
               
             )
     ),
@@ -155,7 +167,7 @@ uusi_peli<-dashboardBody(
             fluidPage(
               fluidRow(column(2,radioButtons("radio_minMax_saavutus","Voittajan valinta",choices=c("min", "max"),selected = "max")),
                        column(2,radioButtons("radio_minMax_saavutus_rivi","Rivitavoite",choices=c("min", "max"),selected = "max")),
-                       column(3,radioButtons("radio_muotoilu","Numeron muotoilu",choices = c("Decimal","Integer","%","€"),selected="%")),
+                       column(3,radioButtons("radio_muotoilu","Numeron muotoilu",choices = c("Decimal","Integer","%","e"),selected="%")),
                        column(3, actionButton("paivita_saavutus","Paivita saavutus"),
                               actionButton("poista_saavutusAsetus","Poista saavutus")),
                        column(3,textInput("txt_palkinto","Palkinnon nimi"),
