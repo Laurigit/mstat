@@ -29,11 +29,11 @@ uusi_peli<-dashboardBody(
               #theme = shinytheme("yeti"),
               shinyjs::useShinyjs(),
               
-              fluidRow(column(3,actionButton("arvo_peli","Arvo peli")),
+              fluidRow(column(2,actionButton("arvo_peli","Arvo peli")),
                        
-                       #column(3,actionButton("tasuri_peli","Tasuripeli")),
+                       column(4,uiOutput("divariRadio_out")),
                        column(3,actionButton("nollaa_aika","Nollaa aika")),
-                       column(3,offset=3,actionButton("jatka_ottelua","Jatka ottelua"))
+                       column(3,actionButton("jatka_ottelua","Jatka ottelua"))
               ),
               fluidRow(column(3,uiOutput("selectInputLauri")),column(3,h3(textOutput("text_aloittaja"))),column(3,uiOutput("selectInputMartti"))),
               fluidRow(column(3,actionButton("laurin_mulligan","Laurin Mulligan")),column(3,h3(textOutput("text_tilanne"))),column(3,actionButton("martin_mulligan","Martin Mulligan"))),
@@ -204,6 +204,7 @@ sidebar <- dashboardSidebar(
               radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
               radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+              radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
               numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5)
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))

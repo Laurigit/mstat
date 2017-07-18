@@ -116,11 +116,18 @@ shinyServer(function(input, output,session) {
   observeEvent(input$arvo_peli,{
     print("arvo peli alku")
     kaikkipelit<-peliDataReact()
-    pelaamattomat <- unique(kaikkipelit[is.na(Voittaja),Ottelu_ID])
+    #kato onko divarifiltteri päällä
+    if(input$divariRadio!="Ei väliä") {
+      pelaamattomat <- unique(kaikkipelit[is.na(Voittaja) & Divari==input$divariRadio,Ottelu_ID])  
+    } else {
+      pelaamattomat <- unique(kaikkipelit[is.na(Voittaja),Ottelu_ID])
+    }
+
     arpa<-ceiling(runif(1,0,length(pelaamattomat)))
     arvottu_ottelu_ID<-pelaamattomat[arpa]
     #eti ottelun pienin pelaamaton peli
    
+    
     arvottu_peli_id <- kaikkipelit[Ottelu_ID==arvottu_ottelu_ID & is.na(Voittaja) , .SD[which.min(Ottelu_no)],.SDcols=c("peli_ID")][,peli_ID]
     paivitaSliderit(arvottu_peli_id,session)
 
@@ -721,6 +728,12 @@ output$sarjataulukkovalitsin <- renderUI({
 
   })
 
+  
+  output$divariRadio_out <- renderUI({
+    divarit_ilman_peleja <- peliDataReact()[is.na(Voittaja),.N,by=Divari]
+    radioButtons("divariRadio", "Divari",
+                 c("Ei väliä",divarit_ilman_peleja[,Divari]),inline=TRUE)
+  })
 
   
 saavutusTaulu<-reactive({
@@ -1289,7 +1302,12 @@ observe({
 peliDataReact<-reactive({
   print("Luettu pelit.csv")
 print(paste(input$tallenna_tulos),input$luo_peleja)
-  kaikkipelit<-luecsv("pelit.csv")  
+  if(input$radio_debug_mode==FALSE) {
+    kaikkipelit<-luecsv("pelit.csv")   
+  } else {
+    kaikkipelit<-luecsv("pelit_debug.csv")  
+  }
+   
   
 })
 

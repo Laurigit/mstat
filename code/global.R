@@ -113,7 +113,7 @@ paivitaSliderit<-function(input_peli_ID,session) {
 }
 
 aikaero<-function(aika,loppuaika,pvm,loppupvm){
-  return((loppupvm-pvm)*60*60*24+loppuaika-aika)
+  return(((loppupvm-pvm)*60*60*24+loppuaika-aika))
   
 }
 
