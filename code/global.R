@@ -73,7 +73,7 @@ luecsvalku()
 
 kircsv<-function(datataulu, tiedostonimi) {
   write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE,dec=",")
-  drop_upload(tiedostonimi, "mstat/csv/", overwrite = TRUE,dtoken = token)
+  drop_upload(tiedostonimi, "mstat/csv/", mode = "overwrite" ,dtoken = token)
 }
 
 
@@ -97,7 +97,7 @@ zipAndSend<-function(){
     
       zip("json.zip",files=json_files)
     
-    drop_upload("json.zip", "mstat/processed/", overwrite = TRUE,dtoken = token)
+    drop_upload("json.zip", "mstat/processed/", mode = "overwrite" ,dtoken = token)
   }
 
 }
@@ -152,7 +152,7 @@ saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   print("ladattu")
   save(list=RdataTallenna,file=RdataTiedostonimi)
   
-  drop_upload(RdataTiedostonimi, "mstat/csv/", overwrite = TRUE,dtoken = token)
+  drop_upload(RdataTiedostonimi, "mstat/csv/", mode = "overwrite",dtoken = token)
   
   print("tallennettu")
   #drop_get("mstat/csv/tilastoAsetukset.R",overwrite = TRUE,dtoken = token)
