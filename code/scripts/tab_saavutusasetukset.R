@@ -53,3 +53,13 @@ observeEvent(input$tallennetut_saavutusAsetukset_rows_selected,{
   updateTextInput(session,"txt_palkinto",value=riviData[,Palkintonimi])
   updateTextInput(session,"txt_palkinto_kuvaus",value=riviData[,kuvaus])
 })
+
+output$tallennetut_saavutusAsetukset<- renderDataTable({
+  input$paivita_saavutus
+  input$poista_Saavutus
+  input$tallennaSaavutusAsetus
+  naytaData<-saavutusAsetuksetReact$data[,.(Kuvaus=kuvaus,Esitysmuoto,Palkintonimi,datataulu,minVaiMax,minVaiMax_rivi)]
+  return(naytaData)
+},selection = 'single',options = list(
+  info=FALSE
+),rownames=FALSE)#,colnames=NULL)

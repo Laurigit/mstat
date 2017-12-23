@@ -146,118 +146,7 @@ shinyServer(function(input, output,session) {
     })
     
     
-    #tallennapeli
-  observeEvent(input$tallenna_tulos,{
-    print("tallenna tulos alku")
-      tempData<-luecsv("./drop_download/temp_data_storage.csv")
-     uusrivi<- c(
-       Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
-       Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
-       Lopetusaika=as.ITime(now(tz="Europe/Helsinki")),
-       Lopetuspvm=as.IDate(now(tz="Europe/Helsinki")),
-       Voittaja=as.numeric(input$radio_voittaja),
-       Lauri_voitti=(1-as.numeric(input$radio_voittaja)),
-       Martti_voitti=as.numeric(input$radio_voittaja),
-       Laurin_mulligan=input$slider_laurin_mulligan,
-       Martin_mulligan=input$slider_martin_mulligan,
-       Laurin_arvosana=input$slider_laurin_virhe,
-       Martin_arvosana=input$slider_martin_virhe,
-       Laurin_humala=input$slider_laurin_humala,
-       Martin_humala=input$slider_martin_humala,
-       Laurin_landit=input$slider_laurin_landit,
-       Martin_landit=input$slider_martin_landit,
-       Laurin_lifet=input$slider_laurin_lifet,
-       Martin_lifet=input$slider_martin_lifet,
-       Vuoroarvio=input$slider_vuoroarvio,
-       Laurin_kasikortit=input$slider_laurin_kasikortit,
-       Martin_kasikortit=input$slider_martin_kasikorit
-       )
-     #tyhjennä tempdata
-     tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
-     
-     kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv")
-   
-     
-     kaikkipelit<-data.table(luecsv("./drop_download/pelit.csv"))
-    
-     cols<-names(kaikkipelit)
-     kaikkipelit[, (cols):= lapply(.SD, as.numeric), .SDcols=cols]
-    
-     kaikkipelit[peli_ID==r_valittu_peli$peliID, names(uusrivi) := as.list(uusrivi)][]
-    
-     
-    #laske valmiiksi mahdollinen jatkopeli
-
-     
-     kaikkipelit[,otteluLKM:=as.double(.N),by=Ottelu_ID]
-
-     kaikkipelit[,pelatut:=as.double(sum(ifelse(!is.na(Voittaja),1,0))),by=Ottelu_ID]
-
-     #prosentti sitten
-     kaikkipelit[,peliprosentti:=pelatut/otteluLKM]
-     #palauta pienin keskeneräinen ottelu
-     keskeneraiset_pelit<-kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID]
-      if (length(keskeneraiset_pelit)>0) {
-      keskenpeli<-min(kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID])
-      } else {
-       keskenpeli<-Inf
-     }
-     if (is.finite(keskenpeli)) {
-       
-       r_valittu_peli$jatkopeli<-keskenpeli 
-       shinyjs::enable("jatka_ottelua") 
-     }else {
-       r_valittu_peli$jatkopeli<-NA
-       shinyjs::disable("jatka_ottelua") 
-       #print("Ei ole peliä kesken")
-       
-     }
-  
-     
-     
-    #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
-       #laske otteluiden voittoprosentti
-       kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
-       kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
       
-       #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
-       pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
-       pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
-      
-     kircsv(pelit_jaljella,"./drop_download/pelit.csv")
-     updateTabItems(session,"sidebarmenu","tab_uusi_peli")
-     
-  
-   #jos pelejä jäljellä disabloi uusien pelien luominen
-     peleja_jaljella <- pelit_jaljella[is.na(Voittaja),.N]
-     if (peleja_jaljella>0) {
-       shinyjs::disable("luo_peleja")
-       shinyjs::enable("tasuri_peli")
-       shinyjs::enable("arvo_peli")
-     } else {
-       shinyjs::enable("luo_peleja")
-       shinyjs::disable("arvo_peli")
-       shinyjs::disable("tasuri_peli")
-       
-     }
-     #nollaa inputit
-     
-     updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
-     updateSliderInput(session, "slider_martin_mulligan",  value = 0) 
-     updateSliderInput(session, "slider_laurin_virhe",  value = 1) 
-     updateSliderInput(session, "slider_martin_virhe",  value = 1) 
-     updateSliderInput(session, "slider_laurin_humala",  value = -0.1) 
-     updateSliderInput(session, "slider_martin_humala",  value = -0.1) 
-     updateSliderInput(session, "slider_laurin_landit",  value = 0) 
-     updateSliderInput(session, "slider_martin_landit",  value = 0) 
-     updateSliderInput(session, "slider_laurin_lifet",  value = 0) 
-     updateSliderInput(session, "slider_martin_lifet",  value = 0)
-     updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
-     updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
-     updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
-     updateNumericInput(session,"sarjataulukkokierros",value=0)
-     print("tallenna tulos loppu")
-    })  
 
     
 
@@ -324,25 +213,7 @@ output$peliKesto <- renderText({
   }
 })
 
-output$mulliganiSliderit<-renderUI({
-  pelitiedot<-luecsv("./drop_download/temp_data_storage.csv")
-  if(nrow(pelitiedot)==0) {
-    laurin_pre_mulligan<-0
-    martin_pre_mulligan<-0
-  } else {
-    laurin_pre_mulligan<-pelitiedot[muuttuja=="Laurin_mulligan",arvo]
-    martin_pre_mulligan<-pelitiedot[muuttuja=="Martin_mulligan",arvo]
-  }
-  
-  fluidRow(column(3, sliderInput("slider_laurin_mulligan", label = h4("Laurin mulliganit"), min = 0, 
-                                 max = 6, value =laurin_pre_mulligan)),
 
-           
-           
-           column(3, offset=3, sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
-                                          max = 6, value = martin_pre_mulligan))
-  )
-})
 
 
 
@@ -440,7 +311,7 @@ output$mulliganiSliderit<-renderUI({
   
 
   #päivitä divarit
-  observeEvent(input$ tallenna_divarit,{
+  observeEvent(input$tallenna_divarit,{
     print("päivitä divarit alku")
     
     divarit<-divaridata()
@@ -460,7 +331,7 @@ output$mulliganiSliderit<-renderUI({
   })
   
   #paivitä bannit
-  observeEvent(input$ tallenna_bannit,{
+  observeEvent(input$tallenna_bannit,{
     print("tallenna bannit alku")
     
     divarit<-divaridata()
@@ -501,38 +372,7 @@ output$mulliganiSliderit<-renderUI({
   output$text_aloittaja <- renderText(({paste(r_valittu_peli$aloittaja_text)}))
   output$text_tilanne <- renderText(({paste(r_valittu_peli$ottelutilanne_text)}))
   
-  #tee laurin pakka selectinput
-  output$selectInputLauri <- renderUI({
-    pakat<-divaridata()
-    keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
-    #tarkista, onko peli kesken
-    print(keskenPeliData)
-    laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
-    laurin_idt<-pakat[Omistaja==1,Pakka]
-    selectinputListLauri<-setNames(as.list(laurin_idt), c(laurin_pakkanimet))
-    if(nrow(keskenPeliData)>1) {
-      preSelect <- keskenPeliData[muuttuja=="Laurin_pakka",arvo]
-    } else {
-      preSelect <- 1
-    }
-    selectInput("select_laurin_pakka","Laurin pakka",choices = selectinputListLauri,selected=preSelect)
-    
-  })
-  #tee martin pakka selectinput
-  output$selectInputMartti <- renderUI({
-    pakat<-divaridata()
-    keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
-    pakkanimet<-pakat[Omistaja==2,Nimi]
-    martin_idt<-pakat[Omistaja==2,Pakka]
-    selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
-    if(nrow(keskenPeliData)>1) {
-      preSelect <- keskenPeliData[muuttuja=="Martin_pakka",arvo]
-    } else {
-      preSelect <- 1
-    }
-    selectInput("select_martin_pakka","Martin pakka",choices = selectinputList,selected=preSelect)
-    
-  })
+ 
   #divaricheckbox
   output$checkboxPakat<-renderUI({
     divarit<-divaridata()
@@ -689,78 +529,7 @@ output$mulliganiSliderit<-renderUI({
   
   )
   
-   output$pivot_cross <- renderRpivotTable({
-     pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
-
-     
-      
-     #1 jos tallennettu asetus valittu, käytä sitä
-     #2 jos edellinen asetus tallennettu, käytä sitä
-     #3 käytä tallennettua asetusta 1, jos sellanen olemassa
-     #4 tyhjä taulu
-     
-     if(!is.null(input$tallennetut_tilastoasetukset_rows_selected)) {
-       #lataa asetukset
-       asetukset<- tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,asetukset][[1]]
-       dataLahto<- tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,datataulu]
-       #sorttaus<-tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,sorttaus]
-       
-       #paivita valinta
-       updateRadioButtons(session,"radio_tilastoData",selected=dataLahto)
-       cols_use<-asetukset[[1]]
-       rows_use<-asetukset[[2]]
-       vals_use<-asetukset[[3]]
-       exclusions_use<-asetukset[[4]]
-       aggregator_use<-asetukset[[5]]
-       renderName_use<-asetukset[[6]]
-       #tallenna edelliset asetukset
-       defaultStatValue$asetukset<-asetukset
-     } else {
-       cols_use<-defaultStatValue$asetukset[[1]]
-       rows_use<-defaultStatValue$asetukset[[2]]
-       vals_use<-defaultStatValue$asetukset[[3]]
-       exclusions_use<-defaultStatValue$asetukset[[4]]
-       aggregator_use<-defaultStatValue$asetukset[[5]]
-       renderName_use<-defaultStatValue$asetukset[[6]]
-       #kato miten sortataan
-       #sorttaus<-input$radio_minMax
-     }
-     
-     
-     #konvertoi sorttaus oikeeseen muotoon (EI TOIMINUT, pivottiin ei vaikuttanut mitenkaan)
-     # if(sorttaus=="max") {
-     #   sortAsetus<-"value_z_to_a"
-     # } else if (sorttaus =="min") {
-     #   sortAsetus<-"value_a_to_z"
-     # } else {
-     #   sortAsetus<-"key_a_to_z"
-     # }
-     # print(sortAsetus)
-     # 
-     #lataa oikea data
-     if(input$radio_tilastoData=="Aikasarja") {
-       outputData<-pivotData$aikasarja
-     } else if (input$radio_tilastoData=="Ristidata"){
-       outputData<-pivotData$cross
-     } else {
-       outputData<-pivotData$turnaus
-     }
-
-     
-     rpivotTable(outputData, 
-                 col=unlist(cols_use),
-                 rows=unlist(rows_use), 
-                 vals=unlist(vals_use), 
-                 exclusions=exclusions_use, 
-                 aggregatorName=aggregator_use,
-                 rowOrder= "value_z_to_a",
-                  rendererName=renderName_use, width="100%", height = "100%",
-                 onRefresh=htmlwidgets::JS("function(config) { Shiny.onInputChange('myPivotData', config); }"))
-     
-  
-     
- 
-  }) 
+    
    #luo tilasto-asetus-objekti
    
    
@@ -810,30 +579,7 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
    })
      
 
-   
-     
-     
-#nayta tallennettut asetukset
-     output$tallennetut_tilastoasetukset<- renderDataTable({
-       naytaData<-tilastoAsetuksetReact$data[,.(Tallennettu_asetus=kuvaus)]
-       input$radio_tilastoData
-       return(naytaData)
-       },selection = 'single',options = list(
-         searching = FALSE,
-         info=FALSE,
-         paging=FALSE,
-         scrollY =105
-         ),rownames=FALSE)#,colnames=NULL)
-     
-     output$tallennetut_saavutusAsetukset<- renderDataTable({
-       input$paivita_saavutus
-       input$poista_Saavutus
-       input$tallennaSaavutusAsetus
-       naytaData<-saavutusAsetuksetReact$data[,.(Kuvaus=kuvaus,Esitysmuoto,Palkintonimi,datataulu,minVaiMax,minVaiMax_rivi)]
-       return(naytaData)
-     },selection = 'single',options = list(
-       info=FALSE
-     ),rownames=FALSE)#,colnames=NULL)
+
 
      
      observeEvent( input$myPivotData,{
@@ -863,17 +609,6 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
      paste(allvalues, collapse = "\n")
    })
 
-#poista tilastoasetus
-   observeEvent(input$poista_tilastoAsetus,{
-     #lue data
-     print(input$tallennetut_tilastoasetukset_rows_selected)
-     print( tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected])
-     tilastoAsetukset<- tilastoAsetuksetReact$data[-input$tallennetut_tilastoasetukset_rows_selected]
-     tilastoAsetuksetReact$data<-tilastoAsetukset
-    print( tilastoAsetuksetReact$data)
-     saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.R")
-
-   })
    
  
 pfi_data<-reactive({
@@ -893,7 +628,6 @@ anyFileUpload<-observe({
   drop_upload(input$anyfile$name, "mstat/csv/", mode = "overwrite", dtoken = token)
   
 })
-
 
 observe({
   print(paste("ifile"))
@@ -918,63 +652,6 @@ print(paste(input$tallenna_tulos),input$luo_peleja)
   
 })
 
-
-
-
-
-
-
-observeEvent( input$tallennaSaavutusAsetus,{
-  #kato onko siellä dataa
-  if(is.null(saavutusAsetuksetReact$data)){
-    saavutusAsetukset<-data.table(
-      datataulu=character(),
-      kuvaus=character(),
-      asetukset=list(),
-      minVaiMax=character(),
-      minVaiMax_rivi=character(),
-      Palkintonimi=character()
-    )
-  }
-  cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
-  # Apply a function to all keys, to get corresponding values
-  allvalues <- lapply(cnames, function(name) {
-    item <- input$myPivotData[[name]]
-  })
-  storeList<-NULL
-  storeList[[1]]<-allvalues
-  
-  uusrivi<-data.table(
-    datataulu=input$radio_tilastoData,
-    kuvaus=input$text_tilastoKuvaus,
-    asetukset=(storeList)
-  )
-  print(uusrivi)
-  #tarkista onko asetusnimi jo olemassa
-  if(nrow(saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
-    print("TÄTKTEÄ")
-    print(saavutusAsetuksetReact$data)
-    vanhat_asetukset<-saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus,.(Palkintonimi,Esitysmuoto,minVaiMax,minVaiMax_rivi)]
-    #liita uudet ja vanhat
-    uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
-    print(uus_ja_vanha_rivi)
-    saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[kuvaus!=input$text_tilastoKuvaus]
-    print(saavutusAsetuksetReact$data)
-    saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
-  }else{
-    #lisätään tyhjat sarakkeet puuttuviin tietoihin
-    uusrivi[,':=' (Palkintonimi="",Esitysmuoto="Decimal",minVaiMax="max",minVaiMax_rivi="max")]
-    saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uusrivi)
-  }
-
-  #tallenna rdata
-  print("TALLENNA SAAVUTUS")
-  print(saavutusAsetukset)
-  saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
-  saavutusAsetuksetReact$data<-saavutusAsetukset
-  #tyhjennä tekstikenttä
-  updateTextInput(session,"text_tilastoKuvaus",value="")
-})
 
 saavutusAsetuksetReact<-reactiveValues(
   data=saavutusAsetukset
@@ -1027,9 +704,6 @@ observeEvent(input$action_reduce,{
   }
   updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]-steppi)
 })
-
-
-
 
 
 })

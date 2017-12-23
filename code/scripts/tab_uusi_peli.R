@@ -22,6 +22,39 @@ observeEvent(input$arvo_peli,{
   
 })
 
+#tee laurin pakka selectinput
+output$selectInputLauri <- renderUI({
+  pakat<-divaridata()
+  keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
+  #tarkista, onko peli kesken
+  print(keskenPeliData)
+  laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
+  laurin_idt<-pakat[Omistaja==1,Pakka]
+  selectinputListLauri<-setNames(as.list(laurin_idt), c(laurin_pakkanimet))
+  if(nrow(keskenPeliData)>1) {
+    preSelect <- keskenPeliData[muuttuja=="Laurin_pakka",arvo]
+  } else {
+    preSelect <- 1
+  }
+  selectInput("select_laurin_pakka","Laurin pakka",choices = selectinputListLauri,selected=preSelect)
+  
+})
+#tee martin pakka selectinput
+output$selectInputMartti <- renderUI({
+  pakat<-divaridata()
+  keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
+  pakkanimet<-pakat[Omistaja==2,Nimi]
+  martin_idt<-pakat[Omistaja==2,Pakka]
+  selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
+  if(nrow(keskenPeliData)>1) {
+    preSelect <- keskenPeliData[muuttuja=="Martin_pakka",arvo]
+  } else {
+    preSelect <- 1
+  }
+  selectInput("select_martin_pakka","Martin pakka",choices = selectinputList,selected=preSelect)
+  
+})
+
 output$data_vs_taulukko<-renderDataTable({
   req(input$radio_bo_mode,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode)
   vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
