@@ -4,6 +4,12 @@
 # Define server logic required to draw a histogram 
 shinyServer(function(input, output,session) {
 
+  sourcelist <- dir("./scripts/")
+  for(filename in sourcelist) {
+    print(filename)
+    source(paste0("./scripts/", filename), local = TRUE)
+  }
+
   
   
   #r_valittu_peli on valittu peli millä tahansa menetelmällä
@@ -112,29 +118,7 @@ shinyServer(function(input, output,session) {
       
 
   
-  #arvopeli
-  observeEvent(input$arvo_peli,{
-    print("arvo peli alku")
-    kaikkipelit<-peliDataReact()
-    #kato onko divarifiltteri päällä
-    if(input$divariRadio!="Ei väliä") {
-      pelaamattomat <- unique(kaikkipelit[is.na(Voittaja) & Divari==input$divariRadio,Ottelu_ID])  
-    } else {
-      pelaamattomat <- unique(kaikkipelit[is.na(Voittaja),Ottelu_ID])
-    }
-
-    arpa<-ceiling(runif(1,0,length(pelaamattomat)))
-    arvottu_ottelu_ID<-pelaamattomat[arpa]
-    #eti ottelun pienin pelaamaton peli
-   
-    
-    arvottu_peli_id <- kaikkipelit[Ottelu_ID==arvottu_ottelu_ID & is.na(Voittaja) , .SD[which.min(Ottelu_no)],.SDcols=c("peli_ID")][,peli_ID]
-    paivitaSliderit(arvottu_peli_id,session)
-
-    #print(pfi_data())
-    print("arvo peli loppu")
-  
-  })
+ 
   
     
 
@@ -453,66 +437,7 @@ output$mulliganiSliderit<-renderUI({
     }
     print("seuraa valintalistoja loppu")
   })
-  observeEvent(input$laurin_mulligan,{
-    print("laurin mulligan alku")
-    updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan+1)
-    print("laurin mulligan loppu")
-  })
-  observeEvent(input$martin_mulligan,{
-    print("martin mulligan alku")
-    updateSliderInput(session, "slider_martin_mulligan", value = input$slider_martin_mulligan+1)
-    print("martin mulligan loppu")
-  })
-  observeEvent(input$laurin_virhe,{
-    print("laurin virhe alku")
-    updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
-    print("laurin virhe loppu")
-  })
-  observeEvent(input$laurin_virhe_uusipeli,{
-    print("laurin virhe alku")
-    updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
-    print("laurin virhe loppu")
-  })
   
-  observeEvent(input$martin_virhe,{
-    print("martin virhe alku")
-    updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
-    print("martin virhe loppu")
-  })
-  observeEvent(input$martin_virhe_uusipeli,{
-    print("martin virhe alku")
-    updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
-    print("martin virhe loppu")
-  })
-  
-  observeEvent(input$lauri_voitti,{
-    print("lauri voitti alku")
-    kaikkipelit<-data.table(luecsv("pelit.csv"))
-    #tarkista onko peli pelattu
-    if(!is.na(kaikkipelit[peli_ID==  r_valittu_peli$peliID,Voittaja])){
-      print("peli on jo pelattu")
-    } else {
-      
-      updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
-      updateRadioButtons(session,"radio_voittaja",selected=0)
-    }
-    print("lauri voitti loppu")
-  })
-  
-  observeEvent(input$martti_voitti,{
-    print("martti voitti alku")
-    updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
-    updateRadioButtons(session,"radio_voittaja",selected=1)
-    print("martti voitti loppu")
-  })
-  
-  
-  observeEvent(input$slider_vuoroarvio,{
-    print("slider vuoroarvio alku")
-    updateSliderInput(session, "slider_martin_landit", value = input$slider_vuoroarvio)
-    updateSliderInput(session, "slider_laurin_landit", value = input$slider_vuoroarvio)
-    print("slider vuoroarvio loppu")
-  })
 
   #päivitä divarit
   observeEvent(input$ tallenna_divarit,{
@@ -618,20 +543,7 @@ output$mulliganiSliderit<-renderUI({
     })
   })
   
-  output$peliAsetuksetUI<-renderUI({
-    divarit<-divaridata()
-    divarit<-divarit[Picked==1,.N,by=.(Divari)][order(Divari)]
-    
-    lapply(divarit[,Divari], function(i) {
-      fluidRow(
-      #column(3,textOutput(paste0("textPeliasetusDivari",i),paste0("Divari: ",i)))
-      column(3,checkboxInput(paste0("checkbox_BO_mode",i),paste0("Best-of-mode päällä. Divari: ",i))),
-      column(5,numericInput(paste0("numeric_rounds",i),paste0("Montako runkosarjakierrosta. Divari: ",i), value = 1)),
-      column(4,numericInput(paste0("numeric_ottelut",i),paste0("Montako pelia per ottelu. Divari: ",i), value = 1))
-      )
-    })
-    
-  })
+
   
   #divariNumericinput
   output$combUI<-renderUI({
@@ -650,10 +562,7 @@ output$mulliganiSliderit<-renderUI({
 
   #output$testiteksti<-renderText({input$sidebarmenu})
 
-output$sarjataulukkovalitsin <- renderUI({
-  maxturnaus<-max(peliDataReact()[,TurnausNo])
-  fluidRow(numericInput("sarjataulukkokierros","Turnauksen numero",value=maxturnaus))
-})
+
   
   
   output$blob <- renderUI({
@@ -673,33 +582,7 @@ output$sarjataulukkovalitsin <- renderUI({
     updateNumericInput(session,"sarjataulukkokierros",value=maxturnaus)})
 
 
-  output$sarjataulukot <-renderUI({
-    #montakodivaria
-    sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
-    divarit<-sarjadata$divarit
-    pelaajat<-sarjadata$pelaajastats
-    
-    kokonaistilanne<-pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
-    print(kokonaistilanne)
-    tilanneteksti <-paste0(kokonaistilanne[,Voitot_Lauri],"-",kokonaistilanne[,Voitot_Martti])
-    subtitle<-ifelse(kokonaistilanne[,Voitot_Lauri]>kokonaistilanne[,Voitot_Martti],"Lauri johtaa",
-                     ifelse(kokonaistilanne[,Voitot_Lauri]<kokonaistilanne[,Voitot_Martti],"Martti johtaa","Tasan"))
-    turnaustilanne<-turnausVoitot(divaridata(),peliDataReact())$total
-    print(turnaustilanne)
-    turnaustilanneteksti<-paste0(turnaustilanne[,Laurin_TV],"-",turnaustilanne[,Martin_TV])
-    
-    fluidPage(
-      fluidRow(valueBox(tilanneteksti,subtitle,icon=icon("dashboard",lib = "font-awesome")),
-               valueBox(turnaustilanneteksti,"Turnaustilanne",icon=icon("trophy",lib = "font-awesome"))),
   
-      lapply(divarit,function(i)  {
-        plotname <- paste0("plotdyn", i, sep="")
-
-        fluidRow(box( dataTableOutput(plotname),width=12,title=paste0(i,". Divari ",pelaajat[Divari==i,Voitot_Lauri],"-",pelaajat[Divari==i,Voitot_Martti]),solidHeader = TRUE,status="primary" ))
-       
-      })
-    )
-  })
   
 
   # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
@@ -736,27 +619,7 @@ output$sarjataulukkovalitsin <- renderUI({
   })
 
   
-saavutusTaulu<-reactive({
-  saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
-  for(kierros in 1:nrow(saavutusAsetuksetReact$data)) {
-    kierrosData<-saavutusAsetuksetReact$data[kierros]
-    
-    kierrosTulos<-laskeSaavtusAsetuksista(kierrosData,peliDataReact(),divaridata(),pfi_data())
 
-
-    saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
-    
-  }
-  
-
-
-  print("saavutustaulu ajettu")
-  print(saavutusTaulu)
-  print("saavutustaulun tulos ylla")
-  return(saavutusTaulu)
-  }
-)
-    
   
 # saavutusUI<-
 #   for(kierros in 0:20) {
@@ -815,210 +678,9 @@ saavutusTaulu<-reactive({
     })
   }
   
-output$saavutus_UI<-renderUI({
- 
-  tekstiData<-saavutusTaulu()[source=="Paras"]
-  # print("render UI ssavutus_UI")
-  # print(infoBoxData)
-  # looppi_kerrat<-nrow(infoBoxData)-1
-  # 
 
-  looppi<-1:nrow(tekstiData)-1
-  fluidPage(
-  lapply(looppi, function(i) {
-    rivi<-i+1
-    looppiData<-tekstiData[rivi]
+
   
-    box(HTML(looppiData[,teksti]),background = looppiData[,color])
-
-    
-  })
-  )
-})
-  # 
-  # 
-  #    for(i in 0:1) {
-  # #     #looppi joka rakentaa infoboxit, alkaa nollasta
-  # # 
-  # #     print("i printtaus")
-  # #   print(paste0("infoDynamic", i, sep=""))
-  #      plotname33 <- paste0("infoDynamic", i, sep="")
-  #     box(
-  #      textOutput(plotname33)
-  #     )
-  #    }
-  #   
-  # 
-  #   })
-  # 
-    
-  
-
-
-
-
-  output$pfi_taulukko <-renderDataTable({
-
-    pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi[!is.na(Nimi)][order(-Tappiot)]
-
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),FALSE,pfi_data())$data
-
-    #join
-
-    joinLisakortit<-lisakortit[pfistats,on=c("Nimi")]
-    return(joinLisakortit)
-  },    options = list(
-    paging = FALSE,
-    searching = FALSE,
-    info=FALSE,
-    rowCallback = DT::JS(
-      'function(row, data) {
-        // Bold cells for those >= 5 in the first column
-        if (parseFloat(data[5]) >= 4)
-           $("td", row).css("background", "Tomato");}')
-    
-  ),rownames=FALSE)
-
-  output$data_vs_taulukko<-renderDataTable({
-    req(input$radio_bo_mode,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode)
-    vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
-    
-    vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())
-    
-    pakka_stats_all_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,NA,input$radio_pfi_mode,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
-    laurin_pakkanimi<-colnames(pakka_stats_all_lauri)[3]
-    pakka_stats_all_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,NA,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())$transposed[!(Tilasto %in% ("Voitot"))]
-    martin_pakkanimi<-colnames(pakka_stats_all_martti)[3]
-    setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
-    setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
-    join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
-    
-    
-    #MA_pakak
-    pakka_stats_MA_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
-    pakka_stats_MA_martti<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,NA,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
-    
-    
-    pfistats<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi_trans
-    
-    #ota vaan sarakkeet, mitä on muuallakkin käytetty
-    pfi_subsetcols<-pfistats[,names(vs_statsit_all$transposed),with=FALSE]
-    
-
-    setkeyv(pakka_stats_MA_lauri,c("Tilasto","selite"))
-    setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
-    join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
-    
-    lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),TRUE,pfi_data())$current_lisakortit
-
-    #filtteröi mukaan vaan pelin pakat
-    lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
-    lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)+37),Lisakortit=NULL)]
-    #transponoi
-    
-    lisakortit_trans<-data.table(dcast(lisakortit_pelipakat,Tilasto+selite~Nimi,value.var="Kortti_lkm"))
-    lisakortit_final<-lisakortit_trans[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
-
-    append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
-    #vaihda sarakejärjestys
-    result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
-    #lisää vielä lisäkorttitilasto
-    result_table<-rbind(result_table,lisakortit_final)
-
-    return(result_table)  
-     
-  },    options = list(
-    paging = FALSE,
-  
-    searching = FALSE,
-    info=FALSE,
-    columnDefs = list(list(className = 'dt-center', targets = 1:2),
-                      list(className = 'dt-left', targets = 3)),
-    rowCallback = DT::JS(
-      'function(row, data) {
-      if ((data[2]) == "VS")
-      $("td", row).css("background", "PaleTurquoise");
-       else if (data[2] == "Deck" )
-          $("td", row).css("background", "PapayaWhip");
-       else if (data[2] == "pfi" )
-          $("td", row).css("background", "PowderBlue");
- 
-      }')
-    
-    
-    
-  ),rownames=FALSE)
-  
-#valueboksit
- 
-
-
-  output$paras_countteri<-renderValueBox({
-    
-    pelatut_parit<-peliDataReact()[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
-    #looppaa parit läpi ja eti paras voitto%
-    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
-    pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
-    #laurin paras countteri
-    laurin_counter<-pelatut_parit[, .SD[which.max(Voitto_pct)]]
-    pakat<-divaridata()
-    martin_counter <- pelatut_parit[, .SD[which.max(vertailu)]]
-    
-    if (laurin_counter[,Voitto_pct]>martin_counter[,vertailu]) {
-      boksiteksti<-paste0(pakat[Omistaja==1 & Pakka == laurin_counter[,Laurin_pakka],Nimi], " voitto% VS ",pakat[Omistaja==2 & Pakka == laurin_counter[,Martin_pakka],Nimi])
-      boksiarvo <-paste0(laurin_counter[,Voitto_pct*100],"%")
-      boksivari="purple"
-    } else {
-      boksiteksti<-paste0(pakat[Omistaja==2 & Pakka == martin_counter[,Martin_pakka],Nimi], " voitto% VS ",pakat[Omistaja==1 & Pakka == martin_counter[,Laurin_pakka],Nimi])
-      boksiarvo <-paste0(martin_counter[,vertailu*100],"%")
-      boksivari<-"orange"    
-      
-      }
-    valueBox(boksiarvo, boksiteksti, icon = icon("list"),
-             color = boksivari)
-    
-  })
-  
-  output$vaikein_counteroitava<-renderValueBox({
-    
-    pelatut_parit<-peliDataReact()[!is.na(Voittaja),.N,by=.(Laurin_pakka,Martin_pakka)]
-    #looppaa parit läpi ja eti paras voitto%
-    pelatut_parit[,Voitto_pct:=sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,Laurin_pakka,Martin_pakka,NA,FALSE,pfi_data())$laurin_voitto_pct,by=.(Laurin_pakka,Martin_pakka)]
-    pelatut_parit[,vertailu:=abs(Voitto_pct-1)]
-    #laurin paras countteri
-    laurin_counter<-pelatut_parit[, .(maxvertailu=max(vertailu)),by=Laurin_pakka]
-    laurin_countteroimaton_pakka<-laurin_counter[,.SD[which.min(maxvertailu)]]
-    
-    pakat<-divaridata()
-    martin_counter <- pelatut_parit[, .(maxvertailu=max(Voitto_pct)),by=Martin_pakka]
-    martin_countteroimaton_pakka<-martin_counter[,.SD[which.min(maxvertailu)]]
-    
-    
-    
-    if (laurin_countteroimaton_pakka[,maxvertailu]>martin_countteroimaton_pakka[,maxvertailu]) {
-      boksiteksti<-paste0(pakat[Omistaja==1 & Pakka == laurin_countteroimaton_pakka[,Laurin_pakka],Nimi], " voittaa pahimman counterpakan %")
-      boksiarvo <-paste0(round(laurin_countteroimaton_pakka[,maxvertailu*100],0),"%")
-      boksivari="purple"
-    } else {
-      boksiteksti<-paste0(pakat[Omistaja==2 & Pakka == martin_countteroimaton_pakka[,Martin_pakka],Nimi], " voittaa pahimman counterpakan %")
-      boksiarvo <-paste0(round(martin_countteroimaton_pakka[,maxvertailu*100],0),"%")
-      boksivari<-"orange"    
-      
-    }
-    valueBox(boksiarvo, boksiteksti, icon = icon("list"),
-             color = boksivari)
-    
-  })
-  
-  
-  output$vb_voittoputki<-renderValueBox({
-    putki<-sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$ison_putki
-    
-    valueBox(paste0(putki[,Putki]), paste0("Pisin voittoputki: ",putki[,Nimi]), icon = icon("list"),
-             color = "purple")
-    
-  })
-
 
   defaultStatValue<-reactiveValues(
    
@@ -1213,62 +875,7 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
 
    })
    
-   #poista saavutusAsetus
-   observeEvent(input$poista_saavutusAsetus,{
-     print(saavutusAsetuksetReact$data)
-     saavutusAsetuksetReact$data<- saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
-     print(saavutusAsetuksetReact$data)
-     saavutusAsetukset<-saavutusAsetuksetReact$data
-     saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
-     
-   })
-   
-   #paivita saavutusAsetus
-   observeEvent(input$paivita_saavutus,{
-     #vanha rivi talteen
-
-     vanhat_asetukset<-saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected,.(datataulu,asetukset)]
-
-     uusrivi<-data.table(
-       minVaiMax=input$radio_minMax_saavutus,
-       minVaiMax_rivi=input$radio_minMax_saavutus_rivi,
-       Esitysmuoto=input$radio_muotoilu,
-       Palkintonimi=input$txt_palkinto,
-       kuvaus=input$txt_palkinto_kuvaus
-     )
-     #liita uudet ja vanhat
-     print(uusrivi)
-     uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
-      print(uus_ja_vanha_rivi)
-
-     #tarkista onko asetusrivi olemassa
-     if(nrow(saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected])>0){
-       #poista vanha rivi
-       saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
-       print(saavutusAsetuksetReact)
-       saavutusAsetuksetReact$data<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
-       saavutusAsetukset<-saavutusAsetuksetReact$data
-       saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
-       print(saavutusAsetuksetReact)
-     }else{
-       print("ei riviä valittuna, mitaan ei muutettu")
-     }
-     
-  
-     
-   })
-   
-   #seuraa saavutusasetusten rivivalintaa
-   observeEvent(input$tallennetut_saavutusAsetukset_rows_selected,{
-     #lueData
-     riviData<-saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected]
-     updateRadioButtons(session,"radio_minMax_saavutus",selected=riviData[,minVaiMax])
-     updateRadioButtons(session,"radio_minMax_saavutus_rivi",selected=riviData[,minVaiMax])
-     updateRadioButtons(session,"radio_muotoilu",selected=riviData[,Esitysmuoto])
-     updateTextInput(session,"txt_palkinto",value=riviData[,Palkintonimi])
-     updateTextInput(session,"txt_palkinto_kuvaus",value=riviData[,kuvaus])
-   })
-   
+ 
 pfi_data<-reactive({
   print("TPALAT PAKAT")
   print("TPALAT PAKAT")
