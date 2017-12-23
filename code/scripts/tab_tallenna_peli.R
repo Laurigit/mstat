@@ -167,7 +167,7 @@ observeEvent(input$martin_virhe_uusipeli,{
 
 observeEvent(input$lauri_voitti,{
   print("lauri voitti alku")
-  kaikkipelit<-data.table(luecsv("pelit.csv"))
+  kaikkipelit<-data.table(luecsv("./drop_download/pelit.csv"))
   #tarkista onko peli pelattu
   if(!is.na(kaikkipelit[peli_ID==  r_valittu_peli$peliID,Voittaja])){
     print("peli on jo pelattu")

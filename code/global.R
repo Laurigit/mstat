@@ -1,3 +1,6 @@
+GLOBAL_test_mode <- TRUE
+
+
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
@@ -57,6 +60,17 @@ token <- readRDS("droptoken.rds")
 
 luecsvalku<-function() {
   print(getwd())
+  
+  test_mode <- FALSE
+  if(exists("GLOBAL_test_mode")) {
+    if (GLOBAL_test_mode == TRUE) {
+      test_mode <- TRUE
+    }
+  }
+  
+  if(test_mode == FALSE) {
+    
+  
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
   tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "temp_data_storage.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
@@ -70,9 +84,12 @@ luecsvalku<-function() {
                 local_path = "./drop_download/",
                 overwrite = TRUE,
                 dtoken = token)
+  #delete prev decks in case of testing
+  do.call(file.remove, list(list.files("./decks_unzipped", full.names = TRUE)))
+  
   unzip(zipfile = "./drop_download/json.zip",
         exdir = "./decks_unzipped")
-  #}
+    #}
   
   #tilastoasetukset
   drop_download(path = "mstat/csv/tilastoAsetukset.R",
@@ -83,12 +100,22 @@ luecsvalku<-function() {
                 local = "./rdata/",
                 overwrite = TRUE,
                 dtoken = token)
+  }
 }
 luecsvalku()
 
 kircsv<-function(datataulu, tiedostonimi) {
+  test_mode <- FALSE
+  if(exists("GLOBAL_test_mode")) {
+    if (GLOBAL_test_mode == TRUE) {
+      test_mode <- TRUE
+    }
+  }
+  
   write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE,dec=",")
+  if (test_mode == FALSE) {
   drop_upload(tiedostonimi, "mstat/csv/", mode = "overwrite" ,dtoken = token)
+  }
 }
 
 
@@ -107,19 +134,27 @@ zipAndSend<-function(){
   tiedostot<- as.data.table(dir(path = "./decks_unzipped/"))
   
   tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
-  json_files<-tiedostot[paate==".json",paste0(paste0("./decks_unzipped/", V1))]
+  json_files<-tiedostot[paate==".json",paste0(V1)]
   if (length(json_files)>0){
-    
-      zip(zipfile = "./drop_upload/json.zip",
+    setwd("./decks_unzipped")
+      zip(zipfile = "../drop_upload/json.zip",
           files=json_files)
-    
+    setwd("..")
+    test_mode <- FALSE
+    if(exists("GLOBAL_test_mode")) {
+      if (GLOBAL_test_mode == TRUE) {
+        test_mode <- TRUE
+      }
+    }
+    if (test_mode == FALSE) {
     drop_upload("./drop_upload/json.zip", "mstat/processed/", mode = "overwrite" ,dtoken = token)
+    }
   }
 
 }
 
 paivitaSliderit<-function(input_peli_ID,session) {
-  kaikkipelit<-luecsv("pelit.csv")
+  kaikkipelit<-luecsv("./drop_download/pelit.csv")
   laurin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Laurin_pakka])
   martin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Martin_pakka])
   
@@ -167,11 +202,18 @@ saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   print(get(RdataTallenna))
   print("ladattu")
   save(list=RdataTallenna,file=RdataTiedostonimi)
-  
+  test_mode <- FALSE
+  if(exists("GLOBAL_test_mode")) {
+    if (GLOBAL_test_mode == TRUE) {
+      test_mode <- TRUE
+    }
+  }
+  if (test_mode == FALSE) {
   drop_upload(RdataTiedostonimi, "mstat/csv/", mode = "overwrite",dtoken = token)
+  }
   
   print("tallennettu")
-  #drop_get("mstat/csv/tilastoAsetukset.R",overwrite = TRUE,dtoken = token)
+
   #load("tilastoAsetukset.R")
   print("ladattu taas ja nyt tulostetaan")
   print(get(RdataTallenna))
