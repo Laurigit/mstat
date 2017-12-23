@@ -1,3 +1,130 @@
+#seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
+observe({
+  print("seuraa valintalistoja alku")
+  #seuraa tallenna buttonia myös 
+  print(paste("tallennatulosarvo",input$tallenna_tulos))
+  
+  kaikkipelit<-luecsv("./drop_download/pelit.csv")
+  #print(paste("Laurin pakka: ",input$select_laurin_pakka))
+  #print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
+  if(!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
+    maxottelu<-max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])
+    r_valittu_peli$ottelutilanne_text <- kaikkipelit[Ottelu_ID==maxottelu,paste("Tilanne: ",sum(Lauri_voitti,na.rm=TRUE),"-",sum(Martti_voitti,na.rm=TRUE))]
+    
+    #kato onko peleja jaljella
+    peleja_jaljella<-kaikkipelit[Ottelu_ID==maxottelu & is.na(Voittaja) ,peli_ID]
+    if(length(peleja_jaljella)>0){
+      temp_peli<-min(kaikkipelit[Ottelu_ID==maxottelu & is.na(Voittaja) ,peli_ID])
+    } else {
+      temp_peli<-Inf
+    }
+    
+    r_valittu_peli$peliID<-temp_peli
+    
+    #kato onko peli pelattu
+    if(is.infinite(temp_peli))
+    {
+      pelipelattu<-TRUE
+      
+    }else {
+      pelipelattu<-FALSE
+    }
+    
+    if(pelipelattu==TRUE){
+      print("observeluettu TRUE")
+      shinyjs::disable("lauri_voitti")
+      shinyjs::disable("martti_voitti")
+      shinyjs::disable("tallenna_tulos")
+      
+      #jos maxottelun turnausNo ei ole nykyinen turnaus, niin peli ei ole ohjelmassa, muuten peli on pelattu
+      maxturnaus<-max(kaikkipelit[,TurnausNo])
+      maxottelun_turnaus<-max(kaikkipelit[maxottelu==Ottelu_ID,TurnausNo])
+      if (maxturnaus==maxottelun_turnaus) {
+        r_valittu_peli$aloittaja_text<-"Pelattu"
+      } else {
+        r_valittu_peli$aloittaja_text<-"Ei ohjelmassa"
+      }
+      
+    } else {
+      
+      #  updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
+      # updateRadioButtons(session,"radio_voittaja",selected=0)
+      shinyjs::enable("lauri_voitti")
+      shinyjs::enable("martti_voitti")
+      shinyjs::enable("tallenna_tulos")
+      aloittajaNo<- kaikkipelit[peli_ID==r_valittu_peli$peliID, Aloittaja]
+      r_valittu_peli$aloittaja_text<-ifelse(aloittajaNo==0,"Aloittaja: Lauri","Aloittaja: Martti")
+    }
+    #seuraa valintalistoja ja paivita r_valittu_peli sen mukaan
+    
+    
+    
+    
+    #tarkista onko jatko-otteluita jäljellä
+    if (is.finite(r_valittu_peli$jatkopeli)) {
+      
+      
+      shinyjs::enable("jatka_ottelua") 
+    }else {
+      
+      shinyjs::disable("jatka_ottelua") 
+      #print("Ei ole peliä kesken")
+      
+    }
+    
+  }
+  print("seuraa valintalistoja loppu")
+})
+
+#jatka ottelua
+
+observeEvent(input$jatka_ottelua,{
+  print("jatka ottelua alku")
+  
+  if (!is.na(r_valittu_peli$jatkopeli)) {
+    #  
+    paivitaSliderit(r_valittu_peli$jatkopeli,session) 
+    
+  }else {
+    print("Ei ole peliä kesken")
+  }
+  print("jatka ottelua loppu")
+})
+
+output$peliKesto <- renderText({
+  
+  invalidateLater(1000, session)
+  tempData<-luecsv("./drop_download/temp_data_storage.csv")
+  
+  if (nrow(tempData)>4) {
+    pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
+    pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
+    sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now(tz="Europe/Helsinki"))),pelialkuPVM,as.integer(as.IDate(now(tz="Europe/Helsinki"))))
+    minuutit<-floor(sekunnit_yht/60)
+    sekunnit<-sekunnit_yht-60*minuutit
+    #print(paste("sekunnit",sekunnit,"lahetetty:",lahetaTempData$lahetetty,"laheta:",lahetaTempData$laheta))
+    if(is.na(tempData[muuttuja=="laheta",arvo])) {
+      print("muuttuja oli NA")
+      tempData[,arvo:=as.character(arvo)]
+      tempData[muuttuja=="laheta",arvo:="TRUE"]
+      tempData[muuttuja=="kesken",arvo:="FALSE"]
+    }
+    
+    if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
+      tempData[muuttuja=="laheta",arvo:="FALSE"]
+      tempData[muuttuja=="kesken",arvo:="TRUE"]
+      kircsv(tempData,"./drop_download/temp_data_storage.csv")
+      print("lähetetty")
+      tempData[muuttuja=="kesken",arvo:="FALSE"]
+      kircsv2(tempData,"./drop_download/temp_data_storage.csv")
+      
+    }
+    paste(minuutit,":",sekunnit)
+  }
+})
+
+
+
 #arvopeli
 observeEvent(input$arvo_peli,{
   print("arvo peli alku")
@@ -21,6 +148,16 @@ observeEvent(input$arvo_peli,{
   print("arvo peli loppu")
   
 })
+
+
+output$divariRadio_out <- renderUI({
+  divarit_ilman_peleja <- peliDataReact()[is.na(Voittaja),.N,by=Divari]
+  radioButtons("divariRadio", "Divari",
+               c("Ei väliä",divarit_ilman_peleja[,Divari]),inline=TRUE)
+})
+
+
+
 
 #tee laurin pakka selectinput
 output$selectInputLauri <- renderUI({

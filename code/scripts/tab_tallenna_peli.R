@@ -193,3 +193,21 @@ observeEvent(input$slider_vuoroarvio,{
   updateSliderInput(session, "slider_laurin_landit", value = input$slider_vuoroarvio)
   print("slider vuoroarvio loppu")
 })
+
+observeEvent(input$action_add,{
+  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
+    steppi <- 0.1
+  } else {
+    steppi <- 1
+  }
+  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]+steppi)
+})
+
+observeEvent(input$action_reduce,{
+  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
+    steppi <- 0.1
+  } else {
+    steppi <- 1
+  }
+  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]-steppi)
+})

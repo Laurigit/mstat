@@ -144,3 +144,59 @@ observeEvent(input$tallennaSaavutusAsetus,{
   #tyhjennä tekstikenttä
   updateTextInput(session,"text_tilastoKuvaus",value="")
 })
+
+#voi käyttää debugissa, jos pistää UIsta päälle
+output$pivotRefresh <- renderText({
+  
+  cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+  # Apply a function to all keys, to get corresponding values
+  allvalues <- lapply(cnames, function(name) {
+    item <- input$myPivotData[[name]]
+    if (is.list(item)) {
+      list_to_string(item, name)
+    } else {
+      paste(name, item, sep=" = ")
+    }
+  })
+  paste(allvalues, collapse = "\n")
+})
+
+observeEvent( input$tallennaTilastoAsetus,{
+  
+  #kato onko siellä dataa
+  if(is.null(tilastoAsetuksetReact$data)){
+    tilastoAsetukset<-data.table(
+      datataulu=character(),
+      kuvaus=character(),
+      asetukset=list()
+    )
+  }
+  
+  cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+  # Apply a function to all keys, to get corresponding values
+  allvalues <- lapply(cnames, function(name) {
+    item <- input$myPivotData[[name]]
+    
+  })
+  
+  storeList<-NULL
+  storeList[[1]]<-allvalues
+  
+  uusrivi<-data.table(
+    datataulu=input$radio_tilastoData,
+    kuvaus=input$text_tilastoKuvaus,
+    asetukset=(storeList)
+  )
+  #tarkista onko asetusnimi jo olemassa
+  if(length(tilastoAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
+    tilastoAsetuksetReact$data<-tilastoAsetuksetReact$data[kuvaus!=input$text_tilastoKuvaus]
+  }
+  tilastoAsetukset<-rbind(tilastoAsetuksetReact$data,uusrivi)
+  
+  #tallenna rdata
+  
+  saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.R")
+  
+  tilastoAsetuksetReact$data<-tilastoAsetukset
+  
+})
