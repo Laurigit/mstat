@@ -26,48 +26,63 @@ token <- readRDS("droptoken.rds")
 # Then pass the token to each drop_ function
 #drop_acc(dtoken = token)
 
+#source all files in folder
 
-source("sarjataulukko.R")
-source("functio_bo_conversio.R")
-source("process_uploaded_decks.R")
-source("omaReadJson.R")
-source("pysyvyys_pct.R")
-source("turnausVoitot.R")
-source("functio_lisakortit.R")
-source("tilastomurskain.R")
-source("funcLiitaPelit_ja_Pysyvyys.R")
-source("saavutusLaskenta.R")
+# source("./scripts/sarjataulukko.R", local = TRUE)
+# source("./scripts/functio_bo_conversio.R", local = TRUE)
+# source("./scripts/process_uploaded_decks.R", local = TRUE)
+# source("./scripts/omaReadJson.R", local = TRUE)
+# source("./scripts/pysyvyys_pct.R", local = TRUE)
+# source("./scripts/turnausVoitot.R", local = TRUE)
+# source("./scripts/functio_lisakortit.R", local = TRUE)
+# source("./scripts/tilastomurskain.R", local = TRUE)
+# source("./scripts/funcLiitaPelit_ja_Pysyvyys.R", local = TRUE)
+# source("./scripts/saavutusLaskenta.R", local = TRUE)
 
-dirname <-  './omawd'
-if (dir.exists(path=dirname)) {
-  setwd(dirname) 
-}
+# source("./scripts/", local = TRUE)
+# source("./scripts/", local = TRUE)
+# source("./scripts/", local = TRUE)
+# source("./scripts/", local = TRUE)
+# source("./scripts/", local = TRUE)
+# source("./scripts/", local = TRUE)
+# source("./scripts/", local = TRUE)
+
+
+# dirname <-  './omawd'
+# if (dir.exists(path=dirname)) {
+#   setwd(dirname) 
+# }
 
 
 
 luecsvalku<-function() {
   print(getwd())
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "temp_data_storage.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "temp_data_storage.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
   print("temp data storage")
   print(tulos)
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "turnaussaanto.csv"), dest = getwd(), sep=";",stringsAsFactors = FALSE,dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "turnaussaanto.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
   #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
   #for(pakka in jsonit[,path]) {
   #  print(substring(pakka,2))
-  drop_get("mstat/processed/json.zip",overwrite = TRUE,dtoken = token)
-
-
-  unzip("json.zip")
-
+  drop_download(path = "mstat/processed/json.zip",
+                local_path = "./drop_download/",
+                overwrite = TRUE,
+                dtoken = token)
+  unzip(zipfile = "./drop_download/json.zip",
+        exdir = "./decks_unzipped")
   #}
   
   #tilastoasetukset
-  drop_get("mstat/csv/tilastoAsetukset.R", overwrite = TRUE,dtoken = token)
-  drop_get("mstat/csv/saavutusAsetukset.R", overwrite = TRUE,dtoken = token)
-  
-  
+  drop_download(path = "mstat/csv/tilastoAsetukset.R",
+                local = "./rdata/",
+                overwrite = TRUE,
+                dtoken = token)
+  drop_download("mstat/csv/saavutusAsetukset.R",
+                local = "./rdata/",
+                overwrite = TRUE,
+                dtoken = token)
 }
 luecsvalku()
 
@@ -89,15 +104,16 @@ kircsv2<-function(datataulu,tiedostonimi) {
 #pakkaa jsonit ja laheta
 zipAndSend<-function(){
 
-  tiedostot<- as.data.table(dir())
+  tiedostot<- as.data.table(dir(path = "./decks_unzipped/"))
   
   tiedostot[,paate:= substr(tiedostot[,V1], nchar(tiedostot[,V1])-5+1, nchar(tiedostot[,V1]))]
-  json_files<-tiedostot[paate==".json",V1]
+  json_files<-tiedostot[paate==".json",paste0(paste0("./decks_unzipped/", V1))]
   if (length(json_files)>0){
     
-      zip("json.zip",files=json_files)
+      zip(zipfile = "./drop_upload/json.zip",
+          files=json_files)
     
-    drop_upload("json.zip", "mstat/processed/", mode = "overwrite" ,dtoken = token)
+    drop_upload("./drop_upload/json.zip", "mstat/processed/", mode = "overwrite" ,dtoken = token)
   }
 
 }
@@ -173,6 +189,6 @@ list_to_string <- function(obj, listname) {
 
 
 
-load("tilastoAsetukset.R")
-load("saavutusAsetukset.R")
+load("./rdata/tilastoAsetukset.R")
+load("./rdata/saavutusAsetukset.R")
 print("Ladattu")

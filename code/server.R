@@ -22,7 +22,7 @@ shinyServer(function(input, output,session) {
   observeEvent(input$luo_peleja,{
     print("luo pejelä alku")
 
-    #divarit_dt<-luecsv("divari.csv")
+    #divarit_dt<-luecsv("./drop_download/divari.csv")
     divarit_dt<-divaridata()
     kaikkiDivarit<-divarit_dt[order(Divari)][Picked==1,.N,by=Divari][,N:=NULL]
     #tarvitaan vain, kun ajetaan manuaalisesti eka kerta
@@ -31,7 +31,7 @@ shinyServer(function(input, output,session) {
     #otteluita<-2
     #montako peliä on yhdessä ottelussa
     #TurnausNo<-1
-    vanhatpelit <-luecsv("pelit.csv")
+    vanhatpelit <-luecsv("./drop_download/pelit.csv")
     turnaus_no<-max(vanhatpelit[,TurnausNo])+1
     for(divariKierros in kaikkiDivarit[,Divari]) {
     otteluita<-input[[paste0("numeric_ottelut",divariKierros)]]
@@ -53,7 +53,7 @@ shinyServer(function(input, output,session) {
     setnames(pelit,c("Var1","Var2"),c("Laurin_pakka","Martin_pakka"))
 
     #lue edellinen turnausnumero
-    vanhatpelit <-luecsv("pelit.csv")
+    vanhatpelit <-luecsv("./drop_download/pelit.csv")
     
     #eti edellinen max ottelu_id
     ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
@@ -100,12 +100,12 @@ shinyServer(function(input, output,session) {
       empty_dt<-data.table(kaikkipelit[1==0])
 
       vanhatpelit<-rbind(empty_dt,vanhatpelit)
-      #kircsv(vanhatpelit,"pelit.csv")
+      #kircsv(vanhatpelit,"./drop_download/pelit.csv")
       #print(vanhatpelit)
       #lisää uudet
       kaikkipelit<-rbind(vanhatpelit,kaikkipelit)
      
-      kircsv(kaikkipelit,"pelit.csv")
+      kircsv(kaikkipelit,"./drop_download/pelit.csv")
     }
       #päivitä nappulastatukset
 
@@ -141,7 +141,7 @@ shinyServer(function(input, output,session) {
     observeEvent(input$nollaa_temp_data, {
       tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
       
-      kircsv(tyhjataulu,"temp_data_storage.csv")
+      kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv")
       
     })
     
@@ -149,7 +149,7 @@ shinyServer(function(input, output,session) {
     #tallennapeli
   observeEvent(input$tallenna_tulos,{
     print("tallenna tulos alku")
-      tempData<-luecsv("temp_data_storage.csv")
+      tempData<-luecsv("./drop_download/temp_data_storage.csv")
      uusrivi<- c(
        Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
        Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
@@ -175,10 +175,10 @@ shinyServer(function(input, output,session) {
      #tyhjennä tempdata
      tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
      
-     kircsv(tyhjataulu,"temp_data_storage.csv")
+     kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv")
    
      
-     kaikkipelit<-data.table(luecsv("pelit.csv"))
+     kaikkipelit<-data.table(luecsv("./drop_download/pelit.csv"))
     
      cols<-names(kaikkipelit)
      kaikkipelit[, (cols):= lapply(.SD, as.numeric), .SDcols=cols]
@@ -224,7 +224,7 @@ shinyServer(function(input, output,session) {
        pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
        pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
       
-     kircsv(pelit_jaljella,"pelit.csv")
+     kircsv(pelit_jaljella,"./drop_download/pelit.csv")
      updateTabItems(session,"sidebarmenu","tab_uusi_peli")
      
   
@@ -268,7 +268,7 @@ observe({
   if(!is.null(input$select_laurin_pakka )) {
   #req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
   print(paste("Observe altotusaika!!!!!!!!!!!"))
-  tempData<-luecsv("temp_data_storage.csv")
+  tempData<-luecsv("./drop_download/temp_data_storage.csv")
   print(tempData)
   if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
     print("peli ei ollut kesken")
@@ -283,11 +283,11 @@ observe({
     muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
     arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
     tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
-    kircsv2(tempData,"temp_data_storage.csv")
+    kircsv2(tempData,"./drop_download/temp_data_storage.csv")
   } else {
     print("peli ei ollut kesken")
     tempData[muuttuja=="kesken",arvo:=FALSE]
-    kircsv2(tempData,"temp_data_storage.csv")
+    kircsv2(tempData,"./drop_download/temp_data_storage.csv")
   }
   }
 })
@@ -295,7 +295,7 @@ observe({
 output$peliKesto <- renderText({
 
    invalidateLater(1000, session)
-  tempData<-luecsv("temp_data_storage.csv")
+  tempData<-luecsv("./drop_download/temp_data_storage.csv")
 
   if (nrow(tempData)>4) {
   pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
@@ -314,10 +314,10 @@ output$peliKesto <- renderText({
   if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
     tempData[muuttuja=="laheta",arvo:="FALSE"]
     tempData[muuttuja=="kesken",arvo:="TRUE"]
-    kircsv(tempData,"temp_data_storage.csv")
+    kircsv(tempData,"./drop_download/temp_data_storage.csv")
     print("lähetetty")
     tempData[muuttuja=="kesken",arvo:="FALSE"]
-    kircsv2(tempData,"temp_data_storage.csv")
+    kircsv2(tempData,"./drop_download/temp_data_storage.csv")
 
   }
   paste(minuutit,":",sekunnit)
@@ -325,7 +325,7 @@ output$peliKesto <- renderText({
 })
 
 output$mulliganiSliderit<-renderUI({
-  pelitiedot<-luecsv("temp_data_storage.csv")
+  pelitiedot<-luecsv("./drop_download/temp_data_storage.csv")
   if(nrow(pelitiedot)==0) {
     laurin_pre_mulligan<-0
     martin_pre_mulligan<-0
@@ -349,10 +349,10 @@ output$mulliganiSliderit<-renderUI({
 
 #  observeEvent(input$button_aloitusaika,{
 #    print(paste("Observe altotusaika"))
-#     kaikkipelit<-data.table(luecsv("pelit.csv"))
+#     kaikkipelit<-data.table(luecsv("./drop_download/pelit.csv"))
 #     kaikkipelit[peli_ID==r_valittu_peli$peliID, ':=' (Aloitusaika=as.ITime(now(tz="Europe/Helsinki")),Aloituspvm=as.IDate(now(tz="Europe/Helsinki")))]
 #     print(kaikkipelit)
-#     kircsv(kaikkipelit,"pelit.csv")
+#     kircsv(kaikkipelit,"./drop_download/pelit.csv")
 #     print("observe aloitusaika loppu")
 # })
 
@@ -366,7 +366,7 @@ output$mulliganiSliderit<-renderUI({
     #seuraa tallenna buttonia myös 
     print(paste("tallennatulosarvo",input$tallenna_tulos))
     
-    kaikkipelit<-luecsv("pelit.csv")
+    kaikkipelit<-luecsv("./drop_download/pelit.csv")
     #print(paste("Laurin pakka: ",input$select_laurin_pakka))
     #print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
     if(!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
@@ -454,7 +454,7 @@ output$mulliganiSliderit<-renderUI({
     })
     divarit[,syntax:=NULL]
     print(divarit)
-    kircsv(divarit,"divari.csv")
+    kircsv(divarit,"./drop_download/divari.csv")
     #divaridata<-divarit
     print("päivitä divarit loppu")
   })
@@ -492,7 +492,7 @@ output$mulliganiSliderit<-renderUI({
     } else {
       shinyjs::disable("luo_peleja")
     }
-  kircsv(divarit,"divari.csv")
+  kircsv(divarit,"./drop_download/divari.csv")
     
   print("tallenna bannit loppu")
   })
@@ -504,7 +504,7 @@ output$mulliganiSliderit<-renderUI({
   #tee laurin pakka selectinput
   output$selectInputLauri <- renderUI({
     pakat<-divaridata()
-    keskenPeliData<-luecsv("temp_data_storage.csv")
+    keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
     #tarkista, onko peli kesken
     print(keskenPeliData)
     laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
@@ -521,7 +521,7 @@ output$mulliganiSliderit<-renderUI({
   #tee martin pakka selectinput
   output$selectInputMartti <- renderUI({
     pakat<-divaridata()
-    keskenPeliData<-luecsv("temp_data_storage.csv")
+    keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
     pakkanimet<-pakat[Omistaja==2,Nimi]
     martin_idt<-pakat[Omistaja==2,Pakka]
     selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
@@ -585,10 +585,10 @@ output$mulliganiSliderit<-renderUI({
   
   
 
-  # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
+  # divaridata <- reactiveFileReader(2000, session, "./drop_download/divari.csv",luecsv)
   divaridata <- reactive({
     print("divaritada alku")
-    tulos <- luecsv("divari.csv")
+    tulos <- luecsv("./drop_download/divari.csv")
     print(paste(input$tallenna_bannit))
     print("divaritada loppu")
     return (tulos)
@@ -879,7 +879,7 @@ tilastoAsetuksetReact$data<-tilastoAsetukset
 pfi_data<-reactive({
   print("TPALAT PAKAT")
   print("TPALAT PAKAT")
-  pakat<-omaReadJson(".//",input$file1)
+  pakat<-omaReadJson("./decks_unzipped/",input$file1)
   print("TPALAT PAKAT")
  # print(pakat)
   tulos<-pakkaUutuusProsentti(pakat)
@@ -907,10 +907,10 @@ observe({
 
 })
 peliDataReact<-reactive({
-  print("Luettu pelit.csv")
+  print("Luettu ./drop_download/pelit.csv")
 print(paste(input$tallenna_tulos),input$luo_peleja)
   if(input$radio_debug_mode==FALSE) {
-    kaikkipelit<-luecsv("pelit.csv")   
+    kaikkipelit<-luecsv("./drop_download/pelit.csv")   
   } else {
     kaikkipelit<-luecsv("pelit_debug.csv")  
   }
