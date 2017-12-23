@@ -1,6 +1,3 @@
-
-
-
 # Define server logic required to draw a histogram 
 shinyServer(function(input, output,session) {
 
@@ -10,8 +7,7 @@ shinyServer(function(input, output,session) {
     source(paste0("./scripts/", filename), local = TRUE)
   }
 
-  
-  
+
   #r_valittu_peli on valittu peli millä tahansa menetelmällä
   r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan")
   
@@ -26,38 +22,6 @@ shinyServer(function(input, output,session) {
       kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv")
       
     })
-    
-
-observe({
-  print(paste(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos,input$nollaa_aika))
-  print(!is.null(input$select_laurin_pakka ))
-  if(!is.null(input$select_laurin_pakka )) {
-  #req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
-  print(paste("Observe altotusaika!!!!!!!!!!!"))
-  tempData<-luecsv("./drop_download/temp_data_storage.csv")
-  print(tempData)
-  if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
-    print("peli ei ollut kesken")
-  alotusaika<-as.ITime(now(tz="Europe/Helsinki"))
-    alotuspvm<-as.IDate(now(tz="Europe/Helsinki"))
-    laurin_pakka<-input$select_laurin_pakka
-    martin_pakka<-input$select_martin_pakka
-    laurin_mull<-input$slider_laurin_mulligan
-    martin_mull<-input$slider_martin_mulligan
-    laheta<-TRUE
-    kesken<-FALSE
-    muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
-    arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
-    tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
-    kircsv2(tempData,"./drop_download/temp_data_storage.csv")
-  } else {
-    print("peli ei ollut kesken")
-    tempData[muuttuja=="kesken",arvo:=FALSE]
-    kircsv2(tempData,"./drop_download/temp_data_storage.csv")
-  }
-  }
-})
-
 
   #päivitä divarit
   observeEvent(input$tallenna_divarit,{
@@ -96,18 +60,6 @@ observe({
     })
   })
 
-
-  output$blob <- renderUI({
-    fluidPage(
-    fluidRow(
-   box( dataTableOutput("plot1"))
-    
-    ),
-    fluidRow(
-      box(dataTableOutput("plot2"))
-    )
-    )
-  })
 
   observeEvent(input$sidebarmenu,{
     maxturnaus <-max(peliDataReact()[,TurnausNo])
