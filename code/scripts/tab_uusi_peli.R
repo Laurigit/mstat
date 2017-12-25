@@ -113,10 +113,10 @@ output$peliKesto <- renderText({
     if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
       tempData[muuttuja=="laheta",arvo:="FALSE"]
       tempData[muuttuja=="kesken",arvo:="TRUE"]
-      kircsv(tempData,"./drop_download/temp_data_storage.csv")
+      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = TRUE)
       print("lähetetty")
       tempData[muuttuja=="kesken",arvo:="FALSE"]
-      kircsv2(tempData,"./drop_download/temp_data_storage.csv")
+      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = FALSE)
       
     }
     paste(minuutit,":",sekunnit)
@@ -144,11 +144,11 @@ observe({
       muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
       arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
       tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
-      kircsv2(tempData,"./drop_download/temp_data_storage.csv")
+      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = FALSE)
     } else {
       print("peli ei ollut kesken")
       tempData[muuttuja=="kesken",arvo:=FALSE]
-      kircsv2(tempData,"./drop_download/temp_data_storage.csv")
+      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = FALSE)
     }
   }
 })

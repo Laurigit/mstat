@@ -105,7 +105,7 @@ observeEvent(input$tallenna_bannit,{
   } else {
     shinyjs::disable("luo_peleja")
   }
-  kircsv(divarit,"./drop_download/divari.csv")
+  kircsv(divarit,"./drop_download/divari.csv", upload = TRUE)
   
   print("tallenna bannit loppu")
 })

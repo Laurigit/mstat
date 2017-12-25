@@ -1,4 +1,9 @@
-GLOBAL_test_mode <- TRUE
+#options are prod, test, dev
+GLOBAL_test_mode <- "test"
+dir.create("./rdata/", showWarnings = FALSE)
+dir.create("./drop_download/", showWarnings = FALSE)
+dir.create("./decks_unzipped/", showWarnings = FALSE)
+dir.create("./drop_upload/", showWarnings = FALSE)
 
 
 library(shiny)
@@ -29,92 +34,87 @@ token <- readRDS("droptoken.rds")
 # Then pass the token to each drop_ function
 #drop_acc(dtoken = token)
 
-#source all files in folder
-
-# source("./scripts/sarjataulukko.R", local = TRUE)
-# source("./scripts/functio_bo_conversio.R", local = TRUE)
-# source("./scripts/process_uploaded_decks.R", local = TRUE)
-# source("./scripts/omaReadJson.R", local = TRUE)
-# source("./scripts/pysyvyys_pct.R", local = TRUE)
-# source("./scripts/turnausVoitot.R", local = TRUE)
-# source("./scripts/functio_lisakortit.R", local = TRUE)
-# source("./scripts/tilastomurskain.R", local = TRUE)
-# source("./scripts/funcLiitaPelit_ja_Pysyvyys.R", local = TRUE)
-# source("./scripts/saavutusLaskenta.R", local = TRUE)
-
-# source("./scripts/", local = TRUE)
-# source("./scripts/", local = TRUE)
-# source("./scripts/", local = TRUE)
-# source("./scripts/", local = TRUE)
-# source("./scripts/", local = TRUE)
-# source("./scripts/", local = TRUE)
-# source("./scripts/", local = TRUE)
 
 
-# dirname <-  './omawd'
-# if (dir.exists(path=dirname)) {
-#   setwd(dirname) 
-# }
-
-
-
-luecsvalku<-function() {
-  print(getwd())
-  
-  test_mode <- FALSE
-  if(exists("GLOBAL_test_mode")) {
-    if (GLOBAL_test_mode == TRUE) {
-      test_mode <- TRUE
+load_data_from_DB <- function(download_folder, drop_box_folder, drop_box_unit_test_folder) {
+  test_mode <- "prod"
+  if (exists("GLOBAL_test_mode")) {
+    if (GLOBAL_test_mode == "dev") {
+      test_mode <- "dev"
+    } else if (GLOBAL_test_mode == "test") {
+      drop_box_folder <- drop_box_unit_test_folder
     }
   }
   
-  if(test_mode == FALSE) {
+  if (test_mode == "prod") {
     
   
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "divari.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "pelit.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "temp_data_storage.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
-  print("temp data storage")
-  print(tulos)
-  tulos <- as.data.table(drop_read_csv(paste0("mstat/csv/", "turnaussaanto.csv"), dest = "./drop_download/", sep=";",stringsAsFactors = FALSE,dtoken = token))
-  #jsonit <- as.data.table(drop_dir("mstat/processed/", dtoken = token))
-  #for(pakka in jsonit[,path]) {
-  #  print(substring(pakka,2))
-  drop_download(path = "mstat/processed/json.zip",
-                local_path = "./drop_download/",
+  tulos <- as.data.table(drop_read_csv(paste0(drop_box_folder, "divari.csv"),
+                                       dest = download_folder,
+                                       sep = ";",
+                                       stringsAsFactors = FALSE,
+                                       dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0(drop_box_folder, "pelit.csv"),
+                                       dest = download_folder,
+                                       sep = ";",stringsAsFactors = FALSE,
+                                       dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0(drop_box_folder, "temp_data_storage.csv"),
+                                       dest = download_folder,
+                                       sep = ";",
+                                       stringsAsFactors = FALSE,
+                                       dtoken = token))
+  tulos <- as.data.table(drop_read_csv(paste0(drop_box_folder, "turnaussaanto.csv"), 
+                                       dest = download_folder,
+                                       sep = ";",
+                                       stringsAsFactors = FALSE,
+                                       dtoken = token))
+  drop_download(path = paste0(drop_box_folder,"json.zip"),
+                local_path = download_folder,
                 overwrite = TRUE,
                 dtoken = token)
   #delete prev decks in case of testing
   do.call(file.remove, list(list.files("./decks_unzipped", full.names = TRUE)))
   
-  unzip(zipfile = "./drop_download/json.zip",
+  unzip(zipfile = paste0(download_folder, "json.zip"),
         exdir = "./decks_unzipped")
-    #}
   
   #tilastoasetukset
-  drop_download(path = "mstat/csv/tilastoAsetukset.R",
-                local = "./rdata/",
+  drop_download(path = paste0(drop_box_folder,"tilastoAsetukset.R"),
+                local = download_folder,
                 overwrite = TRUE,
                 dtoken = token)
-  drop_download("mstat/csv/saavutusAsetukset.R",
-                local = "./rdata/",
+  drop_download(paste0(drop_box_folder, "saavutusAsetukset.R"),
+                local = download_folder,
                 overwrite = TRUE,
                 dtoken = token)
+  #move .R -files to /rdata
+  rfilelist <- data.table(
+    filename=dir(download_folder))[,
+                                      file_end :=  substr(filename, nchar(filename)-1, nchar(filename))][file_end==".R",
+                                                     paste0(download_folder,filename)]
+  file.copy(from = rfilelist, to = "./rdata", overwrite = TRUE)
+  
+  
   }
 }
-luecsvalku()
+load_data_from_DB("./drop_download/")
 
-kircsv<-function(datataulu, tiedostonimi) {
-  test_mode <- FALSE
+
+
+kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
+  test_mode <- "prod"
+  upload_folder <- "mstat/all_data/"
   if(exists("GLOBAL_test_mode")) {
-    if (GLOBAL_test_mode == TRUE) {
-      test_mode <- TRUE
+    if (GLOBAL_test_mode == "dev") {
+      test_mode <- "dev"
+    } else if (GLOBAL_test_mode = "test") {
+      upload_folder <- "mstat/all_data_for_test/"
     }
   }
   
   write.table(x=datataulu,file=tiedostonimi,sep=";",row.names = FALSE,dec=",")
-  if (test_mode == FALSE) {
-  drop_upload(tiedostonimi, "mstat/csv/", mode = "overwrite" ,dtoken = token)
+  if (test_mode == "prod" & upload == TRUE) {
+  drop_upload(tiedostonimi, upload_folder, mode = "overwrite" ,dtoken = token)
   }
 }
 
@@ -124,9 +124,7 @@ luecsv<-function(tiedostonimi) {
   tulos <-as.data.table(read.csv(tiedostonimi,sep=";",stringsAsFactors = FALSE,dec=",",fileEncoding="UTF-8-BOM"))
   return(tulos)
 }
-kircsv2<-function(datataulu,tiedostonimi) {
-  tulos <- write.table(x=datataulu,file=tiedostonimi,sep=";",dec=",",row.names = FALSE)
-}
+
 
 #pakkaa jsonit ja laheta
 zipAndSend<-function(){
@@ -163,38 +161,7 @@ paivitaSliderit<-function(input_peli_ID,session) {
   
 }
 
-aikaero<-function(aika,loppuaika,pvm,loppupvm){
-  return(((loppupvm-pvm)*60*60*24+loppuaika-aika))
-  
-}
 
-
-#oma_timedate
-oma_timedate<-function(pvm,aika) {
-  tulos<-as.integer(pvm)*24*60*60+as.integer(aika)
-  return(tulos)
-  
-}
-
-kategorisoi<-function(arvoVektori,kategorisointiVektori=NULL,pct_vektori=c(0.2, 0.4, 0.6, 0.8)) {
-  if(is.null(kategorisointiVektori)) {
-    kategorisointiVektori<-arvoVektori
-  }
-  kvantiilit <-quantile(kategorisointiVektori,pct_vektori)
-  #laske, että niitä on 4 erilaista
-  eriKvant<-unique(kvantiilit)
-  if(length(eriKvant)==4) {
-    #lisää minimi ja maksimi
-    minHavainto<-min(kategorisointiVektori)
-    maxHavainto<-max(kategorisointiVektori)
-    tulos<-cut(arvoVektori,breaks=sort(unique(c(minHavainto,as.numeric(kvantiilit),maxHavainto))),include.lowest=TRUE)
-    return (tulos)
-    
-  } else {
-    varaTulos<-cut(arvoVektori,sort(unique(kategorisointiVektori)),include.lowest=TRUE)
-    return(varaTulos)
-  }
-}
 
 saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   
@@ -219,15 +186,6 @@ saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   print(get(RdataTallenna))
 }
 
-list_to_string <- function(obj, listname) {
-  if (is.null(names(obj))) {
-    paste(listname, "[[", seq_along(obj), "]] = ", obj,
-          sep = "", collapse = "\n")
-  } else {
-    paste(listname, "$", names(obj), " = ", obj,
-          sep = "", collapse = "\n")
-  }
-}
 
 
 

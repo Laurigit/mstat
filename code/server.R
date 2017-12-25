@@ -19,7 +19,7 @@ shinyServer(function(input, output,session) {
     observeEvent(input$nollaa_temp_data, {
       tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
       
-      kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv")
+      kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv", upload = TRUE)
       
     })
 

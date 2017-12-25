@@ -69,25 +69,46 @@ observeEvent(input$luo_peleja,{
     #lisää kierrokset
     kaikkipelit<-NULL
     for (i in 1:kierroksia){
-      ottelukierros <- kaikki_ottelut[,.(Divari,Laurin_pakka,Martin_pakka,Kierros=i,Ottelu_ID=(Ottelu_ID+(i-1)*ottelua_per_kierros),Ottelu_no,BO_mode)]
-      kaikkipelit<-rbind(kaikkipelit,ottelukierros)
+      ottelukierros <- kaikki_ottelut[,.(Divari,
+                                         Laurin_pakka,
+                                         Martin_pakka,
+                                         Kierros = i,
+                                         Ottelu_ID = (Ottelu_ID + (i - 1) * ottelua_per_kierros),
+                                         Ottelu_no,
+                                         BO_mode)]
+      kaikkipelit <- rbind(kaikkipelit, ottelukierros)
     }
     
     
-    if(!is.finite(turnaus_no)) {turnaus_no<-1}
-    kaikkipelit[,TurnausNo:=turnaus_no]
+    if(!is.finite(turnaus_no)) {turnaus_no <- 1}
+    kaikkipelit[, TurnausNo := turnaus_no]
     
     #edellinen max peli_iD
-    ed_peli_id<-max(vanhatpelit[,peli_ID])
-    if(!is.finite(ed_peli_id)) {ed_peli_id<-0}
+    ed_peli_id <- max(vanhatpelit[, peli_ID])
+    if(!is.finite(ed_peli_id)) {ed_peli_id <- 0}
     
     #aloittaja
     
     kaikkipelit[, idl := 1:.N, by = Laurin_pakka]
     kaikkipelit[, idm := 1:.N, by = Martin_pakka]
-    kaikkipelit[,Aloittaja:=(idl+idm+TurnausNo+Kierros+Divari+Ottelu_no)%%2]
+    kaikkipelit[, Aloittaja := (idl + idm + TurnausNo + Kierros + Divari + Ottelu_no) %% 2]
     
-    kaikkipelit[,':='(peli_ID=.I+ed_peli_id,idl=NULL,idm=NULL,Voittaja=NA,Aloitusaika=NA,Aloituspvm=NA,Lopetusaika=NA,Lopetuspvm=NA,Laurin_mulligan=NA,Martin_mulligan=NA,Laurin_arvosana=NA,Martin_arvosana=NA,Laurin_humala=NA,Martin_humala=NA,Laurin_landit=NA,Martin_landit=NA,Vuoroarvio=NA,Laurin_kasikortit=NA,Martin_kasikortit=NA,Lauri_voitti=NA,Martti_voitti=NA,Laurin_lifet=NA,Martin_lifet=NA)]
+    kaikkipelit[, ':=' (peli_ID = .I + ed_peli_id,
+                        idl = NULL,
+                        idm = NULL, 
+                        Voittaja = NA,
+                        Aloitusaika = NA,
+                        Aloituspvm = NA,
+                        Lopetusaika = NA,
+                        Lopetuspvm = NA,
+                        Laurin_mulligan = NA,
+                        Martin_mulligan = NA,
+                        Laurin_arvosana = NA,
+                        Martin_arvosana = NA,
+                        Laurin_humala = NA,
+                        Martin_humala = NA,
+                        Laurin_landit = NA,
+                        Martin_landit = NA,Vuoroarvio=NA,Laurin_kasikortit=NA,Martin_kasikortit=NA,Lauri_voitti=NA,Martti_voitti=NA,Laurin_lifet=NA,Martin_lifet=NA)]
     #arvosana: 1= pelasin hyvin, en keksi parannettavaa. 0= Hieman löysäilyä. -1= merkittävää hölmöilyä.
     #str(kaikkipelit)
     
@@ -95,12 +116,9 @@ observeEvent(input$luo_peleja,{
     empty_dt<-data.table(kaikkipelit[1==0])
     
     vanhatpelit<-rbind(empty_dt,vanhatpelit)
-    #kircsv(vanhatpelit,"./drop_download/pelit.csv")
-    #print(vanhatpelit)
-    #lisää uudet
     kaikkipelit<-rbind(vanhatpelit,kaikkipelit)
     
-    kircsv(kaikkipelit,"./drop_download/pelit.csv")
+    kircsv(kaikkipelit,"./drop_download/pelit.csv", upload = TRUE)
   }
   #päivitä nappulastatukset
   
