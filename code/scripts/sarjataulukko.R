@@ -10,7 +10,7 @@
 # input_Martin_pakka=NA
 # input_moving_average=NA
 # input_turnaus<-3
-# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
+# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 
@@ -119,8 +119,14 @@ if(input_pfiMA==TRUE) {
   joinpelaajastats<-Lauripelaajastats[Martinpelaajastats,on=c("Divari","Pelit")]
   tulos$pelaajastats<-joinpelaajastats
   
-  Laurinstats<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=1,Hinta=mean(hinta_lauri)),by=.(Pakka=Laurin_pakka,Divari)]
-  Martinstats <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=2,Hinta=mean(hinta_martti)),by=.(Pakka=Martin_pakka,Divari)]
+  Laurinstats_ilman_hintaa<-pelidata[,.(Voitot=sum(Lauri_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=1),by=.(Pakka=Laurin_pakka,Divari)]
+  Laurinhinta <- pelidata[,.SD[which.max(peli_ID)],by=.(Pakka=Laurin_pakka,Divari),][,.(Pakka, Divari, Omistaja = 1, Hinta = hinta_lauri)]
+  #joinlaurihinta
+  Laurinstats <- Laurinhinta[Laurinstats_ilman_hintaa, on = c("Omistaja", "Divari", "Pakka")]
+  
+  Martinstats_ilman_hintaa <- pelidata[,.(Voitot=sum(Martti_voitti,na.rm=TRUE),Pelit=sum(Lauri_voitti+Martti_voitti,na.rm=TRUE),Omistaja=2),by=.(Pakka=Martin_pakka,Divari)]
+  Martinhinta <- pelidata[,.SD[which.max(peli_ID)],by=.(Pakka=Martin_pakka,Divari),][,.(Pakka, Divari, Omistaja = 2, Hinta = hinta_martti)]
+  Martinstats <- Martinhinta[Martinstats_ilman_hintaa, on = c("Omistaja", "Divari", "Pakka")]
   append<-rbind(Laurinstats,Martinstats)
   append[,Tappiot:=Pelit-Voitot]
   pakkatiedot<-divariData[,.(Omistaja,Pakka,Nimi)]

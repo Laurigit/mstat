@@ -1,4 +1,4 @@
-# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
+# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # inputDivariData<-luecsv("divari.csv")
 # inputPeliData<-luecsv("pelit.csv")
@@ -16,7 +16,7 @@ joinsaanto <- turnaussaanto[levite,on=c("TurnausNo","Divari")]
 joinsaanto<-joinsaanto[order(TurnausNo,Divari)]
 #korvaa NA:t seuraavalla
 
-joinsaanto[,lisakortit_per_voitto:=na.locf(lisakortit_per_voitto),by=Divari]
+joinsaanto[, lisakortit_per_voitto := na.locf(lisakortit_per_voitto, na.rm = FALSE), by = Divari]
 
 joinLisakortit<-joinsaanto[inputPeliData,on=c("TurnausNo","Divari")]
 

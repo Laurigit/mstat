@@ -217,7 +217,7 @@ sidebar <- dashboardSidebar(
 #RUNKO  
 dashboardPage(
   
-  dashboardHeader(title = "Mätkysofta"),
+  dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode)),
   sidebar,
   uusi_peli
 )
