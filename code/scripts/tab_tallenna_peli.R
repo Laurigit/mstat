@@ -1,5 +1,5 @@
 #tallennapeli
-observeEvent(input$tallenna_tulos,{
+observeEvent(input$tallenna_tulos, {
   print("tallenna tulos alku")
   tempData<-luecsv("temp_data_storage.csv")
   uusrivi<- c(

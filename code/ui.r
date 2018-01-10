@@ -44,7 +44,7 @@ uusi_peli<-dashboardBody(
                        column(2, actionButton("laurin_virhe_uusipeli","Laurin virhe")
                        ),
                        column(2, textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
-                                 font-size: 25px;
+                                 font-size: 20px;
                                  font-style: bold;
                                  }"
                          )

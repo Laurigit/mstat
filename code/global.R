@@ -1,5 +1,5 @@
 #options are prod, test, dev
-GLOBAL_test_mode <- "prod"
+GLOBAL_test_mode <- "dev"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)
@@ -18,6 +18,7 @@ library(zoo)
 library(rpivotTable)
 library(rvest)
 library(curl)
+library(stringr)
 #library(shinythemes)
 #options(shiny.error=browser)
 options(max.print=1000000)
@@ -49,44 +50,33 @@ load_data_from_DB <- function() {
     }
   }
   
+  #delete prev decks in case of testing
+  do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
   if (download_from_DropBox == TRUE) {
-    #delete prev decks in case of testing
-    do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
-
-    
+   
     
     drop_download(path = paste0(drop_box_folder,"all_files.zip"),
                   local_path = download_folder,
                   overwrite = TRUE,
                   dtoken = token)
-    unzip(zipfile = paste0(download_folder, "all_files.zip"),
-          exdir = "./external_files")
-
+  } else {
+    file.copy("./upload_folder/all_files.zip", to = "./download_folder", overwrite = TRUE)
   }
+  unzip(zipfile = paste0(download_folder, "all_files.zip"),
+        exdir = "./external_files")
 }
 load_data_from_DB()
 
 
 
 kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
-  uplaod_to_DropBox <- TRUE
-  upload_folder <- "mstat/all_data/"
-  if(exists("GLOBAL_test_mode")) {
-    if (GLOBAL_test_mode == "dev") {
-      uplaod_to_DropBox <- FALSE
-    } else if (GLOBAL_test_mode == "test") {
-      upload_folder <- "mstat/all_data_for_test/"
-    }
-  }
-  
   write.table(x = datataulu,
               file = paste0("./external_files/", tiedostonimi),
               sep = ";",
               row.names = FALSE,
               dec = ",")
   
-
-  if (uplaod_to_DropBox == TRUE & upload == TRUE) {
+  if (upload == TRUE) {
        zip_all_and_send()
   }
 }

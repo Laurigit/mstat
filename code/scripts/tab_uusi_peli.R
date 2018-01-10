@@ -119,7 +119,8 @@ output$peliKesto <- renderText({
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
       
     }
-    paste(minuutit,":",sekunnit)
+    sekunnit_fix <- str_pad(sekunnit, 2, pad = "0")
+    paste(minuutit,":",sekunnit_fix)
   }
 })
 
