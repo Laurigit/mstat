@@ -1,5 +1,5 @@
 #options are prod, test, dev
-GLOBAL_test_mode <- "prod"
+GLOBAL_test_mode <- "dev"
 dir.create("./rdata/", showWarnings = FALSE)
 dir.create("./drop_download/", showWarnings = FALSE)
 dir.create("./decks_unzipped/", showWarnings = FALSE)
@@ -18,6 +18,7 @@ library(rdrop2)
 library(zoo)
 library(rpivotTable)
 library(rvest)
+library(curl)
 #library(shinythemes)
 #options(shiny.error=browser)
 options(max.print=1000000)
@@ -38,16 +39,16 @@ token <- readRDS("droptoken.rds")
 #download_folder <- "./drop_download/"
 #drop_box_folder <- "mstat/all_data/"
 load_data_from_DB <- function(download_folder, drop_box_folder, drop_box_unit_test_folder) {
-  test_mode <- "prod"
+  download_from_DropBox <- TRUE
   if (exists("GLOBAL_test_mode")) {
     if (GLOBAL_test_mode == "dev") {
-      test_mode <- "dev"
+      download_from_DropBox <- FALSE
     } else if (GLOBAL_test_mode == "test") {
       drop_box_folder <- drop_box_unit_test_folder
     }
   }
   
-  if (test_mode == "prod") {
+  if (download_from_DropBox == TRUE) {
     #delete prev decks in case of testing
     do.call(file.remove, list(list.files("./decks_unzipped", full.names = TRUE)))
     do.call(file.remove, list(list.files("./drop_download", full.names = TRUE)))
@@ -70,7 +71,7 @@ load_data_from_DB <- function(download_folder, drop_box_folder, drop_box_unit_te
   #move .R -files to /rdata
   rfilelist <- data.table(
     filename=dir(download_folder))[,
-                                      file_end :=  substr(filename, nchar(filename)-1, nchar(filename))][file_end==".R",
+                                      file_end :=  substr(filename, nchar(filename) - 1, nchar(filename))][file_end == ".R",
                                                      paste0(download_folder,filename)]
   file.copy(from = rfilelist, to = "./rdata", overwrite = TRUE)
   
@@ -189,7 +190,7 @@ saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   save(list=RdataTallenna,file=RdataTiedostonimi)
   test_mode <- FALSE
   if(exists("GLOBAL_test_mode")) {
-    if (GLOBAL_test_mode == TRUE) {
+    if (GLOBAL_test_mode == "dev") {
       test_mode <- TRUE
     }
   }

@@ -205,7 +205,8 @@ sidebar <- dashboardSidebar(
               radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
-              #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
+              actionButton("automated_tests", label = h5("Run tests")),
+               #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
               numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5)
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
   )
