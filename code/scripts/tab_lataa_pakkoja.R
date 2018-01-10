@@ -9,8 +9,8 @@ output$pfi_taulukko <- renderDataTable({
   joinLisakortit <- lisakortit[pfistats, on = c("Nimi")]
   
   #eti viimesin pfi
-  viimesin_pfi <-omaReadJson$meta
-  print(viimesin_pfi)
+  # viimesin_pfi <-omaReadJson$meta
+  # print(viimesin_pfi)
   
   print("LISÄKORIT")
   print(joinLisakortit)
