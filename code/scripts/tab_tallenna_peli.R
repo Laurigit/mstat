@@ -1,7 +1,7 @@
 #tallennapeli
 observeEvent(input$tallenna_tulos,{
   print("tallenna tulos alku")
-  tempData<-luecsv("./drop_download/temp_data_storage.csv")
+  tempData<-luecsv("temp_data_storage.csv")
   uusrivi<- c(
     Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
     Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
@@ -27,10 +27,10 @@ observeEvent(input$tallenna_tulos,{
   #tyhjennä tempdata
   tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
   
-  kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv")
+  kircsv(tyhjataulu,"temp_data_storage.csv")
   
   
-  kaikkipelit<-data.table(luecsv("./drop_download/pelit.csv"))
+  kaikkipelit<-data.table(luecsv("pelit.csv"))
   
   cols<-names(kaikkipelit)
   kaikkipelit[, (cols):= lapply(.SD, as.numeric), .SDcols=cols]
@@ -76,7 +76,7 @@ observeEvent(input$tallenna_tulos,{
   pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
   pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
   
-  kircsv(pelit_jaljella,"./drop_download/pelit.csv")
+  kircsv(pelit_jaljella,"pelit.csv")
   updateTabItems(session,"sidebarmenu","tab_uusi_peli")
   
   
@@ -113,7 +113,7 @@ observeEvent(input$tallenna_tulos,{
 
 
 output$mulliganiSliderit<-renderUI({
-  pelitiedot<-luecsv("./drop_download/temp_data_storage.csv")
+  pelitiedot<-luecsv("temp_data_storage.csv")
   if(nrow(pelitiedot)==0) {
     laurin_pre_mulligan<-0
     martin_pre_mulligan<-0
@@ -167,7 +167,7 @@ observeEvent(input$martin_virhe_uusipeli,{
 
 observeEvent(input$lauri_voitti,{
   print("lauri voitti alku")
-  kaikkipelit<-data.table(luecsv("./drop_download/pelit.csv"))
+  kaikkipelit<-data.table(luecsv("pelit.csv"))
   #tarkista onko peli pelattu
   if(!is.na(kaikkipelit[peli_ID==  r_valittu_peli$peliID,Voittaja])){
     print("peli on jo pelattu")
@@ -210,4 +210,20 @@ observeEvent(input$action_reduce,{
     steppi <- 1
   }
   updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]-steppi)
+})
+
+#osuus, joka katsoo mitä UI-palikkaa on viimeksi muokattu. Liittyen sliderehein tallenna peli sivulla
+
+values <- reactiveValues(
+  lastUpdated = NULL
+)
+
+observe({
+  
+  lapply(names(input), function(x) {
+    observe({
+      input[[x]]
+      values$lastUpdated <- x
+    })
+  })
 })

@@ -19,7 +19,7 @@ shinyServer(function(input, output,session) {
     observeEvent(input$nollaa_temp_data, {
       tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
       
-      kircsv(tyhjataulu,"./drop_download/temp_data_storage.csv", upload = TRUE)
+      kircsv(tyhjataulu,"./temp_data_storage.csv", upload = TRUE)
       
     })
 
@@ -38,7 +38,7 @@ shinyServer(function(input, output,session) {
     })
     divarit[,syntax:=NULL]
     print(divarit)
-    kircsv(divarit,"./drop_download/divari.csv")
+    kircsv(divarit,"./divari.csv")
     #divaridata<-divarit
     print("päivitä divarit loppu")
   })
@@ -66,10 +66,10 @@ shinyServer(function(input, output,session) {
     updateNumericInput(session,"sarjataulukkokierros",value=maxturnaus)})
 
 
-  # divaridata <- reactiveFileReader(2000, session, "./drop_download/divari.csv",luecsv)
+  # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
   divaridata <- reactive({
     print("divaritada alku")
-    tulos <- luecsv("./drop_download/divari.csv")
+    tulos <- luecsv("./divari.csv")
     print(paste(input$tallenna_bannit))
     print("divaritada loppu")
     return (tulos)
@@ -108,7 +108,7 @@ shinyServer(function(input, output,session) {
 pfi_data<-reactive({
   print("TPALAT PAKAT")
   print("TPALAT PAKAT")
-  pakat<-omaReadJson("./decks_unzipped/",input$file1)
+  pakat<-omaReadJson("./external_files/",input$file1)
   print("TPALAT PAKAT")
  # print(pakat)
   tulos<-pakkaUutuusProsentti(pakat)
@@ -129,17 +129,14 @@ observe({
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
     validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
-  zipAndSend()
-  
-  #varmaa vähän purkkaa, mutta päivitetään peliDataReact näin()
-
+  zip_all_and_send()
 })
 
 peliDataReact<-reactive({
-  print("Luettu ./drop_download/pelit.csv")
+  print("Luettu ./pelit.csv")
 print(paste(input$tallenna_tulos),input$luo_peleja)
   if(input$radio_debug_mode==FALSE) {
-    kaikkipelit<-luecsv("./drop_download/pelit.csv")   
+    kaikkipelit<-luecsv("./pelit.csv")   
   } else {
     kaikkipelit<-luecsv("pelit_debug.csv")  
   }
@@ -153,8 +150,8 @@ saavutusAsetuksetReact<-reactiveValues(
 
 
 turnausSaantoReact<-reactive({
-  print("luettu ./drop_download/turnaussaanto.csv")
-  turnaussaanto<-data.table(read.csv("./drop_download/turnaussaanto.csv",sep=";",fileEncoding="UTF-8-BOM"))
+  print("luettu ./turnaussaanto.csv")
+  turnaussaanto <- luecsv("turnaussaanto.csv")
   return(turnaussaanto)
 })
 
@@ -163,20 +160,6 @@ output$text_validointi <- renderText(({
   paste(validointiteksti$teksti)
   }))
   
-#osuus, joka katsoo mitä UI-palikkaa on viimeksi muokattu
 
-values <- reactiveValues(
-  lastUpdated = NULL
-)
-
-observe({
-  
-  lapply(names(input), function(x) {
-    observe({
-      input[[x]]
-      values$lastUpdated <- x
-    })
-  })
-})
 
 })

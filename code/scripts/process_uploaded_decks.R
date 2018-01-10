@@ -29,7 +29,7 @@ valid_teksti<-NULL
     sekunnit<-as.integer(as.ITime(aikaleima))
     
     tiedostopaate <- substr(pakka$name,nchar(pakka$name)-4,nchar(pakka$name))
-    tiedostonimi<-paste0("./decks_unzipped/",tiedostoalku,"_",pvm,"_",sekunnit,tiedostopaate)
+    tiedostonimi<-paste0("./external_files/",tiedostoalku,"_",pvm,"_",sekunnit,tiedostopaate)
 
     write.table(read.table(file=pakka$datapath),file=tiedostonimi,row.names=FALSE,col.names = FALSE,quote=FALSE)
     

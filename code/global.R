@@ -1,9 +1,8 @@
 #options are prod, test, dev
-GLOBAL_test_mode <- "dev"
-dir.create("./rdata/", showWarnings = FALSE)
-dir.create("./drop_download/", showWarnings = FALSE)
-dir.create("./decks_unzipped/", showWarnings = FALSE)
-dir.create("./drop_upload/", showWarnings = FALSE)
+GLOBAL_test_mode <- "prod"
+dir.create("./external_files/", showWarnings = FALSE)
+dir.create("./download_folder/", showWarnings = FALSE)
+dir.create("./upload_folder/", showWarnings = FALSE)
 
 
 library(shiny)
@@ -38,22 +37,22 @@ token <- readRDS("droptoken.rds")
 
 #download_folder <- "./drop_download/"
 #drop_box_folder <- "mstat/all_data/"
-load_data_from_DB <- function(download_folder, drop_box_folder, drop_box_unit_test_folder) {
+load_data_from_DB <- function() {
   download_from_DropBox <- TRUE
+  drop_box_folder <- "mstat/all_data/"
+  download_folder <- "./download_folder/"
   if (exists("GLOBAL_test_mode")) {
     if (GLOBAL_test_mode == "dev") {
       download_from_DropBox <- FALSE
     } else if (GLOBAL_test_mode == "test") {
-      drop_box_folder <- drop_box_unit_test_folder
+      drop_box_folder <- "mstat/all_data_test_download/"
     }
   }
   
   if (download_from_DropBox == TRUE) {
     #delete prev decks in case of testing
-    do.call(file.remove, list(list.files("./decks_unzipped", full.names = TRUE)))
-    do.call(file.remove, list(list.files("./drop_download", full.names = TRUE)))
-    do.call(file.remove, list(list.files("./drop_upload", full.names = TRUE)))
-    do.call(file.remove, list(list.files("./rdata", full.names = TRUE)))
+    do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
+
     
     
     drop_download(path = paste0(drop_box_folder,"all_files.zip"),
@@ -61,63 +60,42 @@ load_data_from_DB <- function(download_folder, drop_box_folder, drop_box_unit_te
                   overwrite = TRUE,
                   dtoken = token)
     unzip(zipfile = paste0(download_folder, "all_files.zip"),
-          exdir = "./drop_download")
-    
-    
+          exdir = "./external_files")
 
-  unzip(zipfile = paste0(download_folder, "json.zip"),
-        exdir = "./decks_unzipped")
-  
-  #move .R -files to /rdata
-  rfilelist <- data.table(
-    filename=dir(download_folder))[,
-                                      file_end :=  substr(filename, nchar(filename) - 1, nchar(filename))][file_end == ".R",
-                                                     paste0(download_folder,filename)]
-  file.copy(from = rfilelist, to = "./rdata", overwrite = TRUE)
-  
-  
   }
 }
-load_data_from_DB(download_folder = "./drop_download/", drop_box_folder = "mstat/all_data/",
-                  drop_box_unit_test_folder = "mstat/all_data_static/")
+load_data_from_DB()
 
 
 
 kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
-  test_mode <- "prod"
+  uplaod_to_DropBox <- TRUE
   upload_folder <- "mstat/all_data/"
   if(exists("GLOBAL_test_mode")) {
     if (GLOBAL_test_mode == "dev") {
-      test_mode <- "dev"
+      uplaod_to_DropBox <- FALSE
     } else if (GLOBAL_test_mode == "test") {
       upload_folder <- "mstat/all_data_for_test/"
     }
   }
   
   write.table(x = datataulu,
-              file = tiedostonimi,
+              file = paste0("./external_files/", tiedostonimi),
               sep = ";",
               row.names = FALSE,
               dec = ",")
   
 
-  if (test_mode == "prod" & upload == TRUE) {
-    #copy to upload
-    file.copy(from = tiedostonimi, to = "./drop_upload/")
-    zip_all_and_send()
+  if (uplaod_to_DropBox == TRUE & upload == TRUE) {
+       zip_all_and_send()
   }
 }
 
 zip_all_and_send <- function() {
-#copy rdata
-  rdatafiles <- paste0("./rdata/",  dir("./rdata/"))
-  csv_files <-  data.table(filename= dir("./drop_download/"))[, file_end :=  substr(filename, nchar(filename)-3, nchar(filename))][file_end==".csv",
-                                  paste0("./drop_download/",filename)]
-  file.copy(from= c(rdatafiles, csv_files), to = "./drop_upload", overwrite = TRUE)
-    tiedostot <- as.data.table(dir(path = "./drop_upload/"))
 
-    setwd("./drop_upload")
-    zip(zipfile = "../drop_upload/all_files.zip",
+    tiedostot <- as.data.table(dir(path = "./external_files/"))
+    setwd("./external_files")
+    zip(zipfile = "../upload_folder/all_files.zip",
         files = tiedostot[,V1])
     setwd("..")
     test_mode <- "prod"
@@ -126,18 +104,18 @@ zip_all_and_send <- function() {
       if (GLOBAL_test_mode == "dev") {
         test_mode <- "dev"
       } else if (GLOBAL_test_mode == "test") {
-        upload_dir <- "mstat/all_data_for_test/"
+        upload_dir <- "mstat/all_data_test_upload/"
       }
     }
     if (test_mode == "prod") {
-      drop_upload("./drop_upload/all_files.zip", upload_dir, mode = "overwrite", dtoken = token)
+      drop_upload("./upload_folder/all_files.zip", upload_dir, mode = "overwrite", dtoken = token)
     }
   
 }
 
 
 luecsv <- function(tiedostonimi) {
-  tulos <- as.data.table(read.csv(tiedostonimi,
+  tulos <- as.data.table(read.csv(paste0("./external_files/", tiedostonimi),
                                   sep = ";",
                                   stringsAsFactors = FALSE,
                                   dec = ",",
@@ -148,30 +126,30 @@ luecsv <- function(tiedostonimi) {
 
 #pakkaa jsonit ja laheta
 zipAndSend <- function(){
-  tiedostot <- as.data.table(dir(path = "./decks_unzipped/"))
-  
-  tiedostot[, paate := substr(tiedostot[,V1], nchar(tiedostot[, V1]) - 5 + 1, nchar(tiedostot[, V1]))]
-  json_files <- tiedostot[paate == ".json", paste0(V1)]
-  if (length(json_files) > 0) {
-    setwd("./decks_unzipped")
-      zip(zipfile = "../drop_upload/json.zip",
-          files = json_files)
-    setwd("..")
-    test_mode <- "prod"
-    if(exists("GLOBAL_test_mode")) {
-      if (GLOBAL_test_mode == "dev") {
-        test_mode <- "dev"
-      }
-    }
-    if (test_mode == "prod" | test_mode == "test") {
-      zip_all_and_send()
-    }
-  }
-
+  # tiedostot <- as.data.table(dir(path = "./decks_unzipped/"))
+  # 
+  # tiedostot[, paate := substr(tiedostot[,V1], nchar(tiedostot[, V1]) - 5 + 1, nchar(tiedostot[, V1]))]
+  # json_files <- tiedostot[paate == ".json", paste0(V1)]
+  # if (length(json_files) > 0) {
+  #   setwd("./decks_unzipped")
+  #     zip(zipfile = "../drop_upload/json.zip",
+  #         files = json_files)
+  #   setwd("..")
+  #   test_mode <- "prod"
+  #   if(exists("GLOBAL_test_mode")) {
+  #     if (GLOBAL_test_mode == "dev") {
+  #       test_mode <- "dev"
+  #     }
+  #   }
+  #   if (test_mode == "prod" | test_mode == "test") {
+  #     zip_all_and_send()
+  #   }
+  # }
+print("zipAndSend: THIS FUNC SHOULD NOT BE CALLED ANYMORE")
 }
 
 paivitaSliderit<-function(input_peli_ID,session) {
-  kaikkipelit<-luecsv("./drop_download/pelit.csv")
+  kaikkipelit<-luecsv("pelit.csv")
   laurin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Laurin_pakka])
   martin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Martin_pakka])
   
@@ -182,23 +160,22 @@ paivitaSliderit<-function(input_peli_ID,session) {
 
 
 
-saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
+saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   
   assign(RdataTallenna,rdatasetti)
   print(get(RdataTallenna))
   print("ladattu")
-  save(list=RdataTallenna,file=RdataTiedostonimi)
+  save(list = RdataTallenna,file = paste0("./external_files/", RdataTiedostonimi))
   test_mode <- FALSE
-  if(exists("GLOBAL_test_mode")) {
+  if (exists("GLOBAL_test_mode")) {
     if (GLOBAL_test_mode == "dev") {
       test_mode <- TRUE
     }
   }
   if (test_mode == FALSE) {
-  drop_upload(RdataTiedostonimi, "mstat/csv/", mode = "overwrite",dtoken = token)
+    zip_all_and_send()
+    print("tallennettu uus R-tiedosto jo lähetetty")
   }
-  
-  print("tallennettu")
 
   #load("tilastoAsetukset.R")
   print("ladattu taas ja nyt tulostetaan")
@@ -208,6 +185,6 @@ saveR_and_send <-function(rdatasetti,RdataTallenna,RdataTiedostonimi){
 
 
 
-load("./rdata/tilastoAsetukset.R")
-load("./rdata/saavutusAsetukset.R")
-print("Ladattu")
+load("./external_files/tilastoAsetukset.R")
+load("./external_files/saavutusAsetukset.R")
+print("Global.R valmis")

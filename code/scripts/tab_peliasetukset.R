@@ -26,7 +26,7 @@ observeEvent(input$luo_peleja,{
   #otteluita<-2
   #montako peliä on yhdessä ottelussa
   #TurnausNo<-1
-  vanhatpelit <-luecsv("./drop_download/pelit.csv")
+  vanhatpelit <-luecsv("pelit.csv")
   turnaus_no<-max(vanhatpelit[,TurnausNo])+1
   for(divariKierros in kaikkiDivarit[,Divari]) {
     otteluita<-input[[paste0("numeric_ottelut",divariKierros)]]
@@ -48,7 +48,7 @@ observeEvent(input$luo_peleja,{
     setnames(pelit,c("Var1","Var2"),c("Laurin_pakka","Martin_pakka"))
     
     #lue edellinen turnausnumero
-    vanhatpelit <-luecsv("./drop_download/pelit.csv")
+    vanhatpelit <-luecsv("pelit.csv")
     
     #eti edellinen max ottelu_id
     ed_ottelu_id_max<-max(vanhatpelit[,Ottelu_ID])
@@ -118,7 +118,7 @@ observeEvent(input$luo_peleja,{
     vanhatpelit<-rbind(empty_dt,vanhatpelit)
     kaikkipelit<-rbind(vanhatpelit,kaikkipelit)
     
-    kircsv(kaikkipelit,"./drop_download/pelit.csv", upload = TRUE)
+    kircsv(kaikkipelit,"pelit.csv", upload = TRUE)
   }
   #päivitä nappulastatukset
   

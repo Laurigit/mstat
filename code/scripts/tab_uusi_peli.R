@@ -4,7 +4,7 @@ observe({
   #seuraa tallenna buttonia myös 
   print(paste("tallennatulosarvo",input$tallenna_tulos))
   
-  kaikkipelit<-luecsv("./drop_download/pelit.csv")
+  kaikkipelit<-luecsv("pelit.csv")
   #print(paste("Laurin pakka: ",input$select_laurin_pakka))
   #print(paste("maxvarotus:: ",max(kaikkipelit[Laurin_pakka==input$select_laurin_pakka & Martin_pakka==input$select_martin_pakka,Ottelu_ID])))
   if(!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
@@ -94,7 +94,7 @@ observeEvent(input$jatka_ottelua,{
 output$peliKesto <- renderText({
   
   invalidateLater(1000, session)
-  tempData<-luecsv("./drop_download/temp_data_storage.csv")
+  tempData<-luecsv("temp_data_storage.csv")
   
   if (nrow(tempData)>4) {
     pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
@@ -113,10 +113,10 @@ output$peliKesto <- renderText({
     if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
       tempData[muuttuja=="laheta",arvo:="FALSE"]
       tempData[muuttuja=="kesken",arvo:="TRUE"]
-      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = TRUE)
+      kircsv(tempData,"temp_data_storage.csv", upload = TRUE)
       print("lähetetty")
       tempData[muuttuja=="kesken",arvo:="FALSE"]
-      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = FALSE)
+      kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
       
     }
     paste(minuutit,":",sekunnit)
@@ -129,7 +129,7 @@ observe({
   if(!is.null(input$select_laurin_pakka )) {
     #req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
     print(paste("Observe altotusaika!!!!!!!!!!!"))
-    tempData<-luecsv("./drop_download/temp_data_storage.csv")
+    tempData<-luecsv("temp_data_storage.csv")
     print(tempData)
     if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
       print("peli ei ollut kesken")
@@ -144,11 +144,11 @@ observe({
       muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
       arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
       tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
-      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = FALSE)
+      kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
     } else {
       print("peli ei ollut kesken")
       tempData[muuttuja=="kesken",arvo:=FALSE]
-      kircsv(tempData,"./drop_download/temp_data_storage.csv", upload = FALSE)
+      kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
     }
   }
 })
@@ -191,7 +191,7 @@ output$divariRadio_out <- renderUI({
 #tee laurin pakka selectinput
 output$selectInputLauri <- renderUI({
   pakat<-divaridata()
-  keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
+  keskenPeliData<-luecsv("temp_data_storage.csv")
   #tarkista, onko peli kesken
   print(keskenPeliData)
   laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
@@ -208,7 +208,7 @@ output$selectInputLauri <- renderUI({
 #tee martin pakka selectinput
 output$selectInputMartti <- renderUI({
   pakat<-divaridata()
-  keskenPeliData<-luecsv("./drop_download/temp_data_storage.csv")
+  keskenPeliData<-luecsv("temp_data_storage.csv")
   pakkanimet<-pakat[Omistaja==2,Nimi]
   martin_idt<-pakat[Omistaja==2,Pakka]
   selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
