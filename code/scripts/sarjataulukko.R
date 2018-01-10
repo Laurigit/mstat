@@ -151,16 +151,18 @@ if(input_pfiMA==TRUE) {
   max_pakkaform_by_laurin_pakka<-pelidata[,.(laurin_pfi=max(Laurin_pakka_form_id,na.rm=TRUE)),by=Laurin_pakka]
   max_pakkaform_by_martin_pakka  <-pelidata[,.(martin_pfi=max(Martin_pakka_form_id,na.rm=TRUE)),by=Martin_pakka]                                                 
   
+  
   setkey(max_pakkaform_by_laurin_pakka,laurin_pfi)
   setkey(max_pakkaform_by_martin_pakka,martin_pfi)
   setkey(pelidata,Laurin_pakka_form_id)
-  pfilauri<-pelidata[max_pakkaform_by_laurin_pakka][,.(Pelit=sum(ifelse(is.na(Voittaja),0,1)),Voitot=sum(Lauri_voitti,na.rm=TRUE),Tappiot=sum(Martti_voitti,na.rm=TRUE),Omistaja=1),by=.(Pakka=Laurin_pakka)]
+  pfilauri<-pelidata[max_pakkaform_by_laurin_pakka][,.(Pelit=sum(ifelse(is.na(Voittaja),0,1)),Voitot=sum(Lauri_voitti,na.rm=TRUE),Tappiot=sum(Martti_voitti,na.rm=TRUE),Omistaja=1),
+                                                    by=.(Pakka=Laurin_pakka, pfi = Laurin_pakka_form_id)]
   setkey(pelidata,Martin_pakka_form_id)
-  pfimartti<-pelidata[max_pakkaform_by_martin_pakka][,.(Pelit=sum(ifelse(is.na(Voittaja),0,1)),Voitot=sum(Martti_voitti,na.rm=TRUE),Tappiot=sum(Lauri_voitti,na.rm=TRUE),Omistaja=2),by=.(Pakka=Martin_pakka)]
+  pfimartti<-pelidata[max_pakkaform_by_martin_pakka][,.(Pelit=sum(ifelse(is.na(Voittaja),0,1)),Voitot=sum(Martti_voitti,na.rm=TRUE),Tappiot=sum(Lauri_voitti,na.rm=TRUE),Omistaja=2),by=.(Pakka=Martin_pakka, pfi = Martin_pakka_form_id)]
   append_pfi<-rbind(pfilauri,pfimartti)
   setkeyv(append_pfi,c("Omistaja","Pakka"))
   joinpfipakka <- pakkatiedot[append_pfi]
-  pfiresult<-joinpfipakka[,.(Nimi,Voitot,Tappiot)][order(-Tappiot,-Voitot)]
+  pfiresult<-joinpfipakka[,.(Nimi,Voitot,Tappiot, pfi)][order(-Tappiot,-Voitot)]
 
   tulos$pfi<-pfiresult
   #transponoi

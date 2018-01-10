@@ -1,11 +1,10 @@
 
-#folder<-"C:/Users/laurilepisto/Documents/R/shiny/matka/mstat/code/omawd/"
+#folder<-"C:/Users/Lauri/Documents/R/mstat2/code/external_files/"
 
-
-omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_data reactive why
-  pakkalista<-    list.files(folder)
-  tulos<-NULL
-  pakat<-NULL
+omaReadJson <- function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_data reactive why
+  pakkalista <- list.files(folder)
+  tulos <- NULL
+  pakat <- NULL
   counter <-0
   pakkametataulu<-NULL
   for (pakka in pakkalista){ 
@@ -33,7 +32,7 @@ omaReadJson<-function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_dat
   pakkametataulu[,':=' (pvm_end=shift(pvm,1,type="lead"),kello_end=shift(kello,1,type="lead")),by=.(omistaja,pakkanumero)]
   #fix na ending to future
   pakkametataulu[,':=' (pvm_end=ifelse(is.na(pvm_end),as.IDate("2100-01-01"),pvm_end),kello_end=ifelse(is.na(kello_end),1,kello_end))]
-  tulos$meta<-pakkametataulu
+  tulos$meta <- pakkametataulu
   print("PAKAT PÄIVITETTY")
   return(tulos)
 }

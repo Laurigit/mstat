@@ -132,7 +132,7 @@ observe({
     print(paste("Observe altotusaika!!!!!!!!!!!"))
     tempData<-luecsv("temp_data_storage.csv")
     print(tempData)
-    if(tempData[muuttuja=="kesken",arvo]!=TRUE) {
+    if (tempData[muuttuja == "kesken",arvo] != TRUE) {
       print("peli ei ollut kesken")
       alotusaika<-as.ITime(now(tz="Europe/Helsinki"))
       alotuspvm<-as.IDate(now(tz="Europe/Helsinki"))
@@ -256,7 +256,7 @@ output$data_vs_taulukko<-renderDataTable({
   
   #filtteröi mukaan vaan pelin pakat
   lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
-  lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)+37),Lisakortit=NULL)]
+  lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)),Lisakortit=NULL)]
   #transponoi
   
   lisakortit_trans<-data.table(dcast(lisakortit_pelipakat,Tilasto+selite~Nimi,value.var="Kortti_lkm"))

@@ -35,13 +35,23 @@ uusi_peli<-dashboardBody(
                        column(3,actionButton("nollaa_aika","Nollaa aika")),
                        column(3,actionButton("jatka_ottelua","Jatka ottelua"))
               ),
-              fluidRow(column(3,uiOutput("selectInputLauri")),column(3,h3(textOutput("text_aloittaja"))),column(3,uiOutput("selectInputMartti"))),
-              fluidRow(column(3,actionButton("laurin_mulligan","Laurin Mulligan")),column(3,h3(textOutput("text_tilanne"))),column(3,actionButton("martin_mulligan","Martin Mulligan"))),
+              fluidRow(column(3,uiOutput("selectInputLauri")),
+                       column(3,h3(textOutput("text_aloittaja"))),
+                       column(3,uiOutput("selectInputMartti"))),
+              fluidRow(column(3,actionButton("laurin_mulligan",
+                                             "Laurin Mulligan",
+                                             icon = icon("undo"),
+                                             style = "color: #fff; background-color: #b73338; border-color: #2e6da4")),
+                       column(3,h3(textOutput("text_tilanne"))),
+                       column(3,actionButton("martin_mulligan",
+                                             "Martin Mulligan",
+                                             icon = icon("undo"),
+                                             style = "color: #fff; background-color: #b73338; border-color: #2e6da4"))),
               
              uiOutput("mulliganiSliderit")
              ,
               fluidRow(column(2, actionButton("lauri_voitti","Lauri voitti")),
-                       column(2, actionButton("laurin_virhe_uusipeli","Laurin virhe")
+                       column(2, actionButton("laurin_virhe_uusipeli","Laurin virhe", icon = icon("exclamation-circle"))
                        ),
                        column(2, textOutput("peliKesto"),    tags$head(tags$style("#peliKesto{color: red;
                                  font-size: 20px;
@@ -50,7 +60,7 @@ uusi_peli<-dashboardBody(
                          )
                        )
                        ),
-                       column(2, actionButton("martin_virhe_uusipeli","Martin virhe")
+                       column(2, actionButton("martin_virhe_uusipeli", "Martin virhe", icon = icon("exclamation-circle"))
                        ),
                        
                        
