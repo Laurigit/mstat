@@ -88,7 +88,7 @@ zip_all_and_send <- function() {
     setwd("./external_files")
     
     zip(zipfile = "../upload_folder/all_files.zip",
-        files = tiedostot[,V1])
+        files = tiedostot[,V1],  flags="-q")
     setwd("..")
     test_mode <- "prod"
     upload_dir <- "mstat/all_data/"

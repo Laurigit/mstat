@@ -115,7 +115,6 @@ pfi_data<-reactive({
   print("TPALAT PAKAT")
  # print(pakat)
   tulos<-pakkaUutuusProsentti(pakat)
-  print(tulos)
   tulos
 })
     
