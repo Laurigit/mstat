@@ -113,9 +113,12 @@ output$peliKesto <- renderText({
     if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
       tempData[muuttuja=="laheta",arvo:="FALSE"]
       tempData[muuttuja=="kesken",arvo:="TRUE"]
+      print("tallennetaan seuraava pilveen. Tähän muutettu, että kesken = TRUE ja laheta = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
+      print(tempData)
       kircsv(tempData,"temp_data_storage.csv", upload = TRUE)
-      print("lähetetty")
       tempData[muuttuja=="kesken",arvo:="FALSE"]
+      print("tallennetaan seuraava vaan levylle. Tähän muutettu, että kesken = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
+      print(tempData)
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
       
     }
@@ -125,30 +128,46 @@ output$peliKesto <- renderText({
 })
 
 observe({
-  print(paste(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos,input$nollaa_aika))
+  # req(input$select_laurin_pakka,
+  #     input$select_martin_pakka,
+  #     input$slider_laurin_mulligan,
+  #     input$slider_martin_mulligan,
+  #     input$tallenna_tulos, cancelOutput = FALSE)
+  print("inputvektori laurinpakka, martinpakka, laurinmull, martinmull, tallennatulos, nollaa_aika")
+  print(paste(input$select_laurin_pakka,
+              input$select_martin_pakka,
+              input$slider_laurin_mulligan,
+              input$slider_martin_mulligan,
+              input$tallenna_tulos,
+              input$nollaa_aika))
   print(!is.null(input$select_laurin_pakka ))
   if(!is.null(input$select_laurin_pakka )) {
-    #req(input$select_laurin_pakka,input$select_martin_pakka,input$slider_laurin_mulligan,input$slider_martin_mulligan,input$tallenna_tulos)
-    print(paste("Observe altotusaika!!!!!!!!!!!"))
+    
+    print(paste("Tässä kohtaa luettiin koneelta tempData ja printataan se"))
     tempData<-luecsv("temp_data_storage.csv")
     print(tempData)
-    if (tempData[muuttuja == "kesken",arvo] != TRUE) {
-      print("peli ei ollut kesken")
+    if (tempData[muuttuja == "kesken",arvo] != "TRUE") {
+      print("kesken == FALSE")
       alotusaika<-as.ITime(now(tz="Europe/Helsinki"))
       alotuspvm<-as.IDate(now(tz="Europe/Helsinki"))
       laurin_pakka<-input$select_laurin_pakka
       martin_pakka<-input$select_martin_pakka
       laurin_mull<-input$slider_laurin_mulligan
       martin_mull<-input$slider_martin_mulligan
-      laheta<-TRUE
-      kesken<-FALSE
+      laheta<-"TRUE"
+      kesken<-"FALSE"
       muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
       arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
       tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
+      print("lähetetään seuraava file pilveen. Tässä kohtaa otettiin uudet arvot nykytilasta")
+      print(tempData)
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
     } else {
-      print("peli ei ollut kesken")
-      tempData[muuttuja=="kesken",arvo:=FALSE]
+      print("kesken == TRUE")
+      tempData[muuttuja=="kesken",arvo:="FALSE"]
+       print("Tallennetaan seuraava arvo lokaalisti. Tässä kohtaa vaan korjattiin, että kesken = FALSE")
+      print(tempData)
+
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
     }
   }

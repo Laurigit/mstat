@@ -3,7 +3,6 @@ shinyServer(function(input, output,session) {
 
   sourcelist <- dir("./scripts/")
   for(filename in sourcelist) {
-    print(filename)
     source(paste0("./scripts/", filename), local = TRUE)
   }
 
@@ -126,6 +125,7 @@ anyFileUpload<-observe({
 })
 
 observe({
+  req(input$file1)
   print(paste("ifile"))
   ifile <-input$file1
  # omistaja <- substr(1,1,ifile$name)
