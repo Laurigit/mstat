@@ -84,7 +84,9 @@ kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
 zip_all_and_send <- function() {
 
     tiedostot <- as.data.table(dir(path = "./external_files/"))
+    file.remove("./upload_folder/all_files.zip")
     setwd("./external_files")
+    
     zip(zipfile = "../upload_folder/all_files.zip",
         files = tiedostot[,V1])
     setwd("..")
