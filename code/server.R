@@ -104,11 +104,14 @@ shinyServer(function(input, output,session) {
        defaultStatValue$asetukset<-allvalues
      })
 
+   
+   react_omaReadJson <- reactive({
+     pakat<-omaReadJson("./external_files/",input$file1)
+     pakat
+   })
  
 pfi_data<-reactive({
-  print("TPALAT PAKAT")
-  print("TPALAT PAKAT")
-  pakat<-omaReadJson("./external_files/",input$file1)
+  pakat<-react_omaReadJson()
   print("TPALAT PAKAT")
  # print(pakat)
   tulos<-pakkaUutuusProsentti(pakat)

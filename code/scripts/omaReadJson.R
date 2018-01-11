@@ -33,6 +33,11 @@ omaReadJson <- function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_d
   #fix na ending to future
   pakkametataulu[,':=' (pvm_end=ifelse(is.na(pvm_end),as.IDate("2100-01-01"),pvm_end),kello_end=ifelse(is.na(kello_end),1,kello_end))]
   tulos$meta <- pakkametataulu
+  viimesin_pfi <- pakkametataulu[pakkametataulu[, .I[which.max(id)], by=.(omistaja, pakkanumero)]$V1]
+  viimesin_pfi[,  ':=' (Omistaja = ifelse (omistaja == "L", "Lauri", "Martti"),
+                        Pakka = pakkanumero)][, ':=' (omistaja = NULL,
+                                                      pakkanumero = NULL )]
+  tulos$viimenen_pfi <- viimesin_pfi
   print("PAKAT PÄIVITETTY")
   return(tulos)
 }
