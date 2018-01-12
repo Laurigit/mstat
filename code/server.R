@@ -1,6 +1,9 @@
 # Define server logic required to draw a histogram 
 shinyServer(function(input, output,session) {
-
+  load_data_from_DB()
+  
+  load("./external_files/tilastoAsetukset.R")
+  load("./external_files/saavutusAsetukset.R")
   sourcelist <- dir("./scripts/")
   for(filename in sourcelist) {
     source(paste0("./scripts/", filename), local = TRUE)

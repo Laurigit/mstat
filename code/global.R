@@ -65,7 +65,7 @@ load_data_from_DB <- function() {
   unzip(zipfile = paste0(download_folder, "all_files.zip"),
         exdir = "./external_files")
 }
-load_data_from_DB()
+
 
 
 
@@ -177,6 +177,4 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
 
 
 
-load("./external_files/tilastoAsetukset.R")
-load("./external_files/saavutusAsetukset.R")
 print("Global.R valmis")
