@@ -129,12 +129,31 @@ output$peliKesto <- renderText({
   }
 })
 
-observe({
-  # req(input$select_laurin_pakka,
-  #     input$select_martin_pakka,
-  #     input$slider_laurin_mulligan,
-  #     input$slider_martin_mulligan,
-  #     input$tallenna_tulos, cancelOutput = FALSE)
+observeEvent(c(input$select_laurin_pakka,
+               input$select_martin_pakka,
+               input$slider_laurin_mulligan,
+               input$slider_martin_mulligan,
+               input$tallenna_tulos), {
+  print("check req")
+      req(input$select_laurin_pakka)
+      print("laurin pakka")
+      req(input$select_martin_pakka)
+      print("martin pakka")
+      req(input$slider_laurin_mulligan)
+      print("laurin slider")
+      req(input$slider_martin_mulligan)
+      print("martin mulligan slider")
+      print(input$tallenna_tulos)
+      print("str")
+      print(str(input$tallenna_tulos))
+      #actionbutton alkutilassa on NULL ja sen painallusten jälkeen vasta saa arvoja.
+      print("tallenna tulos")
+      # ,
+      # ,
+      # ,
+      # ,
+      # , cancelOutput = FALSE)
+  print("check req redi")
   print("inputvektori laurinpakka, martinpakka, laurinmull, martinmull, tallennatulos, nollaa_aika")
   print(paste(input$select_laurin_pakka,
               input$select_martin_pakka,
@@ -219,7 +238,7 @@ output$selectInputLauri <- renderUI({
   laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
   laurin_idt<-pakat[Omistaja==1,Pakka]
   selectinputListLauri<-setNames(as.list(laurin_idt), c(laurin_pakkanimet))
-  if(nrow(keskenPeliData)>1) {
+  if(nrow(keskenPeliData)>2) {
     preSelect <- keskenPeliData[muuttuja=="Laurin_pakka",arvo]
   } else {
     preSelect <- 1
@@ -234,7 +253,7 @@ output$selectInputMartti <- renderUI({
   pakkanimet<-pakat[Omistaja==2,Nimi]
   martin_idt<-pakat[Omistaja==2,Pakka]
   selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
-  if(nrow(keskenPeliData)>1) {
+  if(nrow(keskenPeliData)>2) {
     preSelect <- keskenPeliData[muuttuja=="Martin_pakka",arvo]
   } else {
     preSelect <- 1
