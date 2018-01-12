@@ -26,8 +26,8 @@ observeEvent(input$tallenna_tulos, {
   )
   #tyhjennä tempdata
   tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
-  
-  kircsv(tyhjataulu,"temp_data_storage.csv")
+  print("tuloksen tallennuksen jälkeen lähetetään pilveen tyhjä taulu")
+  kircsv(tyhjataulu,"temp_data_storage.csv", upload = FALSE) #tässä false sen takia, että täsäs myöhemmin lähettään kaikki
   
   
   kaikkipelit<-data.table(luecsv("pelit.csv"))
