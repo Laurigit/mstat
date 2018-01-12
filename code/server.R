@@ -16,7 +16,7 @@ shinyServer(function(input, output,session) {
 
     #nollaa temp data
     observeEvent(input$nollaa_temp_data, {
-      tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c(FALSE,FALSE))
+      tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c("FALSE","FALSE"))
       print("tässä lähetetään tyhjataulu pilveen.")
       tyhjataulu
       kircsv(tyhjataulu,"./temp_data_storage.csv", upload = TRUE)

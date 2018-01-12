@@ -110,7 +110,7 @@ output$peliKesto <- renderText({
       tempData[muuttuja=="kesken",arvo:="FALSE"]
     }
     
-    if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]==TRUE) {
+    if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]=="TRUE") {
       tempData[muuttuja=="laheta",arvo:="FALSE"]
       tempData[muuttuja=="kesken",arvo:="TRUE"]
       print("tallennetaan seuraava pilveen. Tähän muutettu, että kesken = TRUE ja laheta = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
@@ -124,6 +124,8 @@ output$peliKesto <- renderText({
     }
     sekunnit_fix <- str_pad(sekunnit, 2, pad = "0")
     paste(minuutit,":",sekunnit_fix)
+  } else {
+    print("temp_data_storagessa ei ollu neljää riviä")
   }
 })
 
