@@ -95,7 +95,17 @@ uusi_peli<-dashboardBody(
               fluidRow(column(6,sliderInput("slider_laurin_humala",label=h4("Laurin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1)),
                        
                        column(6,sliderInput("slider_martin_humala",label=h4("Martin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1))),
-              fluidRow(column(6,actionButton("tallenna_tulos","Tallenna tulos")),
+              fluidRow(column(3,actionButton("tallenna_tulos","Tallenna tulos")),
+                       column(3, textOutput("validateWinnerText"),
+                              
+                              tags$head(tags$style("#validateWinnerText{color: red;
+                                 font-size: 20px;
+                                                   font-style: bold;
+                                                   }"
+                         )
+                              )
+                              
+                              ),
                        column(3,actionButton("action_reduce",label="",icon("arrow-left"),width='100%')),
                        column(3,actionButton("action_add",label="",icon("arrow-right"),width='100%')))
               

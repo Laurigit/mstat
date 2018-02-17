@@ -227,3 +227,22 @@ observe({
     })
   })
 })
+
+
+output$validateWinnerText <- renderText({
+  if(input$radio_voittaja == 0 & input$slider_laurin_lifet == 0) {
+    validate <- FALSE
+  } else if (input$radio_voittaja == 1 & input$slider_martin_lifet == 0) {
+    validate <- FALSE
+  } else {
+    validate <- TRUE
+  }
+  
+  if (validate == TRUE) {
+    result_text <- ""
+  } else {
+    result_text <- "Invalid life"
+  }
+})
+  
+  
