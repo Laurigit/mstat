@@ -53,7 +53,8 @@ observe({
       shinyjs::enable("martti_voitti")
       shinyjs::enable("tallenna_tulos")
       aloittajaNo<- kaikkipelit[peli_ID==r_valittu_peli$peliID, Aloittaja]
-      r_valittu_peli$aloittaja_text<-ifelse(aloittajaNo==0,"Aloittaja: Lauri","Aloittaja: Martti")
+      r_valittu_peli$aloittaja_text <- ifelse(aloittajaNo==0,"Aloittaja: Lauri","Aloittaja: Martti")
+      r_valittu_peli$aloittaja <- aloittajaNo
     }
     #seuraa valintalistoja ja paivita r_valittu_peli sen mukaan
     

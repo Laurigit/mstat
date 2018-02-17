@@ -1,17 +1,17 @@
 # Define server logic required to draw a histogram 
 shinyServer(function(input, output,session) {
 
+  
+  #r_valittu_peli on valittu peli millä tahansa menetelmällä
+  r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan", aloittaja = -1)
+  
   sourcelist <- dir("./scripts/")
   for(filename in sourcelist) {
     source(paste0("./scripts/", filename), local = TRUE)
   }
 
 
-  #r_valittu_peli on valittu peli millä tahansa menetelmällä
-  r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan")
-  
-    
-  #obserEventit
+   #obserEventit
   
 
     #nollaa temp data
@@ -129,6 +129,7 @@ observe({
   req(input$file1)
   print(paste("ifile"))
   ifile <-input$file1
+  print(ifile)
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
     validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
@@ -143,9 +144,8 @@ print(paste(input$tallenna_tulos),input$luo_peleja)
   } else {
     kaikkipelit<-luecsv("pelit_debug.csv")  
   }
-   
-  
 })
+
 
 saavutusAsetuksetReact<-reactiveValues(
   data=saavutusAsetukset
