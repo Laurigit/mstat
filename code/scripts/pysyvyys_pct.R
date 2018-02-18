@@ -7,10 +7,7 @@ pakkaUutuusProsentti <-function(pakat) {
   for(riviloop in 1:nrow(pakka_comb)) {
     rividata<-pakka_comb[riviloop]
     pakkafilter<-pakat$meta[omistaja==rividata[,omistaja] &pakkanumero==rividata[,pakkanumero]][order(pvm,kello)]  
-  
-    
-  
-  
+
   
 
   #eti kaikki pakkakombinaatiot

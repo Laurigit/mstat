@@ -4,7 +4,7 @@
 # filename_in<-"L_1.json"
 # pakka <- file.info(paste(folder_in,filename_in,sep=""))
 # filelist <- "L_1"
-pakka <- data.frame(name = "L_1.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
+#pakka <- data.frame(name = "L_1.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
 process_uploaded_decks<-function(filelist,folder_out) {
 filelist <-data.table(filelist)
   #lue json-tiedosto

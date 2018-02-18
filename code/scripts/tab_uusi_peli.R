@@ -98,9 +98,11 @@ output$peliKesto <- renderText({
   tempData<-luecsv("temp_data_storage.csv")
   
   if (nrow(tempData)>4) {
-    pelialkuAika<-as.integer(tempData[muuttuja=="Aloitusaika",arvo])
-    pelialkuPVM<-as.integer(tempData[muuttuja=="Aloituspvm",arvo])
-    sekunnit_yht<-aikaero(pelialkuAika,as.integer(as.ITime(now(tz="Europe/Helsinki"))),pelialkuPVM,as.integer(as.IDate(now(tz="Europe/Helsinki"))))
+    pelialkuAika <- as.integer(tempData[muuttuja == "Aloitusaika", arvo])
+    pelialkuPVM <- as.integer(tempData[muuttuja == "Aloituspvm", arvo])
+    sekunnit_yht<-aikaero(pelialkuAika, 
+                          as.integer(as.ITime(now(tz = "Europe/Helsinki"))),
+                          pelialkuPVM, as.integer(as.IDate(now(tz = "Europe/Helsinki"))))
     minuutit<-floor(sekunnit_yht/60)
     sekunnit<-sekunnit_yht-60*minuutit
     #print(paste("sekunnit",sekunnit,"lahetetty:",lahetaTempData$lahetetty,"laheta:",lahetaTempData$laheta))
@@ -246,7 +248,17 @@ output$selectInputMartti <- renderUI({
 
 output$data_vs_taulukko<-renderDataTable({
   req(input$radio_bo_mode,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode)
-  vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
+  vs_statsit_MA<-sarjataulukkoKaikki(divaridata(),
+                                     peliDataReact(),
+                                     input$radio_bo_mode,
+                                     1,
+                                     TRUE,
+                                     NA,
+                                     input$select_laurin_pakka,
+                                     input$select_martin_pakka,
+                                     input$numeric_MA_valinta,
+                                     input$radio_pfi_mode,
+                                     pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
   
   vs_statsit_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,input$select_martin_pakka,NA,input$radio_pfi_mode,pfi_data())
   
@@ -258,6 +270,23 @@ output$data_vs_taulukko<-renderDataTable({
   setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
   join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
   
+  #voittoEnnuste
+  peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data(), peliDataReact())
+  Martin_voittoennuste <- round(voittoEnnuste(input$select_laurin_pakka,
+                                        input$select_martin_pakka,
+                                        peliData_ja_pfi,
+                                        input$slider_laurin_mulligan,
+                                        input$slider_martin_mulligan,
+                                        Aloittaja
+                                        ),2)*100
+Laurin_voittoennuste = 100- Martin_voittoennuste
+voittoEnnusteRow<-data.table(
+                               Tilasto = "Voitto",
+                               selite = "ennuste"
+                             )
+voittoEnnusteRow[, (laurin_pakkanimi) := Laurin_voittoennuste]
+voittoEnnusteRow[, (martin_pakkanimi) := Martin_voittoennuste]
+voittoEnnusteFinal <- voittoEnnusteRow[, c(laurin_pakkanimi, "Tilasto", "selite", martin_pakkanimi), with = FALSE]
   
   #MA_pakak
   pakka_stats_MA_lauri<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,1,TRUE,NA,input$select_laurin_pakka,NA,input$numeric_MA_valinta,input$radio_pfi_mode,pfi_data())$transposed[(Tilasto %in% ("Voitot"))]
@@ -288,7 +317,8 @@ output$data_vs_taulukko<-renderDataTable({
   #vaihda sarakejärjestys
   result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
   #lisää vielä lisäkorttitilasto
-  result_table<-rbind(result_table,lisakortit_final)
+
+  result_table<-rbind(voittoEnnusteFinal,result_table,lisakortit_final)
   
   return(result_table)  
   
