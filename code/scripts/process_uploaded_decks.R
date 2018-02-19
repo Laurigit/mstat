@@ -1,7 +1,10 @@
 
-# folder_in <- "C:/Users/Lauri/Documents/R/mstat2/pakat/"
-# folder_out <- "C:/Users/Lauri/Documents/R/mstat2/pakat/processed/"
+# folder_out <-"./external_files"
+# folder_in <- "./code/save_decks_here/"
 # filename_in<-"L_1.json"
+# pakka <- file.info(paste(folder_in,filename_in,sep=""))
+# filelist <- "L_1"
+#pakka <- data.frame(name = "L_1.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
 process_uploaded_decks<-function(filelist,folder_out) {
 filelist <-data.table(filelist)
   #lue json-tiedosto
@@ -25,6 +28,7 @@ valid_teksti<-NULL
    
     if(omistaja==TRUE & pakkanumero==TRUE & pituus==TRUE) {
     aikaleima<-file.info(paste(pakka$datapath))$mtime
+    attributes(aikaleima)$tzone <- "EET"  
     pvm<-as.IDate(aikaleima)
     sekunnit<-as.integer(as.ITime(aikaleima))
     

@@ -1,7 +1,22 @@
 #tallennapeli
 observeEvent(input$tallenna_tulos, {
+ 
   print("tallenna tulos alku")
   tempData<-luecsv("temp_data_storage.csv")
+  #vuoroarviolasku
+
+  aloittajaNo <-  r_valittu_peli$aloittaja
+  print(paste0("aloittajano ", aloittajaNo))
+  if(aloittajaNo == 0) {
+    vuoroarviolasku <- input$slider_vuoroarvio + input$slider_laurin_mulligan - 6
+    print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
+
+  } else {
+    vuoroarviolasku <- input$slider_vuoroarvio + input$slider_martin_mulligan - 6
+    print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
+  }
+  print("VUOROARVIOLASKU")
+  print(vuoroarviolasku)
   uusrivi<- c(
     Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
     Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
@@ -20,7 +35,7 @@ observeEvent(input$tallenna_tulos, {
     Martin_landit=input$slider_martin_landit,
     Laurin_lifet=input$slider_laurin_lifet,
     Martin_lifet=input$slider_martin_lifet,
-    Vuoroarvio=input$slider_vuoroarvio,
+    Vuoroarvio=vuoroarviolasku,
     Laurin_kasikortit=input$slider_laurin_kasikortit,
     Martin_kasikortit=input$slider_martin_kasikorit
   )
@@ -189,8 +204,8 @@ observeEvent(input$martti_voitti,{
 
 observeEvent(input$slider_vuoroarvio,{
   print("slider vuoroarvio alku")
-  updateSliderInput(session, "slider_martin_landit", value = input$slider_vuoroarvio)
-  updateSliderInput(session, "slider_laurin_landit", value = input$slider_vuoroarvio)
+  updateSliderInput(session, "slider_martin_landit", value = round(input$slider_vuoroarvio * 0.42))
+  updateSliderInput(session, "slider_laurin_landit", value = round(input$slider_vuoroarvio * 0.42))
   print("slider vuoroarvio loppu")
 })
 
@@ -227,3 +242,48 @@ observe({
     })
   })
 })
+
+#ruutu mikä näyttää muokattavaa numeroa
+output$last_changed_value_text <- renderText({
+  
+  arvo <- input[[values$lastUpdated]]
+  if(is.numeric(arvo)) {
+    tulos <- arvo 
+  }else {
+    tulos <- ""
+  }
+
+  tulos
+})
+
+#Vuoroarvaus, kumman korttimäärä
+output$vuoroArvausPelaaja <- renderUI({
+ 
+  aloittajaNo <-  r_valittu_peli$aloittaja
+  if(aloittajaNo == 0) {
+    aloittaja_vuoro_teksti <- "Laurin kortti_lkm"
+  } else {
+    aloittaja_vuoro_teksti <- "Martin kortti_lkm"
+  }
+  sliderInput("slider_vuoroarvio",label=h4(aloittaja_vuoro_teksti),min=4,max=16,value=4)
+})
+  
+
+
+output$validateWinnerText <- renderText({
+  if(input$radio_voittaja == 0 & input$slider_laurin_lifet == 0) {
+    validate <- FALSE
+  } else if (input$radio_voittaja == 1 & input$slider_martin_lifet == 0) {
+    validate <- FALSE
+  } else {
+    validate <- TRUE
+  }
+  
+  if (validate == TRUE) {
+    result_text <- ""
+  } else {
+    result_text <- "Invalid life"
+  }
+})
+  
+  

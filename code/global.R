@@ -1,8 +1,9 @@
 #options are prod, test, dev
-GLOBAL_test_mode <- "prod"
+GLOBAL_test_mode <- "dev"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)
+dir.create("./all_data_test_upload/", showWarnings = FALSE)
 
 
 library(shiny)
@@ -23,7 +24,8 @@ library(stringr)
 #options(shiny.error=browser)
 options(max.print=1000000)
 options(DT.fillContainer = FALSE) 
-options(DT.autoHideNavigation = FALSE) 
+options(DT.autoHideNavigation = FALSE)
+Sys.setenv(TZ='EET')
 #setwd("C:/Users/laurilepisto/Documents/R/shiny/r2")
 #setwd("C:/Users/Lauri/Documents/R/mstat2/code")
 #setwd("E:/Pikkuohjelmat/mstat/mstat/code")
