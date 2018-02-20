@@ -7,7 +7,7 @@
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
-voittoEnnuste <- function(LP, MP, peliData_ja_pfi, LMull, MMull, Aloittaja) {
+voittoEnnuste <- function(LP, MP, peliData_ja_pfi, LMull, MMull, Aloittaja, LHinta, MHinta, LKortit, MKortit) {
 
   pelidata_joined_pakkatiedot <-  peliData_ja_pfi
   
@@ -37,7 +37,7 @@ analyse_cols <- subset_pelit[, .(Voittaja,
                                  keskiHintaEro)]
 
 model <- glm(data = analyse_cols, 
-             formula = Voittaja ~ Aloittaja + Mull_diff  + VS_peli_bool, 
+             formula = Voittaja ~ Aloittaja + Mull_diff  + VS_peli_bool + keskiHintaEro, 
              family = binomial(link = "logit")
              ,weights = weight
              )
@@ -46,7 +46,8 @@ model <- glm(data = analyse_cols,
 
 aloittaja_for_dt <- Aloittaja
 
-pred_data <- data.table(Mull_diff = MMull - LMull, VS_peli_bool = 1, Aloittaja = aloittaja_for_dt)
+pred_data <- data.table(Mull_diff = MMull - LMull, VS_peli_bool = 1, Aloittaja = aloittaja_for_dt,
+                        keskiHintaEro = log((LHinta / LKortit)/(MHinta / MKortit), base = exp(1)))
 #print(pred_data)
 prediction <- predict(model, pred_data, type = "response")
 return(prediction)

@@ -291,12 +291,21 @@ output$data_vs_taulukko<-renderDataTable({
   
   #voittoEnnuste
   peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data(), peliDataReact())
+  print("LUEMUT")
+  print(peliData_ja_pfi)
+  
+  pelidataPER_ID <- peliData_ja_pfi[peli_ID ==   r_valittu_peli$peliID]
+  
   Martin_voittoennuste <- round(voittoEnnuste(input$select_laurin_pakka,
                                         input$select_martin_pakka,
                                         peliData_ja_pfi,
                                         input$slider_laurin_mulligan,
                                         input$slider_martin_mulligan,
-                                        r_valittu_peli$aloittaja
+                                        r_valittu_peli$aloittaja,
+                                        pelidataPER_ID[, hinta_lauri],
+                                        pelidataPER_ID[, laurin_kortti_lkm],
+                                        pelidataPER_ID[, hinta_martti],
+                                        pelidataPER_ID[, martin_kortti_lkm]
                                         ),2)*100
 Laurin_voittoennuste = 100- Martin_voittoennuste
 voittoEnnusteRow<-data.table(
@@ -401,8 +410,10 @@ observeEvent(input$tasuriPeli, {
   print("sarjadata")
   pelaajat <- sarjadata$pelaajastats
   print("pelaajat")
+  print(pelaajat)
   kokonaistilanne <- pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
   print("kokonis")
+  print("kokonaistilanne")
   erotus <- kokonaistilanne[,Voitot_Lauri] - kokonaistilanne[,Voitot_Martti]
   print("erotus")
   print(erotus)
@@ -411,6 +422,8 @@ observeEvent(input$tasuriPeli, {
     #jos ei pelattu pelejä vielä turnauksessa, niin tasan
     turnausTilanneInput <- "Tasan"
   }
+  print("TURNAUSTILANNETINPUT")
+  print(turnausTilanneInput)
   uusPeliID <- tasuripeli_ID(turnausTilanneInput, pfi_data(), peliDataReact())
   paivitaSliderit(uusPeliID,session) 
 })

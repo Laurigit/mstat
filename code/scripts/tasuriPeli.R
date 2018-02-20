@@ -11,28 +11,34 @@ peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 # MMull <- 0
 # Aloittaja <- 0
 
-  peliData_SS <- peliData[!is.na(Voittaja)]
-  pelidata_joined_pakkatiedot<-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData_SS)
-
+   
+  pelidata_joined_pakkatiedot<-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
+  peliData_pelaamatomat<- pelidata_joined_pakkatiedot[is.na(Voittaja)]
+  peliData_PELATUT<- pelidata_joined_pakkatiedot[!is.na(Voittaja)]
   
-    peliData_SS <- peliData[is.na(Voittaja)]
   
   
   #ennusta
-  ennustePelit <- peliData_SS[, .(Laurin_pakka, Martin_pakka, 
+  ennustePelit <- peliData_PELATUT[, .(Laurin_pakka, Martin_pakka, 
                                                      Laurin_mulligan,
                                                      Martin_mulligan,
                                                      Mull_diff = Martin_mulligan - Laurin_mulligan, 
                                                      Aloittaja,
                                                      VS_peli_bool = 1,
-                                                     peli_ID, Voittaja)]
-  ennustePelit[, ennuste := voittoEnnuste(Laurin_pakka, Martin_pakka,
-                                          pelidata_joined_pakkatiedot,
+                                                     peli_ID, Voittaja,
+                                                  laurin_kortti_lkm,
+                                                  hinta_lauri,hinta_martti,martin_kortti_lkm)]
+  peliData_pelaamatomat[, ennuste := voittoEnnuste(Laurin_pakka, Martin_pakka,
+                                                   peliData_PELATUT,
                                           0,
                                           0,
-                                          Aloittaja), by = peli_ID]
+                                          Aloittaja,
+                                          hinta_lauri,
+                                          hinta_martti,
+                                          laurin_kortti_lkm,
+                                          martin_kortti_lkm), by = peli_ID]
   
-  ennustePelit_aggr <- ennustePelit[, .(sum_ennuste = sum(ennuste), peli_ID = min(peli_ID)), by = .(Laurin_pakka, Martin_pakka)]
+  ennustePelit_aggr <- peliData_pelaamatomat[, .(sum_ennuste = sum(ennuste), peli_ID = min(peli_ID)), by = .(Laurin_pakka, Martin_pakka)]
 
   ennustePelit_aggr[, erotus := sum_ennuste - 1]
   Martti_johtaa <- ennustePelit_aggr[which.min(erotus), peli_ID]
