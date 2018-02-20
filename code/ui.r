@@ -32,7 +32,8 @@ uusi_peli<-dashboardBody(
               fluidRow(column(2,actionButton("arvo_peli","Arvo peli")),
                        
                        column(4,uiOutput("divariRadio_out")),
-                       column(3,actionButton("nollaa_aika","Nollaa aika")),
+                     #  column(3,actionButton("nollaa_aika","Nollaa aika")),
+                      column(3, actionButton("tasuriPeli", "Tasuripeli")),
                        column(3,actionButton("jatka_ottelua","Jatka ottelua"))
               ),
               fluidRow(column(3,uiOutput("selectInputLauri")),

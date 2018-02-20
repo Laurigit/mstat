@@ -1,12 +1,12 @@
-peliData <- luecsv("pelit.csv")
-LP<-5
-MP<-5
-LMull <- 0
-MMull <- 0
-Aloittaja <- 0
-pakat<-omaReadJson("./external_files/")
-pfi_data<-pakkaUutuusProsentti(pakat)
-peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
+# peliData <- luecsv("pelit.csv")
+# LP<-5
+# MP<-5
+# LMull <- 0
+# MMull <- 0
+# Aloittaja <- 0
+# pakat<-omaReadJson("./external_files/")
+# pfi_data<-pakkaUutuusProsentti(pakat)
+# peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 voittoEnnuste <- function(LP, MP, peliData_ja_pfi, LMull, MMull, Aloittaja) {
 
   pelidata_joined_pakkatiedot <-  peliData_ja_pfi
@@ -15,10 +15,14 @@ voittoEnnuste <- function(LP, MP, peliData_ja_pfi, LMull, MMull, Aloittaja) {
   subset_pelit <- pelidata_joined_pakkatiedot[!is.na(Voittaja) & (Laurin_pakka == LP | Martin_pakka == MP),
                            .(Laurin_pakka, Martin_pakka, Voittaja, Laurin_mulligan,
                               Martin_mulligan, Laurin_pysyvyys_pct, Martin_pysyvyys_pct, Aloittaja)]
-  #luo muuttujat
+  #luo muuttujat. Kertoimet sen takia, että otetaan yhteiskerroin vaan VS_peliin.
   subset_pelit[, ':=' (Mull_diff =  Martin_mulligan - Laurin_mulligan,
     VS_peli_bool = ifelse(Laurin_pakka == LP & Martin_pakka == MP, 1, 0),
-    weight = Laurin_pysyvyys_pct * Martin_pysyvyys_pct)]
+    L_kerroin = ifelse(Laurin_pakka == LP, Laurin_pysyvyys_pct,1),
+    M_kerroin = ifelse(Martin_pakka == MP, Martin_pysyvyys_pct, 1))]
+  
+  
+  subset_pelit[, ':=' (weight = L_kerroin * M_kerroin)]
 
 
 #analyysisarakkeet

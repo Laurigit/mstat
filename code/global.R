@@ -1,5 +1,5 @@
 #options are prod, test, dev
-GLOBAL_test_mode <- "dev"
+GLOBAL_test_mode <- "prod"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)

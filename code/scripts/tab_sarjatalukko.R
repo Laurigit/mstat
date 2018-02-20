@@ -15,7 +15,6 @@ output$sarjataulukot <-renderUI({
   subtitle<-ifelse(kokonaistilanne[,Voitot_Lauri]>kokonaistilanne[,Voitot_Martti],"Lauri johtaa",
                    ifelse(kokonaistilanne[,Voitot_Lauri]<kokonaistilanne[,Voitot_Martti],"Martti johtaa","Tasan"))
   turnaustilanne<-turnausVoitot(divaridata(),peliDataReact())$total
-  print(turnaustilanne)
   turnaustilanneteksti<-paste0(turnaustilanne[,Laurin_TV],"-",turnaustilanne[,Martin_TV])
   
   fluidPage(
