@@ -1,3 +1,11 @@
+# peliData <- luecsv("pelit.csv")
+# LP<-5
+# MP<-5
+# LMull <- 0
+# MMull <- 0
+# Aloittaja <- 0
+# pakat<-omaReadJson("./external_files/")
+# pfi_data<-pakkaUutuusProsentti(pakat)
 funcLiitaPelit_ja_Pysyvyys<-function(pfi_data,peliData) {
 pelidata_temp_all<-peliData
 pysyvyys_pct<-as.data.table(pfi_data)

@@ -1,5 +1,5 @@
 
-#folder<-"C:/Users/Lauri/Documents/R/mstat2/code/external_files/"
+#folder<-"./external_files/"
 
 omaReadJson <- function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_data reactive why
   pakkalista <- list.files(folder)
@@ -22,7 +22,7 @@ omaReadJson <- function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_d
       
       pakat[[counter]]<-kierrospakka
       tulos$pakat<-pakat
-      uusmetarivi<- data.table(id=counter,omistaja=splitti[1],pakkanumero=as.numeric(splitti[2]),pvm=as.IDate(splitti[3]),kello=as.numeric(splitti[4]),hinta=kierrospakka$price$med)
+      uusmetarivi<- data.table(id=counter,omistaja=splitti[1],pakkanumero=as.numeric(splitti[2]),pvm=as.IDate(splitti[3]),kello=as.numeric(splitti[4]),hinta=kierrospakka$price$med, kortti_lkm = kierrospakka$list$total)
       
       pakkametataulu<-as.data.table(rbind(pakkametataulu,uusmetarivi))
       #laske voimassaolon päättyminen

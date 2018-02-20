@@ -322,10 +322,29 @@ voittoEnnusteFinal <- voittoEnnusteRow[, c(laurin_pakkanimi, "Tilasto", "selite"
   setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
   join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
   
+  #lisäkortit manastack
+   lisakortit_Man <- react_omaReadJson()$viimenen_pf
+   
+   laurin_man_pakka <- lisakortit_Man[Omistaja == "Lauri" & Pakka == input$select_laurin_pakka ,.(Laurin_man_kortit = kortti_lkm)]
+   martin_man_pakka <- lisakortit_Man[Omistaja == "Martti" & Pakka == input$select_martin_pakka, .(Martin_man_kortit = kortti_lkm)]
+   
+   man_kortti_lkm<-data.table(
+     Tilasto = "Pakan koko",
+     selite = "Manastack"
+   )
+   man_kortti_lkm[, (laurin_pakkanimi) := laurin_man_pakka]
+   man_kortti_lkm[, (martin_pakkanimi) := martin_man_pakka]
+   man_kortti_lkmFinal <- man_kortti_lkm[, c(laurin_pakkanimi, "Tilasto", "selite", martin_pakkanimi), with = FALSE]
+   
+  
+  #lisäkortit säänötjen mukaan
+  
   lisakortit<-funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),TRUE,pfi_data())$current_lisakortit
   
   #filtteröi mukaan vaan pelin pakat
-  lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka)|(Omistaja=="Martti" & Pakka==input$select_martin_pakka),.(Nimi,Lisakortit,Tilasto="Pakan koko",selite="")]
+  lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka) |
+                                     (Omistaja=="Martti" & Pakka==input$select_martin_pakka),
+                                   .(Nimi,Lisakortit,Tilasto="Pakan koko",selite="ATK")]
   lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)),Lisakortit=NULL)]
   #transponoi
   
@@ -337,7 +356,7 @@ voittoEnnusteFinal <- voittoEnnusteRow[, c(laurin_pakkanimi, "Tilasto", "selite"
   result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
   #lisää vielä lisäkorttitilasto
 
-  result_table<-rbind(voittoEnnusteFinal,result_table,lisakortit_final)
+  result_table<-rbind(voittoEnnusteFinal,result_table,man_kortti_lkmFinal,lisakortit_final)
   
   return(result_table)  
   

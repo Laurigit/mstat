@@ -1,4 +1,4 @@
-
+#pakat<-omaReadJson("./external_files/")
 pakkaUutuusProsentti <-function(pakat) {
   pakka_comb<-pakat$meta[,.N,by=.(omistaja,pakkanumero)]
   
