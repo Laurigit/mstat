@@ -1,9 +1,9 @@
 #tasuripeli
 # kumpiJohtaa, Lauri, Tasan, Martti
 
-peliData <- luecsv("pelit.csv")
-kumpiJohtaa<- "Lauri"
-pfi_data<-pakkaUutuusProsentti(pakat)
+# peliData <- luecsv("pelit.csv")
+# kumpiJohtaa<- "Lauri"
+# pfi_data<-pakkaUutuusProsentti(pakat)
 tasuripeli_ID <- function(kumpiJohtaa, pfi_data, peliData) {
 peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 
