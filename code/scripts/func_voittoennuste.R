@@ -3,6 +3,10 @@
 # MP<-5
 # LMull <- 0
 # MMull <- 0
+# LHinta<-100
+# MHinta <-100
+# LKortit <- 50
+# MKortit  <- 50
 # Aloittaja <- 0
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)

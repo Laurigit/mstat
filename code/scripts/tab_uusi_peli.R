@@ -400,31 +400,37 @@ observeEvent(input$tasuriPeli, {
   #                                  17,
   #                                  FALSE,NA,NA,NA,NA,0,pfi_data)
     #tarkista, että pelattuja pelejä
-  pelattuja_peleja <- nrow(peliDataReact()[!is.na(Voittaja) & TurnausNo == input$sarjataulukkokierros])
+  #eti uusimman turnauksen numero
+  vikaturnausNo <- max(peliDataReact()[, TurnausNo])
+  
+  pelattuja_peleja <- nrow(peliDataReact()[!is.na(Voittaja) & TurnausNo == vikaturnausNo])
   if (pelattuja_peleja > 0) {
   sarjadata <- sarjataulukkoKaikki(divaridata(),
                                  peliDataReact(),
                                  input$radio_bo_mode,
-                                 input$sarjataulukkokierros,
-                                 input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
+                                 vikaturnausNo,
+                                 FALSE,NA,NA,NA,NA,FALSE,pfi_data())
   print("sarjadata")
   pelaajat <- sarjadata$pelaajastats
   print("pelaajat")
   print(pelaajat)
   kokonaistilanne <- pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
   print("kokonis")
-  print("kokonaistilanne")
+  print(kokonaistilanne)
   erotus <- kokonaistilanne[,Voitot_Lauri] - kokonaistilanne[,Voitot_Martti]
   print("erotus")
   print(erotus)
     turnausTilanneInput <- ifelse(erotus > 0, "Lauri", ifelse(erotus < 0, "Martti", "Tasan"))
   } else {
     #jos ei pelattu pelejä vielä turnauksessa, niin tasan
+    print( "jos ei pelattu pelejä vielä turnauksessa, niin tasan")
     turnausTilanneInput <- "Tasan"
   }
   print("TURNAUSTILANNETINPUT")
   print(turnausTilanneInput)
   uusPeliID <- tasuripeli_ID(turnausTilanneInput, pfi_data(), peliDataReact())
+  print("peli_ID")
+  print(uusPeliID)
   paivitaSliderit(uusPeliID,session) 
 })
 

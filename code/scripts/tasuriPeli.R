@@ -1,5 +1,9 @@
 #tasuripeli
 # kumpiJohtaa, Lauri, Tasan, Martti
+
+peliData <- luecsv("pelit.csv")
+kumpiJohtaa<- "Lauri"
+pfi_data<-pakkaUutuusProsentti(pakat)
 tasuripeli_ID <- function(kumpiJohtaa, pfi_data, peliData) {
 peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 
@@ -27,9 +31,11 @@ peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
                                                      VS_peli_bool = 1,
                                                      peli_ID, Voittaja,
                                                   laurin_kortti_lkm,
-                                                  hinta_lauri,hinta_martti,martin_kortti_lkm)]
+                                                  hinta_lauri,hinta_martti,martin_kortti_lkm,
+                                       Laurin_pysyvyys_pct,
+                                       Martin_pysyvyys_pct)]
   peliData_pelaamatomat[, ennuste := voittoEnnuste(Laurin_pakka, Martin_pakka,
-                                                   peliData_PELATUT,
+                                                   ennustePelit,
                                           0,
                                           0,
                                           Aloittaja,
