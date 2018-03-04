@@ -1,6 +1,10 @@
+ennusteDataReact <- reactiveValues(
+ Data = create_forecast_data_for_stats()
+)
+
 output$pivot_cross <- renderRpivotTable({
   pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
-#  ennusteData <- create_forecast_data_for_stats()
+  ennusteData<-ennusteDataReact$Data
   
   
   #1 jos tallennettu asetus valittu, käytä sitä
@@ -51,6 +55,8 @@ output$pivot_cross <- renderRpivotTable({
     outputData<-pivotData$aikasarja
   } else if (input$radio_tilastoData=="Ristidata"){
     outputData<-pivotData$cross
+  } else if (input$radio_tilastoData == "Ennusteet") {
+    outputData <- ennusteData
   } else {
     outputData<-pivotData$turnaus
   }

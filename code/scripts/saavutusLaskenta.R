@@ -1,6 +1,6 @@
 # 
 # peliData<-luecsv("pelit.csv")
-# pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/omawd/")
+# pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
 # saavutusAsetukset[,minVaiMax:="max"]
@@ -15,9 +15,9 @@
 # 
 # }
 # saavutusTaulu
-# 
-#  tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
-laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_data){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
+
+# tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
+laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_data, ennusteDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
   minVaiMax<-saavutusKierrosAsetus[,minVaiMax]
   minVaiMax_rivi<-saavutusKierrosAsetus[,minVaiMax_rivi]
@@ -46,6 +46,8 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_
   outputData<-pivotData$aikasarja
   } else if (lahtoData=="Ristidata"){
   outputData<-pivotData$cross
+  } else if (lahtoData == "Ennusteet") {
+    outputData <- ennusteDataInput
   } else {
   outputData<-pivotData$turnaus
   }

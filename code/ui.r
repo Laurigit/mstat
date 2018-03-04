@@ -155,7 +155,7 @@ uusi_peli<-dashboardBody(
             #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
     ),
     tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(2,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Turnaus"),selected="Aikasarja"))),
+            fluidRow(column(2,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Ennusteet", "Turnaus"),selected="Aikasarja"))),
                      #column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
                      
                      #  column(2, verbatimTextOutput("pivotRefresh")),

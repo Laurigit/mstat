@@ -91,17 +91,49 @@ transp<-data.table(dcast(ssCols, formula = Laurin_pakka + Martin_pakka + Aloitta
 transp[, x := (Laurin_aloitus + Martin_aloitus -1) / (2 * VS_peli_bool_par + 2 * Pakka_etu)]
 transp[, y := (-Laurin_aloitus + 0.5 +x *( VS_peli_bool_par + Pakka_etu)) / Aloittaja_etu]
 transp[, ':=' (Aloittaja_vaikutus_temp = y * Aloittaja_etu, Pakan_vaikutus = Pakka_etu * x, VS_vaikutus = VS_peli_bool_par * x) ]
-result_ss_cols <- transp[, .(Laurin_pakka, Martin_pakka, Aloittaja_vaikutus_temp, Pakan_vaikutus, VS_vaikutus)]
+result_ss_cols <- transp[, .(Laurin_pakka, Martin_pakka, Aloittaja_vaikutus_temp, Pakan_vaikutus, VS_vaikutus,
+                             ennakkosuosikki = ifelse(Laurin_aloitus + Martin_aloitus < 1, 0, 1))]
 
 #joinaa taas tuloksiin
 joined_vaikutus <- tot_result[result_ss_cols, on =c("Laurin_pakka", "Martin_pakka")]
 joined_vaikutus[, Aloittajan_vaikutus := ifelse(Aloittaja == 0, -Aloittaja_vaikutus_temp, Aloittaja_vaikutus_temp)][,Aloittaja_vaikutus_temp:=NULL]
 
 #joinaa nimet
-laurin_nimet <-divarit[Omistaja==1, .(Laurin_pakka = Pakka, Laurin_pakkanimi = Nimi)]
-martin_nimet <-divarit[Omistaja==2, .(Martin_pakka = Pakka, Martin_pakkanimi = Nimi)]
+laurin_nimet <-divarit[Omistaja==1, .(Laurin_pakka = Pakka, Vastustajan_nimi = Nimi, Vastustajan_omistaja = "Lauri")]
+martin_nimet <-divarit[Omistaja==2, .(Martin_pakka = Pakka, Nimi, Omistaja = "Martti")]
 joined_vaikutus_laurin <- joined_vaikutus[laurin_nimet, on = "Laurin_pakka"]
-joined_vaikutus_martin <- joined_vaikutus_laurin[martin_nimet, on = "Martin_pakka"]
-return(joined_vaikutus_martin)
+joined_vaikutus_martin <- joined_vaikutus_laurin[martin_nimet, on = "Martin_pakka"][,rivi := NULL]
+
+martin_Data <- joined_vaikutus_martin[,.(Nimi,
+                                         Vastustajan_nimi,
+                                         Omistaja,
+                                         Vastustajan_omistaja,
+                                         ennuste ,
+                                         ennakkosuosikki,
+                                         nimi_string,
+                                         Aloittaja,
+                                         VS_vaikutus,
+                                         Aloittajan_vaikutus,
+                                         Pakan_vaikutus
+)]
+
+laurin_Data <- joined_vaikutus_martin[,.(Nimi = Vastustajan_nimi,
+                           Vastustajan_nimi = Nimi,
+                          Omistaja = "Lauri",
+                          Vastustajan_omistaja = "Martti",
+                          ennuste = 1 - ennuste,
+                          ennakkosuosikki = 1 - ennakkosuosikki,
+                          nimi_string,
+                          Aloittaja,
+                          VS_vaikutus = - VS_vaikutus,
+                          Aloittajan_vaikutus,
+                          Pakan_vaikutus = - Pakan_vaikutus
+                          )]
+
+result_data <- rbind(laurin_Data, martin_Data)
+
+#tehää vielä kopio niin, että käännetään luvut toisinpäin ja Lauri omistaa
+
+return(result_data)
 #dcast.data.table(join_back, Laurin_pakka ~ Martin_pakka, value.var = "ennuste_filled", fun.aggregate = mean)
 }

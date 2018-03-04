@@ -3,7 +3,7 @@ saavutusTaulu<-reactive({
   for(kierros in 1:nrow(saavutusAsetuksetReact$data)) {
     kierrosData<-saavutusAsetuksetReact$data[kierros]
     
-    kierrosTulos<-laskeSaavtusAsetuksista(kierrosData,peliDataReact(),divaridata(),pfi_data())
+    kierrosTulos<-laskeSaavtusAsetuksista(kierrosData,peliDataReact(),divaridata(),pfi_data(),ennusteDataReact$Data)
     
     
     saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
