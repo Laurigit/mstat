@@ -303,9 +303,16 @@ pfistats_react <- reactive(
   sarjataulukkoKaikki(divaridata(),peliDataReact(),FALSE,1,TRUE,NA,NA,NA,NA,FALSE,pfi_data())$pfi_trans
 )
 
-lisakortit_react <- reactive(
-  funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),TRUE,pfi_data())$current_lisakortit
-  
+lisakortit_react <- reactive({
+  lisakortit <- funcLisakortit(peliDataReact(),divaridata(),turnausSaantoReact(),TRUE,pfi_data())$current_lisakortit
+  #filtteröi mukaan vaan pelin pakat
+  lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka) |
+                                     (Omistaja=="Martti" & Pakka==input$select_martin_pakka),
+                                   .(Nimi,Lisakortit,Tilasto="Pakan koko",selite="ATK")]
+  lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)),Lisakortit=NULL)]
+  lisakortit_trans<-data.table(dcast(lisakortit_pelipakat,Tilasto+selite~Nimi,value.var="Kortti_lkm"))
+
+}
 )
 output$data_vs_taulukko<-renderDataTable({
   req(input$radio_bo_mode,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode)
@@ -378,17 +385,12 @@ pfistats <- pfistats_react()
    
   
   #lisäkortit säänötjen mukaan
-  lisakortit<-lisakortit_react()
-  
-  #filtteröi mukaan vaan pelin pakat
-  lisakortit_pelipakat<-lisakortit[(Omistaja=="Lauri" & Pakka==input$select_laurin_pakka) |
-                                     (Omistaja=="Martti" & Pakka==input$select_martin_pakka),
-                                   .(Nimi,Lisakortit,Tilasto="Pakan koko",selite="ATK")]
-  lisakortit_pelipakat[,':=' (Kortti_lkm=(floor(Lisakortit)),Lisakortit=NULL)]
+   lisakortit_trans<-lisakortit_react()
+   lisakortit_final<-lisakortit_trans[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
+
   #transponoi
   
-  lisakortit_trans<-data.table(dcast(lisakortit_pelipakat,Tilasto+selite~Nimi,value.var="Kortti_lkm"))
-  lisakortit_final<-lisakortit_trans[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
+  
   
   append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
   #vaihda sarakejärjestys

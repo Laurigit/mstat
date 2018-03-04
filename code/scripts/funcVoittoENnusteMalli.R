@@ -60,15 +60,15 @@ voittoEnnusteMallit <- function(peliData_ja_pfi) {
                                    keskiHintaEro)]
   count_vs_peli <- analyse_cols[, sum(VS_peli_bool)]
   if (count_vs_peli > 6) {
-  model <- glm(data = analyse_cols, 
+  model <- suppressWarnings(glm(data = analyse_cols, 
                formula = Voittaja ~ Aloittaja + Mull_diff  + VS_peli_bool + keskiHintaEro, 
                family = binomial(link = "logit")
-               ,weights = weight)
+               ,weights = weight))
   } else {
-    model <- glm(data = analyse_cols, 
+    model <- suppressWarnings(glm(data = analyse_cols, 
                  formula = Voittaja ~ Aloittaja + Mull_diff  + keskiHintaEro, 
                  family = binomial(link = "logit")
-                 ,weights = weight)
+                 ,weights = weight))
   }
 
   
@@ -76,7 +76,7 @@ voittoEnnusteMallit <- function(peliData_ja_pfi) {
   model_list[[1]]<-model
   pakkayhdistelmat[kierros, malli:=.(model_list)]
 }
-  pakkayhdistelmat [, ':=' (rivi = NULL)]
+
   #predict
   
  # aloittaja_for_dt <- Aloittaja
