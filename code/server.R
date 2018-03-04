@@ -153,6 +153,9 @@ print(paste(input$tallenna_tulos),input$luo_peleja)
   }
 })
 
+peliData_ja_pfi_react <- reactive({
+  peliData_ja_pfi_react<-  funcLiitaPelit_ja_Pysyvyys(pfi_data(), peliDataReact())
+})
 
 saavutusAsetuksetReact<-reactiveValues(
   data=saavutusAsetukset

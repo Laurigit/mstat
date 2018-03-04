@@ -391,6 +391,15 @@ voittoEnnusteFinal <- voittoEnnusteRow[, c(laurin_pakkanimi, "Tilasto", "selite"
   
   ),rownames=FALSE)
 
+
+mallinnusDataReact <- reactiveValues(mallit = NULL)
+
+observeEvent(input$luo_peleja,{
+  print("JOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo")
+  voittoEnnusteMallit(peliData_ja_pfi_react())
+  
+})
+
 observeEvent(input$tasuriPeli, {
   print("tasuripeli")
 #  divaridata <-luecsv("divarit.csv")
