@@ -292,13 +292,13 @@ output$data_vs_taulukko<-renderDataTable({
   #voittoEnnuste
   peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data(), peliDataReact())
   print("LUEMUT")
-  print(peliData_ja_pfi)
+ 
   
   pelidataPER_ID <- peliData_ja_pfi[peli_ID ==   r_valittu_peli$peliID]
   
   Martin_voittoennuste <- round(voittoEnnuste(input$select_laurin_pakka,
                                         input$select_martin_pakka,
-                                        peliData_ja_pfi,
+                                        ennusteMallitReact(),
                                         input$slider_laurin_mulligan,
                                         input$slider_martin_mulligan,
                                         r_valittu_peli$aloittaja,
@@ -308,6 +308,8 @@ output$data_vs_taulukko<-renderDataTable({
                                         pelidataPER_ID[, martin_kortti_lkm]
                                         ),2)*100
 Laurin_voittoennuste = 100- Martin_voittoennuste
+print("tabuusipeli laurin voittoennuste")
+print(Laurin_voittoennuste)
 voittoEnnusteRow<-data.table(
                                Tilasto = "Voitto",
                                selite = "ennuste"

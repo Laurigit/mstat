@@ -161,6 +161,10 @@ saavutusAsetuksetReact<-reactiveValues(
   data=saavutusAsetukset
 )
 
+ennusteMallitReact <- eventReactive(input$luo_peleja,{
+  voittoEnnusteMallit(peliData_ja_pfi_react())
+}, ignoreNULL = FALSE)
+
 
 turnausSaantoReact<-reactive({
   print("luettu ./turnaussaanto.csv")
