@@ -13,7 +13,12 @@ shinyServer(function(input, output,session) {
   
 
   sourcelist <- dir("./scripts/")
-  for(filename in sourcelist) {
+  tab_sources <- sourcelist[grepl("tab", sourcelist)]
+  sources_rest <-  sourcelist[!grepl("tab", sourcelist)]
+  for(filename in sources_rest) {
+    source(paste0("./scripts/", filename), local = TRUE)
+  }
+  for(filename in tab_sources) {
     source(paste0("./scripts/", filename), local = TRUE)
   }
 
@@ -99,7 +104,12 @@ shinyServer(function(input, output,session) {
      data=tilastoAsetukset
 
    )
-
+   
+   ennusteDataReact <- eventReactive(input$luo_peleja, {
+     create_forecast_data_for_stats()
+   }, ignoreNULL = FALSE)
+   
+   
    observeEvent(input$myPivotData,{
        #ota edelliset asetukset talteen
        cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")

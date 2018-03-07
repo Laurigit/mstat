@@ -265,6 +265,7 @@ output$selectInputMartti <- renderUI({
   
 })
 
+#seuraavaks uusi_peli statseja muistiin etukäteen.
 vs_statsit_MA_react <- reactive(
   sarjataulukkoKaikki(divaridata(),
                                    peliDataReact(),

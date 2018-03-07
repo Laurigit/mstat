@@ -14,13 +14,13 @@
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
-voittoEnnusteMallit <- function(peliData_ja_pfi) {
+voittoEnnusteMallit <- function(peliData_ja_pfi, maxTurausInclude = 10000000) {
   print("TEHDÄÄN VOITTOENNUSTEMALLIT")
   pelidata_joined_pakkatiedot <-  peliData_ja_pfi
   
   #loopataan kaikki pelit
-  Laurin_pakat <- pelidata_joined_pakkatiedot[,.N, by = ,.(Laurin_pakka)][,N:=NULL][, avain := 1]
-  Martin_pakat <-  pelidata_joined_pakkatiedot[,.N, by = ,.(Martin_pakka)][,N:=NULL][, avain := 1]
+  Laurin_pakat <- pelidata_joined_pakkatiedot[TurnausNo <= maxTurausInclude,.N, by = ,.(Laurin_pakka)][,N:=NULL][, avain := 1]
+  Martin_pakat <-  pelidata_joined_pakkatiedot[TurnausNo <= maxTurausInclude,.N, by = ,.(Martin_pakka)][,N:=NULL][, avain := 1]
   pakkayhdistelmat <-merge(Laurin_pakat, Martin_pakat, all = TRUE, by = "avain", allow.cartesian = TRUE)
     #luo muuttujat. Kertoimet sen takia, että otetaan yhteiskerroin vaan VS_peliin.
   #looppaa_kombot
@@ -32,7 +32,7 @@ voittoEnnusteMallit <- function(peliData_ja_pfi) {
   
   
   #filtteröi data
-  subset_pelit <- pelidata_joined_pakkatiedot[!is.na(Voittaja) & (Laurin_pakka == LP | Martin_pakka == MP),
+  subset_pelit <- pelidata_joined_pakkatiedot[!is.na(Voittaja) & (Laurin_pakka == LP | Martin_pakka == MP) & TurnausNo <= maxTurausInclude,
                                               .(Laurin_pakka, Martin_pakka, Voittaja, Laurin_mulligan,
                                                 Martin_mulligan, Laurin_pysyvyys_pct, Martin_pysyvyys_pct, Aloittaja, hinta_lauri, hinta_martti, laurin_kortti_lkm, martin_kortti_lkm)]
   
