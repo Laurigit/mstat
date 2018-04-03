@@ -12,11 +12,14 @@
 # MKortit  <- 50
 # Aloittaja <- 0
 # 
-# peliData <- peliDataReact()
-# pakat<-react_omaReadJson()
+
+# peliData <- luecsv("pelit.csv")
+# pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
+# peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 output$EV_plot <- renderPlot({
 peliData_ja_pfi <-  peliData_ja_pfi_react()
+# peliData_ja_pfi<- funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
 
 
@@ -47,18 +50,22 @@ ssCols <- turnaus_ja_voitto[, .(alkuaika, Voittaja,
 # ssCols[sample.int(32)[1:8], ':=' (Voittaja_EV = -1, alkuaika = seq_len(.N))]
 ssCols <- ssCols[order(alkuaika)]
 alkuperainen_ennuste <- ssCols[,sum(voittoEnnusteVar_EV)]
-ssCols[, ':=' (tilanne = cumsum(Voittaja_EV), cEnnuste = cumsum(voittoEnnusteVar_EV))]
-ssCols[, loppuEnnuste := alkuperainen_ennuste + tilanne - cEnnuste]
+ssCols[, ':=' (Tilanne = cumsum(Voittaja_EV), cEnnuste = cumsum(voittoEnnusteVar_EV))]
+ssCols[, Ennuste := alkuperainen_ennuste + Tilanne - cEnnuste]
 #lisää nollarivi
-nollarivi <- data.table(tilanne = 0, loppuEnnuste = alkuperainen_ennuste, peliNo = 0)
-kuvaajadata <- ssCols[,. (tilanne, loppuEnnuste, peliNo = seq_len(.N))]
+nollarivi <- data.table(Tilanne = 0, Ennuste = alkuperainen_ennuste, peliNo = 0)
+kuvaajadata <- ssCols[,. (Tilanne, Ennuste, peliNo = seq_len(.N))]
 bindaa <- rbind(nollarivi, kuvaajadata)
-melttaa <- melt(bindaa, id.vars = "peliNo", measure.vars = c("tilanne", "loppuEnnuste") )
+melttaa <- melt(bindaa, id.vars = "peliNo", measure.vars = c("Tilanne", "Ennuste") )
 melttaa[, Martin_johto := value]
 melttaa[, ottelu_id := (peliNo/2)]
 melttaa_aggr <- melttaa[ottelu_id %% 1 == 0, .(ottelu_id, value, Martin_johto, variable)]
-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
-   theme_calc() + scale_color_calc()
+plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
+   theme_calc() + scale_color_calc() 
+plot+ theme(legend.title=element_blank(),
+            legend.position = c(0.12, 0.1), legend.background = element_rect(color = "black", 
+                                                                            fill = "transparent", size = 1, linetype = "solid"))
+
 })
   #pelijärjestys
 #peliTilanne <- ssCols[!is.na(Voittaja),sum(Voittaja)]
@@ -85,9 +92,9 @@ ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + 
 # 
 # 
 # pelijarjestys[, peli_no := seq_len(.N)]
-# pelijarjestys[, ':=' (tilanne = cumsum(Voittaja), cEnnuste = cumsum(voittoEnnusteVar))]
+# pelijarjestys[, ':=' (Tilanne = cumsum(Voittaja), cEnnuste = cumsum(voittoEnnusteVar))]
 # peliTilanne2 <- ssCols[!is.na(Voittaja),sum(Voittaja)]
-# pelijarjestys[is.na(Voittaja), loppuEnnuste := cumsum(voittoEnnusteVar) +peliTilanne2 ]
-# pelijarjestys[!is.na(Voittaja), loppuEnnuste := tilanne]
+# pelijarjestys[is.na(Voittaja), Ennuste := cumsum(voittoEnnusteVar) +peliTilanne2 ]
+# pelijarjestys[!is.na(Voittaja), Ennuste := Tilanne]
 
 
