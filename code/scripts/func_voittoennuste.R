@@ -1,7 +1,7 @@
 # peliData <- luecsv("pelit.csv")
 # LP<-5
 # MP<-5
-# LMull <- 0
+# LMull <- 0ff
 # MMull <- 0
 # LHinta<-100
 # MHinta <-100
@@ -13,13 +13,18 @@
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 #voittoEnnuste(1,1,tulos,0,0,0,100,100,50,50)
 voittoEnnuste <- function(LP, MP, ennusteMallit, LMull, MMull, Aloittaja, LHinta, MHinta, LKortit, MKortit) {
-
+  print(ennusteMallit)
+#if (nrow(ennusteMallit[Laurin_pakka == LP & Martin_pakka == MP]) > 1000) {
 model <- ennusteMallit[Laurin_pakka == LP & Martin_pakka == MP, malli[[1]]]
 
 pred_data <- data.table(Mull_diff = MMull - LMull, VS_peli_bool = 1, Aloittaja ,
                         keskiHintaEro = log((LHinta / LKortit)/(MHinta / MKortit), base = exp(1)))
 #print(pred_data)
 prediction <- predict(model, pred_data, type = "response")
+#} else {
+#  prediction <- 0.5
+#}
+  
 return(prediction)
 #analyse_cols[,fix_voit := ifelse(Voittaja==0, -1, 1)]
 #analyse_cols[, weight_fix := weight*fix_voit]

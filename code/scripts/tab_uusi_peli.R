@@ -470,7 +470,7 @@ observeEvent(input$tasuriPeli, {
   }
   print("TURNAUSTILANNETINPUT")
   print(turnausTilanneInput)
-  uusPeliID <- tasuripeli_ID(turnausTilanneInput, pfi_data(), peliDataReact())
+  uusPeliID <- tasuripeli_ID(turnausTilanneInput, pfi_data(), peliDataReact(), ennusteMallitReact())
   print("peli_ID")
   print(uusPeliID)
   paivitaSliderit(uusPeliID,session) 
