@@ -372,18 +372,20 @@ pfistats <- pfistats_react()
   
   #lisäkortit manastack
    lisakortit_Man <- react_omaReadJson()$viimenen_pf
-   
-   laurin_man_pakka <- lisakortit_Man[Omistaja == "Lauri" & Pakka == input$select_laurin_pakka ,.(Laurin_man_kortit = kortti_lkm)]
-   martin_man_pakka <- lisakortit_Man[Omistaja == "Martti" & Pakka == input$select_martin_pakka, .(Martin_man_kortit = kortti_lkm)]
-   
+   laurin_man_pakka <- lisakortit_Man[Omistaja == "Lauri" & Pakka == input$select_laurin_pakka ,.(Laurin_man_kortit = kortti_lkm)]   
+ #  laurin_man_pakka <- lisakortit_Man[Omistaja == "Lauri" & Pakka == input$select_laurin_pakka,
+  #                                    .(Laurin_man_kortit =
+   #                                       paste0(kortti_lkm, " (", kortti_lkm %% 8, ")"))]
+   martin_man_pakka <- lisakortit_Man[Omistaja == "Martti" & Pakka == input$select_martin_pakka, .(Martin_man_kortit =
+                                                                                                     paste0(kortti_lkm, " (", kortti_lkm %% 8, ")"))]
+   laurin_man_pakka_numeric <- laurin_man_pakka[, Laurin_man_kortit]
    man_kortti_lkm<-data.table(
-     Tilasto = "Pakan koko",
+     Tilasto = paste0("(", laurin_man_pakka_numeric %% 8, ") Pakan koko"),
      selite = "Manastack"
    )
    man_kortti_lkm[, (laurin_pakkanimi) := laurin_man_pakka]
    man_kortti_lkm[, (martin_pakkanimi) := martin_man_pakka]
    man_kortti_lkmFinal <- man_kortti_lkm[, c(laurin_pakkanimi, "Tilasto", "selite", martin_pakkanimi), with = FALSE]
-   
   
   #lisäkortit säänötjen mukaan
    lisakortit_trans<-lisakortit_react()

@@ -1,7 +1,7 @@
-#laske nykyturnauksen ennusteet
-
-
-# peliData <- luecsv("pelit.csv")
+# #laske nykyturnauksen ennusteet
+# 
+# 
+# 
 # LP<-5
 # MP<-5
 # LMull <- 0
@@ -11,9 +11,9 @@
 # LKortit <- 50
 # MKortit  <- 50
 # Aloittaja <- 0
+# # 
 # 
-
-# peliData <- luecsv("pelit.csv")
+#  peliData <- luecsv("pelit.csv")
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
@@ -23,7 +23,7 @@ peliData_ja_pfi <-  peliData_ja_pfi_react()
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
 
 
-maxTurnaus <- peliData_ja_pfi[,max(TurnausNo)]
+maxTurnaus <- peliData_ja_pfi[,max(TurnausNo)]-1
 #maxTurnaus <- maxTurnaus -1
 turnausData <- peliData_ja_pfi[TurnausNo == maxTurnaus]
 turnausData[, ':=' (alkuaika = oma_timedate(Aloituspvm, Aloitusaika), rivi = seq_len(.N)) ]
