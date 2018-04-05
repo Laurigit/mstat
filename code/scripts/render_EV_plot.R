@@ -45,6 +45,8 @@ turnaus_ja_voitto <- turnausData[voittoEnnusteData, on = "rivi"][order(alkuaika)
 ssCols <- turnaus_ja_voitto[, .(alkuaika, Voittaja,
                                 Voittaja_EV = (Voittaja - 0.5) * 2, voittoEnnusteVar,
                                 voittoEnnusteVar_EV = (voittoEnnusteVar - 0.5) * 2)]
+print("UUS")
+
 #deviin arvotaan voittajia
 # ssCols[sample.int(32)[1:8], ':=' (Voittaja_EV = 1, alkuaika = seq_len(.N))]
 # ssCols[sample.int(32)[1:8], ':=' (Voittaja_EV = -1, alkuaika = seq_len(.N))]
@@ -52,14 +54,17 @@ ssCols <- ssCols[order(alkuaika)]
 alkuperainen_ennuste <- ssCols[,sum(voittoEnnusteVar_EV)]
 ssCols[, ':=' (Tilanne = cumsum(Voittaja_EV), cEnnuste = cumsum(voittoEnnusteVar_EV))]
 ssCols[, Ennuste := alkuperainen_ennuste + Tilanne - cEnnuste]
+
 #lisää nollarivi
 nollarivi <- data.table(Tilanne = 0, Ennuste = alkuperainen_ennuste, peliNo = 0)
 kuvaajadata <- ssCols[,. (Tilanne, Ennuste, peliNo = seq_len(.N))]
 bindaa <- rbind(nollarivi, kuvaajadata)
+print(bindaa)
 melttaa <- melt(bindaa, id.vars = "peliNo", measure.vars = c("Tilanne", "Ennuste") )
 melttaa[, Martin_johto := value]
 melttaa[, ottelu_id := (peliNo/2)]
 melttaa_aggr <- melttaa[ottelu_id %% 1 == 0, .(ottelu_id, value, Martin_johto, variable)]
+print(melttaa_aggr)
 plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
    theme_calc() + scale_color_calc() 
 plot+ theme(legend.title=element_blank(),

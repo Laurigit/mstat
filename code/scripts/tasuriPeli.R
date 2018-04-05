@@ -34,8 +34,7 @@ peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
                                                   hinta_lauri,hinta_martti,martin_kortti_lkm,
                                        Laurin_pysyvyys_pct,
                                        Martin_pysyvyys_pct)]
-  print("UUS")
-  print(ennustePelit)
+ 
   
   peliData_pelaamatomat[, ennuste := voittoEnnuste(Laurin_pakka, Martin_pakka,
                                                    ennusteMallitInput,

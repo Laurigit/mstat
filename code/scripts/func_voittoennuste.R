@@ -13,7 +13,7 @@
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 #voittoEnnuste(1,1,tulos,0,0,0,100,100,50,50)
 voittoEnnuste <- function(LP, MP, ennusteMallit, LMull, MMull, Aloittaja, LHinta, MHinta, LKortit, MKortit) {
-  print(ennusteMallit)
+ # print(ennusteMallit)
 #if (nrow(ennusteMallit[Laurin_pakka == LP & Martin_pakka == MP]) > 1000) {
 model <- ennusteMallit[Laurin_pakka == LP & Martin_pakka == MP, malli[[1]]]
 
