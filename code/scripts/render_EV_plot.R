@@ -23,7 +23,7 @@ peliData_ja_pfi <-  peliData_ja_pfi_react()
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
 
 
-maxTurnaus <- peliData_ja_pfi[,max(TurnausNo)]-1
+maxTurnaus <- peliData_ja_pfi[,max(TurnausNo)]
 #maxTurnaus <- maxTurnaus -1
 turnausData <- peliData_ja_pfi[TurnausNo == maxTurnaus]
 turnausData[, ':=' (alkuaika = oma_timedate(Aloituspvm, Aloitusaika), rivi = seq_len(.N)) ]
