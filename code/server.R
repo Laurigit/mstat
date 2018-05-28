@@ -15,10 +15,13 @@ shinyServer(function(input, output,session) {
   sourcelist <- dir("./scripts/")
   tab_sources <- sourcelist[grepl("tab", sourcelist)]
   sources_rest <-  sourcelist[!grepl("tab", sourcelist)]
-  for(filename in sources_rest) {
+  sources_rest_no_ui <-  sources_rest[!grepl("UI", sources_rest)]
+  for(filename in sources_rest_no_ui) {
+    edellinen <- filename 
     source(paste0("./scripts/", filename), local = TRUE)
   }
-  for(filename in tab_sources) {
+
+  for(filename in sourcelist) {
     source(paste0("./scripts/", filename), local = TRUE)
   }
 
@@ -106,7 +109,7 @@ shinyServer(function(input, output,session) {
    )
    
    ennusteDataReact <- eventReactive(input$luo_peleja, {
-     create_forecast_data_for_stats()
+     create_forecast_data_for_stats(peliData_ja_pfi_react())
    }, ignoreNULL = FALSE)
    
    

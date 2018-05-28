@@ -1,11 +1,14 @@
 #mallinnusmatriimi
 # 
-create_forecast_data_for_stats <- function() {
-divarit<-luecsv("divari.csv")
-peliData <- luecsv("pelit.csv")
-pakat<-omaReadJson("./external_files/")
-pfi_data<-pakkaUutuusProsentti(pakat)
-peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
+
+create_forecast_data_for_stats <- function(peliData_ja_pfi, include_tourNo_and_before = 99999) {
+#divarit<-luecsv("divari.csv")
+#peliData <- luecsv("pelit.csv")
+#peliDataSS <- peliData[TurnausNo <= include_tourNo_and_before]
+#pakat<-omaReadJson("./external_files/")
+#pfi_data<-pakkaUutuusProsentti(pakat)
+#peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
+peliData_ja_pfi_SS <- peliData_ja_pfi[TurnausNo <= include_tourNo_and_before]
 mallitKaikk <- voittoEnnusteMallit(peliData_ja_pfi)
 
 peliData_SS <- peliData_ja_pfi[,. (weight = Laurin_pysyvyys_pct * Martin_pysyvyys_pct, Voittaja,hinta_lauri, laurin_kortti_lkm, hinta_martti, martin_kortti_lkm, Aloittaja, Laurin_pakka, Martin_pakka)]

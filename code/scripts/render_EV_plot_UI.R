@@ -11,7 +11,7 @@
 # LKortit <- 50
 # MKortit  <- 50
 # Aloittaja <- 0
-# # 
+# #
 # 
 #  peliData <- luecsv("pelit.csv")
 # pakat<-omaReadJson("./external_files/")
@@ -68,8 +68,9 @@ print(melttaa_aggr)
 plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
    theme_calc() + scale_color_calc() 
 plot+ theme(legend.title=element_blank(),
-            legend.position = c(0.12, 0.1), legend.background = element_rect(color = "black", 
-                                                                            fill = "transparent", size = 1, linetype = "solid"))
+            legend.position = c(0.12, 0.1),
+            legend.background = element_rect(color = "black",
+            fill = "transparent", size = 1, linetype = "solid")) 
 
 })
   #pelijärjestys
