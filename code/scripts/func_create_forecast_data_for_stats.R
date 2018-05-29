@@ -9,9 +9,9 @@ create_forecast_data_for_stats <- function(peliData_ja_pfi, include_tourNo_and_b
 #pfi_data<-pakkaUutuusProsentti(pakat)
 #peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 peliData_ja_pfi_SS <- peliData_ja_pfi[TurnausNo <= include_tourNo_and_before]
-mallitKaikk <- voittoEnnusteMallit(peliData_ja_pfi)
+mallitKaikk <- voittoEnnusteMallit(peliData_ja_pfi_SS)
 
-peliData_SS <- peliData_ja_pfi[,. (weight = Laurin_pysyvyys_pct * Martin_pysyvyys_pct, Voittaja,hinta_lauri, laurin_kortti_lkm, hinta_martti, martin_kortti_lkm, Aloittaja, Laurin_pakka, Martin_pakka)]
+peliData_SS <- peliData_ja_pfi_SS[,. (weight = Laurin_pysyvyys_pct * Martin_pysyvyys_pct, Voittaja,hinta_lauri, laurin_kortti_lkm, hinta_martti, martin_kortti_lkm, Aloittaja, Laurin_pakka, Martin_pakka)]
 
 #joinaa
 pelit_ja_mallit <- peliData_SS[mallitKaikk, on = c("Laurin_pakka", "Martin_pakka")]
@@ -99,6 +99,7 @@ result_ss_cols <- transp[, .(Laurin_pakka, Martin_pakka, Aloittaja_vaikutus_temp
 
 #joinaa taas tuloksiin
 joined_vaikutus <- tot_result[result_ss_cols, on =c("Laurin_pakka", "Martin_pakka")]
+
 joined_vaikutus[, Aloittajan_vaikutus := ifelse(Aloittaja == 0, -Aloittaja_vaikutus_temp, Aloittaja_vaikutus_temp)][,Aloittaja_vaikutus_temp:=NULL]
 
 #joinaa nimet
@@ -107,7 +108,9 @@ martin_nimet <-divarit[Omistaja==2, .(Martin_pakka = Pakka, Nimi, Omistaja = "Ma
 joined_vaikutus_laurin <- joined_vaikutus[laurin_nimet, on = "Laurin_pakka"]
 joined_vaikutus_martin <- joined_vaikutus_laurin[martin_nimet, on = "Martin_pakka"][,rivi := NULL]
 
-martin_Data <- joined_vaikutus_martin[,.(Nimi,
+martin_Data <- joined_vaikutus_martin[,.(Pakka = Martin_pakka,
+                                         Vastustajan_Pakka =Laurin_pakka ,
+                                         Nimi,
                                          Vastustajan_nimi,
                                          Omistaja,
                                          Vastustajan_omistaja,
@@ -120,7 +123,9 @@ martin_Data <- joined_vaikutus_martin[,.(Nimi,
                                          Pakan_vaikutus
 )]
 
-laurin_Data <- joined_vaikutus_martin[,.(Nimi = Vastustajan_nimi,
+laurin_Data <- joined_vaikutus_martin[,.(Pakka = Laurin_pakka,
+                                         Vastustajan_Pakka = Martin_pakka,
+                                         Nimi = Vastustajan_nimi,
                            Vastustajan_nimi = Nimi,
                           Omistaja = "Lauri",
                           Vastustajan_omistaja = "Martti",
@@ -129,7 +134,7 @@ laurin_Data <- joined_vaikutus_martin[,.(Nimi = Vastustajan_nimi,
                           nimi_string,
                           Aloittaja,
                           VS_vaikutus = - VS_vaikutus,
-                          Aloittajan_vaikutus,
+                          Aloittajan_vaikutus = - Aloittajan_vaikutus,
                           Pakan_vaikutus = - Pakan_vaikutus
                           )]
 

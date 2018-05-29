@@ -112,6 +112,10 @@ shinyServer(function(input, output,session) {
      create_forecast_data_for_stats(peliData_ja_pfi_react())
    }, ignoreNULL = FALSE)
    
+   modelHistoryDataReact <- eventReactive(input$luo_peleja, {
+     create_data_for_win_disribution(peliData_ja_pfi_react())
+   }, ignoreNULL = FALSE)
+   
    
    observeEvent(input$myPivotData,{
        #ota edelliset asetukset talteen
