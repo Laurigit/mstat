@@ -1,13 +1,14 @@
 #mallinnusmatriimi
 # 
+# divarit<-luecsv("divari.csv")
+# peliData <- luecsv("pelit.csv")
+# 
+# pakat<-omaReadJson("./external_files/")
+# pfi_data<-pakkaUutuusProsentti(pakat)
+# peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
+# create_forecast_data_for_stats(peliData_ja_pfi, divarit, 13)
+create_forecast_data_for_stats <- function(peliData_ja_pfi, divarit, include_tourNo_and_before = 99999) {
 
-create_forecast_data_for_stats <- function(peliData_ja_pfi, include_tourNo_and_before = 99999) {
-#divarit<-luecsv("divari.csv")
-#peliData <- luecsv("pelit.csv")
-#peliDataSS <- peliData[TurnausNo <= include_tourNo_and_before]
-#pakat<-omaReadJson("./external_files/")
-#pfi_data<-pakkaUutuusProsentti(pakat)
-#peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 peliData_ja_pfi_SS <- peliData_ja_pfi[TurnausNo <= include_tourNo_and_before]
 mallitKaikk <- voittoEnnusteMallit(peliData_ja_pfi_SS)
 
@@ -31,8 +32,8 @@ pelit_ja_mallit_ja_ennuste <- pelit_ja_mallit[ennusteet_fit, on = "rivi"]
 # summary(pelit_ja_mallit_ja_ennuste[, virhe])
 
 #luo matriisi
-Laurin_pakka <- 1:nrow(peliData[,.N, by = ,.(Laurin_pakka)])
-Martin_pakka  <- 1:nrow(peliData[,.N, by = ,.(Martin_pakka)])
+Laurin_pakka <- 1:nrow(peliData_ja_pfi_SS[,.N, by = ,.(Laurin_pakka)])
+Martin_pakka  <- 1:nrow(peliData_ja_pfi_SS[,.N, by = ,.(Martin_pakka)])
 Aloittaja <- 0:1
 Pelit <- expand.grid(Laurin_pakka, Martin_pakka, Aloittaja)
 dt_pelimatriisi <- as.data.table(Pelit)
@@ -40,10 +41,19 @@ colnames(dt_pelimatriisi) <- c("Laurin_pakka","Martin_pakka","Aloittaja")
 
 
 #pakkahinnat
-Laurin_pakka_hinta <- pakat$viimenen_pfi[Omistaja == "Lauri", .( Laurin_pakka = Pakka, Laurin_Hinta = hinta,
-                                                                 laurin_kortti_lkm = kortti_lkm)]
-Martin_pakka_hinta <- pakat$viimenen_pfi[Omistaja == "Martti", .( Martin_pakka = Pakka, Martin_hinta = hinta,
-                                                                  martin_kortti_lkm = kortti_lkm)]
+max_turnee_ss <- peliData_ja_pfi_SS[,max(TurnausNo)]
+Laurin_pakka_hinta <- peliData_ja_pfi_SS[TurnausNo == max_turnee_ss, .N, by = .(Laurin_pakka,
+                                                                       Laurin_Hinta = hinta_lauri,
+                                                                       laurin_kortti_lkm)][,N := NULL]
+
+Laurin_pakka_hinta <- peliData_ja_pfi_SS[TurnausNo == max_turnee_ss, .SD[c(1)], by=Laurin_pakka][, .(Laurin_pakka,
+                                                                               Laurin_Hinta = hinta_lauri,
+                                                                               laurin_kortti_lkm)]
+
+
+Martin_pakka_hinta <- peliData_ja_pfi_SS[TurnausNo == max_turnee_ss, .SD[c(1)], by = Martin_pakka][,.(Martin_pakka,
+                                                                                Martin_hinta = hinta_martti,
+                                                                                martin_kortti_lkm)]
 #joinaa
 joinaa_hinnat <- dt_pelimatriisi[Laurin_pakka_hinta, on ="Laurin_pakka"][Martin_pakka_hinta, on = "Martin_pakka"]
 joinaa_hinnat[, ':=' (VS_peli_bool = 1,
@@ -103,8 +113,10 @@ joined_vaikutus <- tot_result[result_ss_cols, on =c("Laurin_pakka", "Martin_pakk
 joined_vaikutus[, Aloittajan_vaikutus := ifelse(Aloittaja == 0, -Aloittaja_vaikutus_temp, Aloittaja_vaikutus_temp)][,Aloittaja_vaikutus_temp:=NULL]
 
 #joinaa nimet
+print("DIVARIT")
 laurin_nimet <-divarit[Omistaja==1, .(Laurin_pakka = Pakka, Vastustajan_nimi = Nimi, Vastustajan_omistaja = "Lauri")]
 martin_nimet <-divarit[Omistaja==2, .(Martin_pakka = Pakka, Nimi, Omistaja = "Martti")]
+
 joined_vaikutus_laurin <- joined_vaikutus[laurin_nimet, on = "Laurin_pakka"]
 joined_vaikutus_martin <- joined_vaikutus_laurin[martin_nimet, on = "Martin_pakka"][,rivi := NULL]
 

@@ -109,11 +109,11 @@ shinyServer(function(input, output,session) {
    )
    
    ennusteDataReact <- eventReactive(input$luo_peleja, {
-     create_forecast_data_for_stats(peliData_ja_pfi_react())
+     create_forecast_data_for_stats(peliData_ja_pfi_react(), divaridata())
    }, ignoreNULL = FALSE)
    
    modelHistoryDataReact <- eventReactive(input$luo_peleja, {
-     create_data_for_win_disribution(peliData_ja_pfi_react())
+     create_data_for_win_disribution(peliData_ja_pfi_react(), divaridata())
    }, ignoreNULL = FALSE)
    
    
