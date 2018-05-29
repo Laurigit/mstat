@@ -6,7 +6,10 @@
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
-# create_forecast_data_for_stats(peliData_ja_pfi, divarit, 13)
+#include_tourNo_and_before<-14
+# db<-create_forecast_data_for_stats(peliData_ja_pfi, divarit, 13)
+# db[Pakka==1 & Vastustajan_Pakka == 8 ]
+
 create_forecast_data_for_stats <- function(peliData_ja_pfi, divarit, include_tourNo_and_before = 99999) {
 
 peliData_ja_pfi_SS <- peliData_ja_pfi[TurnausNo <= include_tourNo_and_before]
@@ -42,9 +45,7 @@ colnames(dt_pelimatriisi) <- c("Laurin_pakka","Martin_pakka","Aloittaja")
 
 #pakkahinnat
 max_turnee_ss <- peliData_ja_pfi_SS[,max(TurnausNo)]
-Laurin_pakka_hinta <- peliData_ja_pfi_SS[TurnausNo == max_turnee_ss, .N, by = .(Laurin_pakka,
-                                                                       Laurin_Hinta = hinta_lauri,
-                                                                       laurin_kortti_lkm)][,N := NULL]
+
 
 Laurin_pakka_hinta <- peliData_ja_pfi_SS[TurnausNo == max_turnee_ss, .SD[c(1)], by=Laurin_pakka][, .(Laurin_pakka,
                                                                                Laurin_Hinta = hinta_lauri,
