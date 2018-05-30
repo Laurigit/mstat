@@ -209,7 +209,15 @@ uusi_peli<-dashboardBody(
                               textInput("txt_palkinto_kuvaus","Palkinnon kuvaus"))),
               fluidRow( column(6,dataTableOutput("tallennetut_saavutusAsetukset")))
             )
-    )
+    ),
+    tabItem(tabName = "tab_boosterit",
+            fluidPage(
+              fluidRow(
+                       column(3, numericInput("numeric_count_boosters", "How many boosters to draft?", 4, 1, 16, step = 1)),
+                       column(3, textOutput("txt_vect_boosters")),
+                       column(3, actionButton("action_add_boosters", "Draft these boosters")),
+                       column(3, textOutput("txt_confirm_drafted")))
+            ))
     
     
     
@@ -235,7 +243,8 @@ sidebar <- dashboardSidebar(
               #menuSubItem(icon = NULL,actionButton("tallenna_bannit","Tallenna")),
               menuItem('Peliasetukset',  icon=icon("server"),tabName = 'tab_peliasetukest'),
               menuItem("Lataa pakkoja", icon=icon("cloud-upload") ,tabName = "pakkaupload"),
-              menuItem("Saavutusasetukset",icon=icon("key"), tabName= "tab_saavutusasetukset"),
+              menuItem("Saavutusasetukset",icon=icon("cloud-upload"), tabName= "tab_saavutusasetukset"),
+              menuItem("Boosterit", icon = icon("box"), tabName = "tab_boosterit"),
               radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
               radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
               radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),

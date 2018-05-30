@@ -2,32 +2,38 @@
 #outputtina objekti, missä tekstinä boosterit, mitä avataan ja objektina juttu, jonka voi tunkea toiseen funktioon
 #mikä päivttää csv:n
 
-suggest_boosters <- function() {
+#kolmas funcio lisää boostereita
+
+suggest_boosters <- function(how_many_boosters) {
   booster_data <- luecsv("boosters.csv")
+  booster_data[, rivi := seq_len(.N)]
+  #find previous increase
+  last_increase_row <- booster_data[draft_no <0,max(rivi)]
   
+  #find next draft after increase
+  next_draft <- booster_data[rivi > last_increase_row, (min(draft_no, na.rm = TRUE))]
   
+  #calculate kulmakerroin for booster use. Use original amount from last increase
+  current_stock <- booster_data[draft_no < next_draft, .(sum_boosters = sum(muutos)), by = setti]
+  print( booster_data[, .(sum_boosters = sum(muutos)), by = setti])
+  current_stock[, kulmakerroin := sum_boosters/ sum(sum_boosters)]
   
-  draftit <- booster_data[, .N, by = draft_no][draft_no> 0, draft_no]
-  total_muutos <- NULL
-  for (draft_loop in draftit) {
-    #stock before draft
-    current_stock <- booster_data[draft_no < draft_loop, .(sum_boosters = sum(muutos)), by = setti]
-    current_stock[, pct_left := sum_boosters/ sum(sum_boosters)]
-    current_stock[, drafti := draft_loop]
-    drafted_boosters <- booster_data[draft_no ==draft_loop, .(muutos = muutos, setti)]
-    #add change
-    join_change <- drafted_boosters[current_stock,on = "setti"]
-    join_change[, muutos := ifelse(is.na(muutos), 0, muutos)]
-    
-    total_muutos <- rbind(total_muutos,join_change)
+  #count how many boosters have drafted since last increase
+  count_dafted_boosters <- booster_data[rivi > last_increase_row, .(drafted_count = - sum(muutos, na.rm = TRUE)), by = setti]
+  count_dafted_boosters_tot <- count_dafted_boosters[, sum(drafted_count)]
+  #join count
+  joined_count <-count_dafted_boosters[current_stock, on = "setti"]
+  joined_count[,drafted_count := ifelse(is.na(drafted_count), 0, drafted_count)]
+  kpi_status <- joined_count[, .(kulmakerroin, setti, kpi_status = count_dafted_boosters_tot * kulmakerroin - drafted_count, kulmakerroin)]
+  loop_kpi <- current_stock[, .(setti, kulmakerroin)]
+  set_vector <- NULL
+  for(booster_loop in 1:how_many_boosters) {
+    kpi_status[, kpi_status := kpi_status + kulmakerroin]
+    boosted_set <- kpi_status[which.max(kpi_status), setti]
+    print(boosted_set)
+    kpi_status[setti == boosted_set, kpi_status := kpi_status - 1]
+    set_vector <- c(set_vector, boosted_set)
   }
   
-  current_stock <- booster_data[, .(sum_boosters = sum(muutos)), by = setti]
-  print(current_stock)
-  current_stock[, booster_kpi := sum_boosters/ sum(sum_boosters, na.rm =TRUE)][,sum_boosters := NULL]
-  current_situation <- total_muutos[, .(booster_kpi = sum(muutos) + sum(pct_left)), by = setti]
-  print(current_situation)
-  append_total <- rbind(current_situation, current_stock)
-  aggr_append <- append_total[, .(kpi_candidates = sum(booster_kpi)), by = setti][order(-kpi_candidates)][1:4][,setti]
-  return(aggr_append)
+  return(set_vector)
 }
