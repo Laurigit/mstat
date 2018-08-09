@@ -189,11 +189,23 @@ turnausSaantoReact<-reactive({
   return(turnaussaanto)
 })
 
+
 validointiteksti <-reactiveValues(teksti="Ei ladattu pakkoja")
 output$text_validointi <- renderText(({
   paste(validointiteksti$teksti)
   }))
   
-
+output$blow_timer <- renderText({
+  
+  invalidateLater(1000 , session)
+  blow_data <- luecsv("blow_timer.csv")
+  blow_aika <- as.integer(as.ITime(blow_data[, Puhallusaika]))
+  blow_pvm <- as.integer(as.IDate(blow_data[, Puhalluspvm])) * 60 * 60 *24 
+  aika <- as.integer(as.ITime(now(tz = "Europe/Helsinki")))
+  pvm <- as.integer(as.IDate(now(tz = "Europe/Helsinki"))) * 60 * 60 * 24
+  total <- aika + pvm - blow_aika - blow_pvm - 15 * 60
+  minuutit <- floor(total / 60)
+  minuutit
+})
 
 })

@@ -246,12 +246,18 @@ sidebar <- dashboardSidebar(
               menuItem("Saavutusasetukset",icon=icon("cloud-upload"), tabName= "tab_saavutusasetukset"),
               menuItem("Boosterit", icon = icon("box"), tabName = "tab_boosterit"),
               radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
-              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
-              radioButtons("radio_pfi_mode", label = h5("PFI mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
-              radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
-              actionButton("automated_tests", label = h5("Run tests")),
+              radioButtons("radio_pfi_mode",
+                           label = h5("PFI mode"),
+                           choices = list("Pois" = FALSE, "Paalla" = TRUE),
+                           selected = TRUE, 
+                           inline = T),
+              # actionButton("automated_tests", label = h5("Run tests")),
+             actionButton("blow_timer", label = h5("Blow timer")),
+             actionButton("blow_now", label = h5("Blow now")),
+             radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+             radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
-              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=5)
+              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7)
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
   )
   
@@ -261,7 +267,9 @@ sidebar <- dashboardSidebar(
 #RUNKO  
 dashboardPage(
   
-  dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode)),
+  #dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode, " ", textOutput('blow_timer')),
+  dashboardHeader(title = textOutput('blow_timer'),
+                  titleWidth = 450),
   sidebar,
   uusi_peli
 )
