@@ -3,7 +3,7 @@
 
 # Define UI for application that draws a histogram
 
-
+useShinyalert()
 uusi_peli<-dashboardBody(
   tags$head(
     tags$style(
@@ -26,6 +26,7 @@ uusi_peli<-dashboardBody(
   tabItems(
     tabItem(tabName="tab_uusi_peli",
             fluidPage(
+              useShinyalert(),
               #theme = shinytheme("yeti"),
               shinyjs::useShinyjs(),
               
@@ -126,7 +127,18 @@ uusi_peli<-dashboardBody(
               
             )
     ),
-    
+    tabItem(tabName="tab_blow",
+            fluidPage(
+              fluidRow(column(6,sliderInput("slider_laurin_humala_new",label=h4("Laurin humala"),min=-0.1,max=2.5,value=-0.1,step=0.1)),
+                       
+                       column(6,sliderInput("slider_martin_humala_new",
+                                            label=h4("Martin humala"),
+                                            min=-0.1,
+                                            max=2.5,
+                                            value=-0.1,
+                                            step=0.1))),
+              fluidRow(actionButton("tallenna_humala", "Tallenna"))
+            )),
     tabItem(tabName="tab_combined",
             fluidPage(
               fluidRow(uiOutput("table_divari2")),
@@ -234,6 +246,7 @@ sidebar <- dashboardSidebar(
               menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
               
               menuItem("Tallenna peli", icon = icon("th"), tabName = "tab_tallenna_peli"),
+              menuItem("Blow", icon = icon("th"), tabName = "tab_blow"),
               menuItem("Sarjataulukko", icon = icon("dashboard"), tabName = "tab_sarjataulukko"),
               menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName="tab_tilastomurskain"),
               menuItem("Saavutukset",icon=icon("bullseye"),tabName="tab_saavutukset"),

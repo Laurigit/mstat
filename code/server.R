@@ -1,5 +1,5 @@
 # Define server logic required to draw a histogram 
-shinyServer(function(input, output,session) {
+shinyServer(function(input, output, session) {
 
   load_data_from_DB()
   
@@ -87,10 +87,14 @@ shinyServer(function(input, output,session) {
     tulos <- luecsv("./divari.csv")
     print(paste(input$tallenna_bannit))
     print("divaritada loppu")
-    return (tulos)
+    return(tulos)
   })
 
-
+humalaData <- reactive({
+  tulos <- luecsv("./humala.csv")
+  print(input$tallenna_humala)
+  return(tulos)
+})
   defaultStatValue<-reactiveValues(
    
   asetukset=list("Nimi","Vastustajan Nimi","Voitti",list(),"Average","Table")
@@ -196,16 +200,73 @@ output$text_validointi <- renderText(({
   }))
   
 output$blow_timer <- renderText({
-  
+  blow_timer_react()
+
+})
+
+observeEvent(input$blow_timer, {
+  create_timedata_for_blowtimer(15)
+})
+blow_response <- reactiveValues(response = "Initial")
+# observeEvent(input$blow_now, {
+#   shinyalert(
+#     callbackR = function(x) {
+#       blow_response$response <- x
+#     },
+#     
+#     title = "Ready to blow?", text = "Or snooze for X min", type = "input", closeOnEsc = TRUE,
+#              closeOnClickOutside = FALSE, html = TRUE, showCancelButton = TRUE,
+#              showConfirmButton = TRUE, inputType = "number", inputValue = 15,
+#              inputPlaceholder = 15, confirmButtonText = "Snooze",
+#              confirmButtonCol = "#AEDEF4", cancelButtonText = "Blow now", timer = 0,
+#              animation = TRUE, imageUrl = NULL, imageWidth = 100,
+#              imageHeight = 100, className = "",
+#              callbackJS = NULL)
+# 
+# })
+
+observe({
+  if (blow_response$response == FALSE) {
+    updateTabItems(session, "sidebarmenu", "tab_blow")
+    blow_response$response <- "Initial"
+  } else if (blow_response$response == "Initial") {
+    #do nothing
+  } else {
+    input_time <- as.numeric(blow_response$response)
+    create_timedata_for_blowtimer(input_time)
+    blow_response$response <- FALSE
+  }
+})
+
+blow_timer_react <- reactive({
   invalidateLater(1000 , session)
   blow_data <- luecsv("blow_timer.csv")
   blow_aika <- as.integer(as.ITime(blow_data[, Puhallusaika]))
-  blow_pvm <- as.integer(as.IDate(blow_data[, Puhalluspvm])) * 60 * 60 *24 
+  blow_pvm <- as.integer(as.IDate(blow_data[, Puhalluspvm])) * 60 * 60 * 24 
   aika <- as.integer(as.ITime(now(tz = "Europe/Helsinki")))
   pvm <- as.integer(as.IDate(now(tz = "Europe/Helsinki"))) * 60 * 60 * 24
-  total <- aika + pvm - blow_aika - blow_pvm - 15 * 60
+  total <- aika + pvm - blow_aika - blow_pvm
   minuutit <- floor(total / 60)
+  if(minuutit >= 0 & minuutit < 1) {
+
+
+    shinyalert(
+      callbackR = function(x) {
+        blow_response$response <- x
+      },
+      
+      title = "Ready to blow?", text = "Or snooze for X min", type = "input", closeOnEsc = TRUE,
+      closeOnClickOutside = FALSE, html = TRUE, showCancelButton = TRUE,
+      showConfirmButton = TRUE, inputType = "number", inputValue = 15,
+      inputPlaceholder = 15, confirmButtonText = "Snooze",
+      confirmButtonCol = "#AEDEF4", cancelButtonText = "Blow now", timer = 0,
+      animation = TRUE, imageUrl = NULL, imageWidth = 100,
+      imageHeight = 100, className = "",
+      callbackJS = NULL)
+    
+  }
   minuutit
-})
+})  
+
 
 })

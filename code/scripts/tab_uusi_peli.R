@@ -92,9 +92,7 @@ observeEvent(input$jatka_ottelua,{
   print("jatka ottelua loppu")
 })
 
-observeEvent(input$blow_timer, {
-  create_timedata_for_blowtimer()
-})
+
 
 output$peliKesto <- renderText({
   

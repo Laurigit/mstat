@@ -14,7 +14,7 @@
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
-voittoEnnusteMallit <- function(peliData_ja_pfi, maxTurausInclude = 10000000) {
+voittoEnnusteMallit <- function(peliData_ja_pfi, maxTurausInclude = 1000000000) {
   print("TEHDÄÄN VOITTOENNUSTEMALLIT")
   pelidata_joined_pakkatiedot <-  peliData_ja_pfi
   
