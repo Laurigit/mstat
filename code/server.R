@@ -229,6 +229,7 @@ observe({
   if (blow_response$response == FALSE) {
     updateTabItems(session, "sidebarmenu", "tab_blow")
     blow_response$response <- "Initial"
+    create_timedata_for_blowtimer(180)
   } else if (blow_response$response == "Initial") {
     #do nothing
   } else {
@@ -239,7 +240,7 @@ observe({
 })
 
 blow_timer_react <- reactive({
-  invalidateLater(1000 , session)
+  invalidateLater(60000 , session)
   blow_data <- luecsv("blow_timer.csv")
   blow_aika <- as.integer(as.ITime(blow_data[, Puhallusaika]))
   blow_pvm <- as.integer(as.IDate(blow_data[, Puhalluspvm])) * 60 * 60 * 24 

@@ -40,6 +40,8 @@ print(pfistats)
     'function(row, data) {
     // Bold cells for those >= 5 in the first column
     if (parseFloat(data[5]) >= 4)
-    $("td", row).css("background", "Tomato");}')
+    $("td", row).css("background", "Tomato");
+     if (parseFloat(data[4]) >= 4)
+    $("td", row).css("background", "DodgerBlue");}')
   
   ), rownames = FALSE)

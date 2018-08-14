@@ -18,6 +18,8 @@
 
 # tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus,peliData,divariData,pfi_data, ennusteDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
+  #saavutusKierrosAsetus <- kierrosData
+  
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
   minVaiMax<-saavutusKierrosAsetus[,minVaiMax]
   minVaiMax_rivi<-saavutusKierrosAsetus[,minVaiMax_rivi]
