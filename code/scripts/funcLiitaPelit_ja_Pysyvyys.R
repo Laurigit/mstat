@@ -7,7 +7,7 @@
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 funcLiitaPelit_ja_Pysyvyys<-function(pfi_data,peliData) {
-pelidata_temp_all<-peliData
+pelidata_temp_all<-peliData#[TurnausNo==28]
 pysyvyys_pct<-as.data.table(pfi_data)
 
 #joinaa pysyvyys_pct divariin

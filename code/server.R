@@ -12,15 +12,11 @@ shinyServer(function(input, output, session) {
   #r_valittu_peli on valittu peli millä tahansa menetelmällä
   r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan", aloittaja = -1)
   
-
+  source("./scripts/load_scripts.R", local = TRUE)
+  
   sourcelist <- dir("./scripts/")
   tab_sources <- sourcelist[grepl("tab", sourcelist)]
-  sources_rest <-  sourcelist[!grepl("tab", sourcelist)]
-  sources_rest_no_ui <-  sources_rest[!grepl("UI", sources_rest)]
-  for(filename in sources_rest_no_ui) {
-    edellinen <- filename 
-    source(paste0("./scripts/", filename), local = TRUE)
-  }
+
 
   for(filename in sourcelist) {
     source(paste0("./scripts/", filename), local = TRUE)

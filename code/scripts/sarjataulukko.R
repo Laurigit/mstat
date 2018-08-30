@@ -1,15 +1,16 @@
 
 #sarjataulukko total
-# setwd("~/R/mstat2/code/omawd")
+# setwd("~/R/mstat2/code")
+# source("./scripts/load_scripts.R")
 # peliData<-luecsv("pelit.csv")
 # input_bo_mode=FALSE
-# input_total=TRUE
+# input_total=FALSE
 # input_pfiMA=FALSE
-# input_divari=NA
+# input_divari=3
 # input_Laurin_pakka=NA
 # input_Martin_pakka=NA
 # input_moving_average=NA
-# input_turnaus<-3
+# input_turnaus<-28
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # divariData<-luecsv("divari.csv")
@@ -42,7 +43,7 @@ pelidata_temp_all<-bo_data_conv(input_bo_mode,peliData)
 
   
  
-pelidata_joined_pakkatiedot<-  funcLiitaPelit_ja_Pysyvyys(pfi_data,pelidata_temp_all)
+pelidata_joined_pakkatiedot <- funcLiitaPelit_ja_Pysyvyys(pfi_data,pelidata_temp_all)
   
   #ota pois pelaamattomat pelit
   pelidata_temp<-pelidata_joined_pakkatiedot[!is.na(Voittaja)]
