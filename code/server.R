@@ -5,7 +5,8 @@ shinyServer(function(input, output, session) {
   
   load("./external_files/tilastoAsetukset.R")
   load("./external_files/saavutusAsetukset.R")
-
+  load("./external_files/model_history_data.R")
+  modelHistoryDataReact <- model_history_data
 
   
   #r_valittu_peli on valittu peli millä tahansa menetelmällä
@@ -115,12 +116,17 @@ humalaData <- reactive({
    ennusteDataReact <- eventReactive(input$luo_peleja, {
      create_forecast_data_for_stats(peliData_ja_pfi_react(), divaridata())
    }, ignoreNULL = FALSE)
-   
+
    modelHistoryDataReact <- eventReactive(input$luo_peleja, {
-     create_data_for_win_disribution(peliData_ja_pfi_react(), divaridata())
-   }, ignoreNULL = FALSE)
-   
-   
+     if (input$luo_peleja > 0) {
+       model_history_data_new <- create_data_for_win_disribution(peliData_ja_pfi_react(), divaridata()) 
+       saveR_and_send(model_history_data,"model_history_data","model_history_data.R")
+     } else {
+       model_history_data_new <- model_history_data
+     }
+     return(model_history_data_new)
+   }, ignoreNULL = FALSE, ignoreInit = FALSE)
+
    observeEvent(input$myPivotData,{
        #ota edelliset asetukset talteen
        cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")

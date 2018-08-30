@@ -25,6 +25,7 @@ voittoEnnusteMallit <- function(peliData_ja_pfi, maxTurausInclude = 1000000000) 
     #luo muuttujat. Kertoimet sen takia, että otetaan yhteiskerroin vaan VS_peliin.
   #looppaa_kombot
   pakkayhdistelmat[, avain := NULL]
+  #ota vain yhdistelmat
   for(kierros in 1:nrow(pakkayhdistelmat)) {
     LP <- pakkayhdistelmat[kierros, Laurin_pakka]
     MP <- pakkayhdistelmat[kierros, Martin_pakka]
@@ -64,12 +65,18 @@ voittoEnnusteMallit <- function(peliData_ja_pfi, maxTurausInclude = 1000000000) 
                formula = Voittaja ~ Aloittaja + Mull_diff  + VS_peli_bool + keskiHintaEro, 
                family = binomial(link = "logit")
                ,weights = weight))
-  } else {
+  } else if (count_vs_peli > 0) {
     model <- suppressWarnings(glm(data = analyse_cols, 
                  formula = Voittaja ~ Aloittaja + Mull_diff  + keskiHintaEro, 
                  family = binomial(link = "logit")
                  ,weights = weight))
-  }
+  } else {
+    dummydata <- data.table(Voittaja = c(1, 0, 1, 0), Aloittaja = c(1, 1, 0, 0))
+    model <- suppressWarnings(glm(data = dummydata, 
+                                  formula = Voittaja ~ Aloittaja,
+                                  family = binomial(link = "logit")
+                                  ))
+  } 
 
   
   model_list <- list()
