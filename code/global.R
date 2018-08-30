@@ -181,5 +181,5 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
 
 
 
-
+print( environment())
 print("Global.R valmis")

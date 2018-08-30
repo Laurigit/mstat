@@ -1,6 +1,6 @@
 # Define server logic required to draw a histogram 
 shinyServer(function(input, output, session) {
-
+  print( environment())
   load_data_from_DB()
   
   load("./external_files/tilastoAsetukset.R")
@@ -13,14 +13,14 @@ shinyServer(function(input, output, session) {
   r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan", aloittaja = -1)
   
   source("./scripts/load_scripts.R", local = TRUE)
-  
-  sourcelist <- dir("./scripts/")
-  tab_sources <- sourcelist[grepl("tab", sourcelist)]
-
-
-  for(filename in sourcelist) {
-    source(paste0("./scripts/", filename), local = TRUE)
-  }
+  # 
+  # sourcelist <- dir("./scripts/")
+  # tab_sources <- sourcelist[grepl("tab", sourcelist)]
+  # 
+  # 
+  # for(filename in tab_sources) {
+  #   source(paste0("./scripts/", filename), local = TRUE)
+  # }
 
 
    #obserEventit
@@ -271,5 +271,11 @@ blow_timer_react <- reactive({
   minuutit
 })  
 
+#tätä voi käyttää, jos haluaa tallentaa inputtien arvot.
+# observeEvent(input$arvo_peli,{
+# input_values <<- lapply(reactiveValuesToList(input), unclass)
+# saveR_and_send(input_values, "input", "input_values.R")
+# })
+#load("./external_files/input_values.R")
 
 })
