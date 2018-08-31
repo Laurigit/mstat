@@ -1,6 +1,7 @@
 # Define server logic required to draw a histogram 
 shinyServer(function(input, output, session) {
-  print( environment())
+
+  
   load_data_from_DB()
   
   load("./external_files/tilastoAsetukset.R")
@@ -22,7 +23,10 @@ shinyServer(function(input, output, session) {
   #   source(paste0("./scripts/", filename), local = TRUE)
   # }
 
-
+  #write shiny env name
+  shiny_env <- environment()
+  save(shiny_env, "shiny_env", file = "./shiny_env.R")
+  
    #obserEventit
   
 
@@ -166,9 +170,10 @@ observe({
   zip_all_and_send()
 })
 
-peliDataReact<-reactive({
+peliDataReact<-eventReactive(
+  c(input$tallenna_tulos,
+  input$luo_peleja), {
   print("Luettu ./pelit.csv")
-print(paste(input$tallenna_tulos),input$luo_peleja)
   if(input$radio_debug_mode==FALSE) {
     kaikkipelit<-luecsv("./pelit.csv")   
   } else {

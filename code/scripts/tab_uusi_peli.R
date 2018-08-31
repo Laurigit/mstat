@@ -203,7 +203,10 @@ observeEvent(c(input$select_laurin_pakka,
 #arvopeli
 observeEvent(input$arvo_peli,{
   print("arvo peli alku")
-  kaikkipelit<-peliDataReact()
+  browser()
+  required_data("ADM_PELIT")
+  #kaikkipelit<-peliDataReact()
+  kaikkipelit <- ADM_PELIT
   #kato onko divarifiltteri päällä
   if(input$divariRadio!="Ei väliä") {
     pelaamattomat <- unique(kaikkipelit[is.na(Voittaja) & Divari==input$divariRadio,Ottelu_ID])  

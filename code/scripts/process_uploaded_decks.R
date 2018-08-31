@@ -1,10 +1,10 @@
 
 # folder_out <-"./external_files"
-# folder_in <- "./code/save_decks_here/"
-# filename_in<-"L_1.json"
+# folder_in <- "./external_files/"
+# filename_in<-"L_7.json"
 # pakka <- file.info(paste(folder_in,filename_in,sep=""))
-# filelist <- "L_1"
-#pakka <- data.frame(name = "L_1.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
+# filelist <- "L_7"
+# pakka <- data.frame(name = "L_7.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
 process_uploaded_decks<-function(filelist,folder_out) {
 filelist <-data.table(filelist)
   #lue json-tiedosto
@@ -27,15 +27,26 @@ valid_teksti<-NULL
     
    
     if(omistaja==TRUE & pakkanumero==TRUE & pituus==TRUE) {
-    aikaleima<-file.info(paste(pakka$datapath))$mtime
-    attributes(aikaleima)$tzone <- "EET"  
-    pvm<-as.IDate(aikaleima)
-    sekunnit<-as.integer(as.ITime(aikaleima))
+    aikaleima <- now(tz = "EET")
+    
+    repl_pattern <- paste0(', "load_datetime":{"datetime":"', aikaleima, '"}')
+    
+    file_content <- fread(paste0("./external_files/", pakka$name), header = FALSE, sep = "¤",
+                          stringsAsFactors = FALSE)
+    len_of_string <- nchar(file_content[1])
+    start_string <- str_sub(file_content, 1, len_of_string -1)
+    result_string <- paste0(start_string, repl_pattern, "}")
+    
     
     tiedostopaate <- substr(pakka$name,nchar(pakka$name)-4,nchar(pakka$name))
-    tiedostonimi<-paste0("./external_files/",tiedostoalku,"_",pvm,"_",sekunnit,tiedostopaate)
+    tiedostonimi_illegal <- paste0("./external_files/",tiedostoalku,"_",aikaleima, tiedostopaate)
+    tiedostonimi <- gsub(":", ".", tiedostonimi_illegal)
 
-    write.table(read.table(file=pakka$datapath),file=tiedostonimi,row.names=FALSE,col.names = FALSE,quote=FALSE)
+    write.table(result_string,
+                file = tiedostonimi,
+                row.names = FALSE,
+                col.names = FALSE,
+                quote = FALSE)
     
     
     #syscommand <-paste("copy ", pakka$datapath," ",folder_out,tiedostonimi,sep="")

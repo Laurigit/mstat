@@ -1,0 +1,22 @@
+#find_and_source
+#source_list <- c("SRC_PELIT", "ölölkj")
+find_and_source <- function(source_list) {
+  #find all files
+  load("shiny_env.R")
+  
+  filenames <- data.table(filename = list.files(recursive = TRUE))
+  source_to_table <- data.table(source_nm= source_list)
+  source_to_table[, rivi := seq_len(.N)]
+  source_to_table[, ':=' (source_found = grepl(source_nm,
+                                             paste(filenames[, filename], collapse = "|"))),
+                  by = rivi]
+  source_files_not_found <- source_to_table[source_found == FALSE, source_nm]
+  filenames[,  ':=' (match_nm = grepl(paste(source_list, collapse = "|"), filename))]
+  for(source_loop in filenames[match_nm == TRUE, filename]) {
+    source(source_loop, local = shiny_env)
+  }
+  if(length(source_files_not_found) > 0) {
+    warning(source_files_not_found)
+    return(source_files_not_found)
+  }
+}
