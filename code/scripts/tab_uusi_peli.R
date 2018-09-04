@@ -81,10 +81,10 @@ observe({
 
 observeEvent(input$jatka_ottelua,{
   print("jatka ottelua alku")
-  
-  if (!is.na(r_valittu_peli$jatkopeli)) {
+  jatkopeli <- find_jatka_ottelua(ADM_PELIT)
+  if (!is.na(jatkopeli)) {
     #  
-    paivitaSliderit(r_valittu_peli$jatkopeli,session) 
+    paivitaSliderit(jatkopeli,session) 
     
   }else {
     print("Ei ole peliä kesken")
@@ -203,7 +203,6 @@ observeEvent(c(input$select_laurin_pakka,
 #arvopeli
 observeEvent(input$arvo_peli,{
   print("arvo peli alku")
-  browser()
   required_data("ADM_PELIT")
   #kaikkipelit<-peliDataReact()
   kaikkipelit <- ADM_PELIT
@@ -230,8 +229,8 @@ observeEvent(input$arvo_peli,{
 
 output$divariRadio_out <- renderUI({
   divarit_ilman_peleja <- peliDataReact()[is.na(Voittaja),.N,by=Divari]
-  radioButtons("divariRadio", "Divari",
-               c("Ei väliä",divarit_ilman_peleja[,Divari]),inline=TRUE)
+  radioButtons("divariRadio", "Division",
+               c("All",divarit_ilman_peleja[,Divari]),inline=TRUE)
 })
 
 

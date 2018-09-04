@@ -1,8 +1,9 @@
 #SRC_PFI
 
 pakkalista <- list.files("./external_files")
+folder <-"./external_files/"
 pakat <- NULL
-counter <-0
+counter <- 0
 for (pakka in pakkalista){ 
   if (substr(pakka, nchar(pakka)-5+1, nchar(pakka))==".json") {
     counter<-counter+1
@@ -13,8 +14,7 @@ for (pakka in pakkalista){
     splitti<-splitti[[1]]
     kierrospakka$omistaja <-splitti[1]
     kierrospakka$pakkanumero <-as.numeric(splitti[2])
-    kierrospakka$pvm<-as.IDate(splitti[3])
-    kierrospakka$kello<-(as.numeric(splitti[4]))
+    kierrospakka$pakka_form_id <- counter
     
     pakat[[counter]]<-kierrospakka
     

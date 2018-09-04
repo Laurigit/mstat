@@ -1,6 +1,6 @@
 #one time. Conv manastack deck file names
 required_functions("convSecsToTime")
-pakkalista <- list.files(folder)
+pakkalista <- list.files("./external_files/")
 tulos <- NULL
 pakat <- NULL
 counter <-0

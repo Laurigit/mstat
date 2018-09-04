@@ -1,0 +1,52 @@
+#STAT_PELIT_BO
+BO_conversio <- function(ADM_PELIT) {
+  
+
+
+testdata <- ADM_PELIT
+# testdata[, Turnaus_NO := round(Turnaus_NO / 2,0)]
+# testdata[Turnaus_NO %% 2 == 0, BO_mode := 1]
+# testdata[Turnaus_NO %% 2 == 0, Ottelu_NO := 1]
+#aggregate peli to ottelu level
+aggr_BO <- testdata[, .(sum_Voittaja = sum(Voittaja),
+                                       Pakka_form_ID = max(Pakka_form_ID),
+                                       Pakka_form_pct = max(Pakka_form_pct),
+                                       Pelit_PFI = max(Pelit_PFI),
+                                       Aloitus_DT = min(Aloitus_DT),
+                                       Lopetus_DT = max(Lopetus_DT),
+                                       Peli_ID = NA,
+                                       Ottelu_NO = NA,
+                        Aloittaja = mean(Aloittaja),
+                       Mulligan = mean(Mulligan),
+                        Arvosana = mean(Arvosana),
+                        Vuoroarvio = mean(Vuoroarvio),
+                        Kasikortit = mean(Kasikortit),
+                        Landit = mean(Landit),
+                        ifet = mean(Lifet),
+                        Humala = mean(Humala),
+                        Pelit_PFI= mean(Pelit_PFI),
+                        Peli_LKM = .N),
+                    by = .(Pakka_form_pct,
+                      Vastustajan_Pakka_form_pct,
+                           Vastustustajan_Pakka_form_ID,
+                           Pakka_form_ID,
+                           Pakka_NO,
+                      Vastustajan_Pakka_NO,
+                           Ottelu_ID,
+                           Pakka_ID,
+                           Vastustajan_Pakka_ID,
+                           Omistaja_ID,
+                           Vastustajan_Omistaja_ID,
+                           Divari,
+                           Vastustajan_Pakka_NO,
+                           Kierros,
+                           Turnaus_NO)]
+aggr_BO[, Voittaja := ifelse(sum_Voittaja / Peli_LKM > 0.5, 1,
+        ifelse(sum_Voittaja / Peli_LKM < 0.5, 0, 0.5))]
+aggr_BO[, ':=' (Voittaja_PFI = Voittaja * Pelit_PFI)]
+
+aggr_BO[, ':=' (sum_Voittaja = NULL,
+                Peli_LKM = NULL)]
+STAT_PELIT_BO <- aggr_BO
+return(STAT_PELIT_BO)
+}
