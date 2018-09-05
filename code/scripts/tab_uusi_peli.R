@@ -319,94 +319,27 @@ lisakortit_react <- reactive({
 
 }
 )
+
+output$PakkaLeftBox <- renderUI({
+result <- getDeckStats("Lauri")
+  box(HTML(result), background = "purple", width = NULL)
+  
+})
+output$PakkaRightBox <- renderUI({
+  result <- getDeckStats("Martti")
+  box(HTML(result), background = "yellow", width = NULL)
+  
+})
+output$PakkaVSBox <- renderUI({
+  result <- getVSStatsHtml("Lauri")
+  box(HTML(result), background = "aqua", width = NULL, align = "middle")
+  
+})
+
+
 output$data_vs_taulukko<-renderDataTable({
-  req(input$radio_bo_mode,input$select_laurin_pakka,input$select_martin_pakka,input$numeric_MA_valinta,input$radio_pfi_mode)
-  vs_statsit_MA <- vs_statsit_MA_react()
-  vs_statsit_all  <- vs_statsit_all_react() 
-  pakka_stats_all_lauri<-pakka_stats_all_lauri_react()
-    laurin_pakkanimi<-colnames(pakka_stats_all_lauri)[3]
-    pakka_stats_all_martti<- pakka_stats_all_martti_react()
-  martin_pakkanimi<-colnames(pakka_stats_all_martti)[3]
-  setkeyv(pakka_stats_all_lauri,c("Tilasto","selite"))
-  setkeyv(pakka_stats_all_martti,c("Tilasto","selite"))   
-  join_pakka_stats_all<-pakka_stats_all_lauri[pakka_stats_all_martti]
-  
-  #voittoEnnuste
-  peliData_ja_pfi <-  peliData_ja_pfi_react()
-  print("LUEMUT")
- 
-  
-  pelidataPER_ID <- peliData_ja_pfi[peli_ID ==   r_valittu_peli$peliID]
-  
-  Martin_voittoennuste <- round(voittoEnnuste(input$select_laurin_pakka,
-                                        input$select_martin_pakka,
-                                        ennusteMallitReact(),
-                                        input$slider_laurin_mulligan,
-                                        input$slider_martin_mulligan,
-                                        r_valittu_peli$aloittaja,
-                                        pelidataPER_ID[, hinta_lauri],
-                                        pelidataPER_ID[, laurin_kortti_lkm],
-                                        pelidataPER_ID[, hinta_martti],
-                                        pelidataPER_ID[, martin_kortti_lkm]
-                                        ),2)*100
-Laurin_voittoennuste = 100- Martin_voittoennuste
-print("tabuusipeli laurin voittoennuste")
-print(Laurin_voittoennuste)
-voittoEnnusteRow<-data.table(
-                               Tilasto = "Voitto",
-                               selite = "ennuste"
-                             )
-voittoEnnusteRow[, (laurin_pakkanimi) := Laurin_voittoennuste]
-voittoEnnusteRow[, (martin_pakkanimi) := Martin_voittoennuste]
-voittoEnnusteFinal <- voittoEnnusteRow[, c(laurin_pakkanimi, "Tilasto", "selite", martin_pakkanimi), with = FALSE]
-  
-  #MA_pakak
-pakka_stats_MA_lauri <- pakka_stats_MA_lauri_react()
-pakka_stats_MA_martti <- pakka_stats_MA_martti_react()
- 
-pfistats <- pfistats_react()
- 
-  #ota vaan sarakkeet, mitä on muuallakkin käytetty
-  pfi_subsetcols<-pfistats[,names(vs_statsit_all$transposed),with=FALSE]
-  
-  
-  setkeyv(pakka_stats_MA_lauri,c("Tilasto","selite"))
-  setkeyv(pakka_stats_MA_martti,c("Tilasto","selite"))   
-  join_pakka_stats_MA<-pakka_stats_MA_lauri[pakka_stats_MA_martti]
-  
-  #lisäkortit manastack
-   lisakortit_Man <- react_omaReadJson()$viimenen_pf
-   laurin_man_pakka <- lisakortit_Man[Omistaja == "Lauri" & Pakka == input$select_laurin_pakka ,.(Laurin_man_kortit = kortti_lkm)]   
- #  laurin_man_pakka <- lisakortit_Man[Omistaja == "Lauri" & Pakka == input$select_laurin_pakka,
-  #                                    .(Laurin_man_kortit =
-   #                                       paste0(kortti_lkm, " (", kortti_lkm %% 8, ")"))]
-   martin_man_pakka <- lisakortit_Man[Omistaja == "Martti" & Pakka == input$select_martin_pakka, .(Martin_man_kortit =
-                                                                                                     paste0(kortti_lkm, " (", kortti_lkm %% 8, ")"))]
-   laurin_man_pakka_numeric <- laurin_man_pakka[, Laurin_man_kortit]
-   man_kortti_lkm<-data.table(
-     Tilasto = paste0("(", laurin_man_pakka_numeric %% 8, ") Pakan koko"),
-     selite = "Manastack"
-   )
-   man_kortti_lkm[, (laurin_pakkanimi) := laurin_man_pakka]
-   man_kortti_lkm[, (martin_pakkanimi) := martin_man_pakka]
-   man_kortti_lkmFinal <- man_kortti_lkm[, c(laurin_pakkanimi, "Tilasto", "selite", martin_pakkanimi), with = FALSE]
-  
-  #lisäkortit säänötjen mukaan
-   lisakortit_trans<-lisakortit_react()
-   lisakortit_final<-lisakortit_trans[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
-
-  #transponoi
-  
-  
-  
-  append<-rbind(vs_statsit_all$transposed,join_pakka_stats_all,vs_statsit_MA,join_pakka_stats_MA,pfi_subsetcols)#,laurin_MA$transposed)
-  #vaihda sarakejärjestys
-  result_table<-append[,c(laurin_pakkanimi,"Tilasto","selite",martin_pakkanimi),with=FALSE]
-  #lisää vielä lisäkorttitilasto
-
-  result_table<-rbind(voittoEnnusteFinal,result_table,man_kortti_lkmFinal,lisakortit_final)
-  
-  return(result_table)  
+  required_data("UID_UUSI_PELI")
+  return(UID_UUSI_PELI)  
   
 },    options = list(
   paging = FALSE,

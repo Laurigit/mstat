@@ -46,7 +46,7 @@ sscols <- SRC_DIVARI[,. (Pakka_ID = rivi_id, Omistaja_ID = substr(Omistaja_nimi,
 join_pid <- sscols[pakkametataulu_sorted, on = .(Omistaja_ID, Pakka_NO)]
 
 join_pid[, Current_Pakka_form_ID := max(Pakka_form_ID), by = Pakka_ID]
-
+join_pid[, ':=' (Omistaja_ID = NULL, Pakka_NO = NULL)]
 STG_PFI <- join_pid
 
 

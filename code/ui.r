@@ -29,7 +29,9 @@ uusi_peli<-dashboardBody(
               useShinyalert(),
               #theme = shinytheme("yeti"),
               shinyjs::useShinyjs(),
-              
+              fluidRow(column(4, uiOutput("PakkaLeftBox")),
+                       column(4,  uiOutput("PakkaVSBox")),
+                       column(4, uiOutput("PakkaRightBox"))),
               fluidRow(column(2,actionButton("arvo_peli","Arvo peli")),
                        
                        column(4,uiOutput("divariRadio_out")),

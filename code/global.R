@@ -23,6 +23,8 @@ library(stringr)
 library(ggplot2)
 library(ggthemes)
 library(shinyalert)
+library(anytime)
+library(readxl)
 #library(shinythemes)
 #options(shiny.error=browser)
 options(max.print=1000000)
@@ -75,10 +77,12 @@ load_data_from_DB <- function() {
 
 
 kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
+
   write.table(x = datataulu,
               file = paste0("./external_files/", tiedostonimi),
               sep = ";",
               row.names = FALSE,
+
               dec = ",")
   
   if (upload == TRUE) {
@@ -112,6 +116,9 @@ zip_all_and_send <- function() {
 
 
 luecsv <- function(tiedostonimi) {
+ # tulos <- as.data.table(read_excel(path = paste0("./external_files/", tiedostonimi),
+                #                    col_types = "text")
+                         # )
   tulos <- as.data.table(read.csv(paste0("./external_files/", tiedostonimi),
                                   sep = ";",
                                   stringsAsFactors = FALSE,

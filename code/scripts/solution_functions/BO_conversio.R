@@ -1,4 +1,5 @@
 #STAT_PELIT_BO
+#required_data("ADM_PELIT")
 BO_conversio <- function(ADM_PELIT) {
   
 
@@ -24,13 +25,14 @@ aggr_BO <- testdata[, .(sum_Voittaja = sum(Voittaja),
                         Landit = mean(Landit),
                         Lifet = mean(Lifet),
                         Humala = mean(Humala),
-                        Pelit_PFI= mean(Pelit_PFI),
+                       Pakka_form_pct = mean(Pakka_form_pct),
+                       Vastustajan_Pakka_form_pct = mean(Vastustajan_Pakka_form_pct),
+                       Pakka_form_ID = max(Pakka_form_ID),
+                       Vastustustajan_Pakka_form_ID = max(Vastustustajan_Pakka_form_ID),
+                       Hinta = mean(Hinta),
+                       Kortti_lkm_manastack = max(Kortti_lkm_manastack),
                         Peli_LKM = .N),
-                    by = .(Pakka_form_pct,
-                      Vastustajan_Pakka_form_pct,
-                           Vastustustajan_Pakka_form_ID,
-                           Pakka_form_ID,
-                           Pakka_NO,
+                    by = .(Pakka_NO,
                       Vastustajan_Pakka_NO,
                            Ottelu_ID,
                            Pakka_ID,
@@ -39,6 +41,7 @@ aggr_BO <- testdata[, .(sum_Voittaja = sum(Voittaja),
                            Vastustajan_Omistaja_ID,
                            Divari,
                            Kierros,
+                          BO_mode,
                            Turnaus_NO)]
 aggr_BO[, ':=' (Voittaja = ifelse(sum_Voittaja / Peli_LKM > 0.5, 1, 0),
                 Tasapeli = ifelse(sum_Voittaja / Peli_LKM == 0.5, 1, 0))]

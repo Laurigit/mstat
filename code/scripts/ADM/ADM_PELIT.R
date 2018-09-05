@@ -1,4 +1,4 @@
-required_data(c("STG_PELIT", "STG_HUMALA", "INT_PFI"))
+required_data(c("STG_PELIT", "STG_HUMALA", "INT_PFI", "STG_TURNAUSSAANTO"))
 
 #join Humala
 temp_hum <- STG_HUMALA
@@ -42,7 +42,7 @@ join_humala_aggr <- join_humala[, .(Humala = mean(Humala, na.rm = TRUE)), by = .
                                                                                 Lifet)]
 
 #join PFI
-temp_pfi <- INT_PFI[, .(Pakka_ID, Valid_from_DT, Valid_to_DT, Pakka_form_ID, Pakka_form_pct)]
+temp_pfi <- INT_PFI[, .(Pakka_ID, Valid_from_DT, Valid_to_DT, Pakka_form_ID, Pakka_form_pct, Hinta, Kortti_lkm_manastack)]
 join_humala_pfi <- temp_pfi[join_humala_aggr, on = .(Pakka_ID,
                                                      Valid_from_DT <= Aloitus_DT,
                                                      Valid_to_DT >= Aloitus_DT)]
@@ -79,6 +79,8 @@ molemmat_pfit[, ':=' (Putki_VS = cumsum(putki_cal)), by = .(perakkaiset, Pakka_I
 
 #tuhoa turhat
 molemmat_pfit[, ':=' (perakkaiset = NULL, putki_cal = NULL)]
+
+
 
 ADM_PELIT <- molemmat_pfit
 
