@@ -1,6 +1,5 @@
 #getDeckStats
-getDeckStats <- function(Omistaja) {
-required_data("UID_UUSI_PELI")
+getDeckStats <- function(Omistaja, UID_UUSI_PELI) {
 lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja, .(Deck = Pakka_NM,
                                                        'Win%' = round(Voitto_PCT, 2) * 100,
                                                        'Win%-MA' = round(Voitto_PCT_MA, 2) * 100,

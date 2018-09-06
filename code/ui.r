@@ -29,10 +29,8 @@ uusi_peli<-dashboardBody(
               useShinyalert(),
               #theme = shinytheme("yeti"),
               shinyjs::useShinyjs(),
-              fluidRow(column(4, uiOutput("PakkaLeftBox")),
-                       column(4,  uiOutput("PakkaVSBox")),
-                       column(4, uiOutput("PakkaRightBox"))),
-              fluidRow(column(2,actionButton("arvo_peli","Arvo peli")),
+
+              box(fluidRow(column(2,actionButton("arvo_peli","Arvo peli")),
                        
                        column(4,uiOutput("divariRadio_out")),
                      #  column(3,actionButton("nollaa_aika","Nollaa aika")),
@@ -52,7 +50,7 @@ uusi_peli<-dashboardBody(
                                              icon = icon("undo"),
                                              style = "color: #fff; background-color: #b73338; border-color: #2e6da4"))),
               
-             uiOutput("mulliganiSliderit")
+             uiOutput("mulliganiSliderit"), width = NULL, collapsible = TRUE)
              ,
               fluidRow(column(2, actionButton("lauri_voitti","Lauri voitti")),
                        column(2, actionButton("laurin_virhe_uusipeli","Laurin virhe", icon = icon("exclamation-circle"))
@@ -72,7 +70,9 @@ uusi_peli<-dashboardBody(
               
               fluidRow(column(3,(textOutput("peli_id")))),
               
-              fluidRow(column(12,box(dataTableOutput("data_vs_taulukko"),width=12))),
+             fluidRow(column(4, uiOutput("PakkaLeftBox")),
+                      column(4,  uiOutput("PakkaVSBox")),
+                      column(4, uiOutput("PakkaRightBox"))),
              fluidRow(column(6,plotOutput("EV_plot"), width = 6),
                       column(6, plotOutput("win_distribution"), width = 6))
             )          

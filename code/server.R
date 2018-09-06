@@ -13,6 +13,7 @@ shinyServer(function(input, output, session) {
   #r_valittu_peli on valittu peli millä tahansa menetelmällä
   r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan", aloittaja = -1)
   
+
   source("./scripts/load_scripts.R", local = TRUE)
   # 
   # sourcelist <- dir("./scripts/")
@@ -33,7 +34,7 @@ shinyServer(function(input, output, session) {
     #nollaa temp data
     observeEvent(input$nollaa_temp_data, {
       tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c("FALSE","FALSE"))
-      print("tässä lähetetään tyhjataulu pilveen.")
+     # print("tässä lähetetään tyhjataulu pilveen.")
       tyhjataulu
       kircsv(tyhjataulu,"./temp_data_storage.csv", upload = TRUE)
       
@@ -41,7 +42,7 @@ shinyServer(function(input, output, session) {
 
   #päivitä divarit
   observeEvent(input$tallenna_divarit,{
-    print("päivitä divarit alku")
+ 
     
     divarit<-divaridata()
     
@@ -56,7 +57,7 @@ shinyServer(function(input, output, session) {
     print(divarit)
     kircsv(divarit,"./divari.csv")
     #divaridata<-divarit
-    print("päivitä divarit loppu")
+  
   })
   
  
@@ -173,7 +174,7 @@ observe({
 peliDataReact<-eventReactive(
   c(input$tallenna_tulos,
   input$luo_peleja), {
-  print("Luettu ./pelit.csv")
+
   if(input$radio_debug_mode==FALSE) {
     kaikkipelit<-luecsv("./pelit.csv")   
   } else {

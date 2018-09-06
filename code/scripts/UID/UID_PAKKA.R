@@ -1,4 +1,4 @@
-#STAT_PAKKA
+#UID_PAKKA
 # required_data(c("ADM_PELIT"))
 # required_data(c("INT_PFI"))
 # 

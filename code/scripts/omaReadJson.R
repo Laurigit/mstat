@@ -7,7 +7,7 @@ omaReadJson <- function(folder,optionaldoesNothingbutDontDelme=NA) {#check pfi_d
   pakat <- NULL
   counter <-0
   pakkametataulu<-NULL
-  for (pakka in pakkalista){ 
+  for (pakka in 10){ 
     if (substr(pakka, nchar(pakka)-5+1, nchar(pakka))==".json") {
       counter<-counter+1
       pakkanimi<-substr(pakka,1,nchar(pakka)-5)

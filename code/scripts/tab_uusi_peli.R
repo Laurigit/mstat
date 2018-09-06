@@ -1,8 +1,8 @@
 #seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
 observe({
-  print("seuraa valintalistoja alku")
+
   #seuraa tallenna buttonia myös 
-  print(paste("tallennatulosarvo",input$tallenna_tulos))
+
   
   kaikkipelit<-luecsv("pelit.csv")
   #print(paste("Laurin pakka: ",input$select_laurin_pakka))
@@ -31,7 +31,7 @@ observe({
     }
     
     if(pelipelattu==TRUE){
-      print("observeluettu TRUE")
+  
       shinyjs::disable("lauri_voitti")
       shinyjs::disable("martti_voitti")
       shinyjs::disable("tallenna_tulos")
@@ -74,20 +74,20 @@ observe({
     }
     
   }
-  print("seuraa valintalistoja loppu")
+
 })
 
 #jatka ottelua
 
 observeEvent(input$jatka_ottelua,{
-  print("jatka ottelua alku")
+
   jatkopeli <- find_jatka_ottelua(ADM_PELIT)
   if (!is.na(jatkopeli)) {
     #  
     paivitaSliderit(jatkopeli,session) 
     
   }else {
-    print("Ei ole peliä kesken")
+
   }
   print("jatka ottelua loppu")
 })
@@ -109,7 +109,7 @@ output$peliKesto <- renderText({
     sekunnit<-sekunnit_yht-60*minuutit
     #print(paste("sekunnit",sekunnit,"lahetetty:",lahetaTempData$lahetetty,"laheta:",lahetaTempData$laheta))
     if(is.na(tempData[muuttuja=="laheta",arvo])) {
-      print("muuttuja oli NA")
+    #  print("muuttuja oli NA")
       tempData[,arvo:=as.character(arvo)]
       tempData[muuttuja=="laheta",arvo:="TRUE"]
       tempData[muuttuja=="kesken",arvo:="FALSE"]
@@ -118,19 +118,19 @@ output$peliKesto <- renderText({
     if(sekunnit>10 & tempData[muuttuja=="laheta",arvo]=="TRUE") {
       tempData[muuttuja=="laheta",arvo:="FALSE"]
       tempData[muuttuja=="kesken",arvo:="TRUE"]
-      print("tallennetaan seuraava pilveen. Tähän muutettu, että kesken = TRUE ja laheta = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
-      print(tempData)
+      #print("tallennetaan seuraava pilveen. Tähän muutettu, että kesken = TRUE ja laheta = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
+     # print(tempData)
       kircsv(tempData,"temp_data_storage.csv", upload = TRUE)
       tempData[muuttuja=="kesken",arvo:="FALSE"]
-      print("tallennetaan seuraava vaan levylle. Tähän muutettu, että kesken = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
-      print(tempData)
+     # print("tallennetaan seuraava vaan levylle. Tähän muutettu, että kesken = FALSE. Tässä kohtaa oleteteaan, että yli 10 sec on menny ja käsky on laheta")
+      #print(tempData)
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
       
     }
     sekunnit_fix <- str_pad(sekunnit, 2, pad = "0")
     paste(minuutit,":",sekunnit_fix)
   } else {
-    print("temp_data_storagessa ei ollu neljää riviä")
+   # print("temp_data_storagessa ei ollu neljää riviä")
   }
 })
 
@@ -139,41 +139,38 @@ observeEvent(c(input$select_laurin_pakka,
                input$slider_laurin_mulligan,
                input$slider_martin_mulligan,
                input$tallenna_tulos), {
-  print("check req")
+ 
       req(input$select_laurin_pakka)
-      print("laurin pakka")
+     
       req(input$select_martin_pakka)
-      print("martin pakka")
+   
       req(input$slider_laurin_mulligan)
-      print("laurin slider")
+     
       req(input$slider_martin_mulligan)
-      print("martin mulligan slider")
-      print(input$tallenna_tulos)
-      print("str")
-      print(str(input$tallenna_tulos))
+
       #actionbutton alkutilassa on NULL ja sen painallusten jälkeen vasta saa arvoja.
-      print("tallenna tulos")
+
       # ,
       # ,
       # ,
       # ,
       # , cancelOutput = FALSE)
-  print("check req redi")
-  print("inputvektori laurinpakka, martinpakka, laurinmull, martinmull, tallennatulos, nollaa_aika")
-  print(paste(input$select_laurin_pakka,
-              input$select_martin_pakka,
-              input$slider_laurin_mulligan,
-              input$slider_martin_mulligan,
-              input$tallenna_tulos,
-              input$nollaa_aika))
-  print(!is.null(input$select_laurin_pakka ))
+ # print("check req redi")
+ # print("inputvektori laurinpakka, martinpakka, laurinmull, martinmull, tallennatulos, nollaa_aika")
+ # print(paste(input$select_laurin_pakka,
+ #              input$select_martin_pakka,
+ #              input$slider_laurin_mulligan,
+ #              input$slider_martin_mulligan,
+ #              input$tallenna_tulos,
+ #              input$nollaa_aika))
+ #  print(!is.null(input$select_laurin_pakka ))
   if(!is.null(input$select_laurin_pakka )) {
     
-    print(paste("Tässä kohtaa luettiin koneelta tempData ja printataan se"))
+   # print(paste("Tässä kohtaa luettiin koneelta tempData ja printataan se"))
     tempData<-luecsv("temp_data_storage.csv")
-    print(tempData)
+    #print(tempData)
     if (tempData[muuttuja == "kesken",arvo] != "TRUE") {
-      print("kesken == FALSE")
+      #print("kesken == FALSE")
       alotusaika<-as.ITime(now(tz="Europe/Helsinki"))
       alotuspvm<-as.IDate(now(tz="Europe/Helsinki"))
       laurin_pakka<-input$select_laurin_pakka
@@ -185,14 +182,14 @@ observeEvent(c(input$select_laurin_pakka,
       muuttujat<-c("Laurin_pakka","Martin_pakka","Aloitusaika","Aloituspvm","Laurin_mulligan","Martin_mulligan","laheta","kesken")
       arvot<-c(laurin_pakka,martin_pakka,alotusaika,alotuspvm,laurin_mull,martin_mull,laheta,kesken)
       tempData<-data.table(muuttuja=muuttujat,arvo=arvot)
-      print("lähetetään seuraava file pilveen. Tässä kohtaa otettiin uudet arvot nykytilasta")
-      print(tempData)
+      #print("lähetetään seuraava file pilveen. Tässä kohtaa otettiin uudet arvot nykytilasta")
+      #print(tempData)
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
     } else {
-      print("kesken == TRUE")
+     # print("kesken == TRUE")
       tempData[muuttuja=="kesken",arvo:="FALSE"]
-       print("Tallennetaan seuraava arvo lokaalisti. Tässä kohtaa vaan korjattiin, että kesken = FALSE")
-      print(tempData)
+     #  print("Tallennetaan seuraava arvo lokaalisti. Tässä kohtaa vaan korjattiin, että kesken = FALSE")
+     # print(tempData)
 
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
     }
@@ -222,7 +219,7 @@ observeEvent(input$arvo_peli,{
   paivitaSliderit(arvottu_peli_id,session)
   
   #print(pfi_data())
-  print("arvo peli loppu")
+
   
 })
 
@@ -238,12 +235,13 @@ output$divariRadio_out <- renderUI({
 
 #tee laurin pakka selectinput
 output$selectInputLauri <- renderUI({
-  pakat<-divaridata()
+  required_data("STG_PAKAT")
+  pakat<-STG_PAKAT[Omistaja_ID == "L"]
   keskenPeliData<-luecsv("temp_data_storage.csv")
   #tarkista, onko peli kesken
-  print(keskenPeliData)
-  laurin_pakkanimet<-pakat[Omistaja==1,Nimi]
-  laurin_idt<-pakat[Omistaja==1,Pakka]
+#  print(keskenPeliData)
+  laurin_pakkanimet<-pakat[,Pakka_NM]
+  laurin_idt<-pakat[,Pakka_ID]
   selectinputListLauri<-setNames(as.list(laurin_idt), c(laurin_pakkanimet))
   if(nrow(keskenPeliData)>2) {
     preSelect <- keskenPeliData[muuttuja=="Laurin_pakka",arvo]
@@ -255,10 +253,11 @@ output$selectInputLauri <- renderUI({
 })
 #tee martin pakka selectinput
 output$selectInputMartti <- renderUI({
-  pakat<-divaridata()
+  required_data("STG_PAKAT")
+  pakat<-STG_PAKAT[Omistaja_ID == "M"]
   keskenPeliData<-luecsv("temp_data_storage.csv")
-  pakkanimet<-pakat[Omistaja==2,Nimi]
-  martin_idt<-pakat[Omistaja==2,Pakka]
+  pakkanimet<-pakat[,Pakka_NM]
+  martin_idt<-pakat[,Pakka_ID]
   selectinputList<-setNames(as.list(martin_idt), c(pakkanimet))
   if(nrow(keskenPeliData)>2) {
     preSelect <- keskenPeliData[muuttuja=="Martin_pakka",arvo]
@@ -266,7 +265,7 @@ output$selectInputMartti <- renderUI({
     preSelect <- 1
   }
   selectInput("select_martin_pakka","Martin pakka",choices = selectinputList,selected=preSelect)
-  
+
 })
 
 #seuraavaks uusi_peli statseja muistiin etukäteen.
@@ -321,17 +320,84 @@ lisakortit_react <- reactive({
 )
 
 output$PakkaLeftBox <- renderUI({
-result <- getDeckStats("Lauri")
+ # eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
+result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+ # result(eR_UID_UUSI_PELI())
   box(HTML(result), background = "purple", width = NULL)
   
 })
 output$PakkaRightBox <- renderUI({
-  result <- getDeckStats("Martti")
-  box(HTML(result), background = "yellow", width = NULL)
+
+ result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
+ box(HTML(result), background = "yellow", width = NULL)
   
 })
+eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
+                              input$select_martin_pakka),{
+                                
+  # input$select_laurin_pakka <- 1
+  # input$select_martin_pakka <-9                              
+  required_data("ADM_PELIT")        
+                               
+  uusi_pelii <-getUusi_Peli_ID(ADM_PELIT,
+                  input$select_laurin_pakka,
+                   input$select_martin_pakka)
+ 
+  return(uusi_pelii)
+}, ignoreInit = TRUE, ignoreNULL = TRUE)
+eR_UID_UUSI_PELI <- eventReactive(eR_Peli_ID(), {
+  # input$numeric_MA_valinta <- 7
+  # input$radio_bo_mode<- FALSE
+  # input$radio_pfi_mode <- FALSE
+
+  required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA"))
+
+  tulos <- UID_UUSI_PELI(eR_Peli_ID(),
+                         eR_UID_PAKKA(),
+                         eR_UID_PAKKA_VS(),
+                         STG_PAKAT,
+                         STG_OMISTAJA,
+                         ADM_PELIT
+                        )
+  return(tulos)
+}, ignoreInit = FALSE, ignoreNULL = FALSE)
+
+eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
+                                input$radio_bo_mode,
+                                input$radio_pfi_mode),{
+                                  # input$numeric_MA_valinta <- 7
+                                  # input$radio_bo_mode<- FALSE
+                                  # input$radio_pfi_mode <- FALSE
+required_functions("UID_PAKKA")
+result <-  UID_PAKKA(ADM_PELIT,
+                                                        INT_PFI,
+                                                        input_MA_length = input$numeric_MA_valinta,
+                                                        input_BO_mode  = input$radio_bo_mode,
+                                                        input_pfi_mode = input$radio_pfi_mode)
+return(result)
+})
+
+eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
+                                input$radio_bo_mode,
+                                input$radio_pfi_mode),{
+                                  # input$numeric_MA_valinta <- 7
+                                  # input$radio_bo_mode<- FALSE
+                                  # input$radio_pfi_mode <- FALSE
+                                  required_functions("UID_PAKKA_VS")
+                                  result <-  UID_PAKKA_VS(ADM_PELIT,
+                                                       INT_PFI,
+                                                       input_MA_length = input$numeric_MA_valinta,
+                                                       input_BO_mode  = input$radio_bo_mode,
+                                                       input_pfi_mode = input$radio_pfi_mode)
+                                  return(result)
+ })
+
 output$PakkaVSBox <- renderUI({
-  result <- getVSStatsHtml("Lauri")
+  #required_data("UID_UUSI_PELI", TRUE)
+  #rm(eR_UID_UUSI_PELI)
+  print(eR_UID_UUSI_PELI())
+  eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
+  result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
   box(HTML(result), background = "aqua", width = NULL, align = "middle")
   
 })
@@ -367,13 +433,13 @@ output$data_vs_taulukko<-renderDataTable({
 mallinnusDataReact <- reactiveValues(mallit = NULL)
 
 observeEvent(input$luo_peleja,{
-  print("JOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOo")
+
   voittoEnnusteMallit(peliData_ja_pfi_react())
   
 })
 
 observeEvent(input$tasuriPeli, {
-  print("tasuripeli")
+
 #  divaridata <-luecsv("divarit.csv")
   # sarjadata <- sarjataulukkoKaikki(divaridata,
   #                                  peliData,
@@ -391,27 +457,24 @@ observeEvent(input$tasuriPeli, {
                                  input$radio_bo_mode,
                                  vikaturnausNo,
                                  FALSE,NA,NA,NA,NA,FALSE,pfi_data())
-  print("sarjadata")
+
   pelaajat <- sarjadata$pelaajastats
-  print("pelaajat")
-  print(pelaajat)
+
+
   kokonaistilanne <- pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
-  print("kokonis")
+
   print(kokonaistilanne)
   erotus <- kokonaistilanne[,Voitot_Lauri] - kokonaistilanne[,Voitot_Martti]
-  print("erotus")
-  print(erotus)
+
     turnausTilanneInput <- ifelse(erotus > 0, "Lauri", ifelse(erotus < 0, "Martti", "Tasan"))
   } else {
     #jos ei pelattu pelejä vielä turnauksessa, niin tasan
-    print( "jos ei pelattu pelejä vielä turnauksessa, niin tasan")
+
     turnausTilanneInput <- "Tasan"
   }
-  print("TURNAUSTILANNETINPUT")
-  print(turnausTilanneInput)
+
   uusPeliID <- tasuripeli_ID(turnausTilanneInput, pfi_data(), peliDataReact(), ennusteMallitReact())
-  print("peli_ID")
-  print(uusPeliID)
+
   paivitaSliderit(uusPeliID,session) 
 })
 
