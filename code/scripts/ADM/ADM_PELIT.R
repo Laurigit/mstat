@@ -35,23 +35,37 @@ join_humala_aggr <- join_humala[, .(Humala = mean(Humala, na.rm = TRUE)), by = .
                                                                                 Peli_ID,
                                                                                 Voittaja,
                                                                                 Mulligan,
+                                                                                Vastustajan_Mulligan,
                                                                                 Arvosana,
+                                                                                Vastustajan_Arvosana,
                                                                                 Landit,
+                                                                                Vastustajan_Landit,
                                                                                 Vuoroarvio,
                                                                                 Kasikortit,
-                                                                                Lifet)]
+                                                                                Vastustajan_Kasikortit,
+                                                                                Lifet,
+                                                                                Vastustajan_Lifet)]
 
 #join PFI
 temp_pfi <- INT_PFI[, .(Pakka_ID, Valid_from_DT, Valid_to_DT, Pakka_form_ID, Pakka_form_pct, Hinta, Kortti_lkm_manastack)]
+#tehää pieni kikkailu, että saadaan pelaamattomille peleille pakkatiedot. Eli syötetää dummy alotusaika ja poistetaa sen jälkeen
+join_humala_aggr[is.na(Aloitus_DT), delme := TRUE]
+join_humala_aggr[ ,Aloitus_DT_for_join := Aloitus_DT]
+join_humala_aggr[delme == TRUE,Aloitus_DT_for_join := as.POSIXct("2050-01-01 01:01:01", tz = "EET")]
+
 join_humala_pfi <- temp_pfi[join_humala_aggr, on = .(Pakka_ID,
-                                                     Valid_from_DT <= Aloitus_DT,
-                                                     Valid_to_DT >= Aloitus_DT)]
+                                                     Valid_from_DT <= Aloitus_DT_for_join,
+                                                     Valid_to_DT >= Aloitus_DT_for_join)]
 join_humala_pfi_sscols <- join_humala_pfi[,. (Vastustajan_Pakka_form_pct = Pakka_form_pct,
                                               Vastustustajan_Pakka_form_ID = Pakka_form_ID,Peli_ID,
-                                              Vastustajan_Pakka_ID = Pakka_ID)]
+                                              Vastustajan_Pakka_ID = Pakka_ID,
+                                              Vastustajan_Kortti_lkm_manastack = Kortti_lkm_manastack,
+                                              Vastustajan_Hinta = Hinta)]
 #join vihun PFI
 
 molemmat_pfit <- join_humala_pfi_sscols[join_humala_pfi, on = .(Peli_ID, Vastustajan_Pakka_ID)]
+
+#
 
 
 molemmat_pfit[,  ':=' (Voittaja_PFI = Pakka_form_pct * Vastustajan_Pakka_form_pct * Voittaja,
