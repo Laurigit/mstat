@@ -65,8 +65,8 @@ uusi_peli<-dashboardBody(
              fluidRow(column(4, uiOutput("PakkaLeftBox")),
                       column(4,  uiOutput("PakkaVSBox")),
                       column(4, uiOutput("PakkaRightBox"))),
-             fluidRow(column(6,plotOutput("EV_plot"), width = 6),
-                      column(6, plotOutput("win_distribution"), width = 6))
+             fluidRow(column(6,plotOutput("EV_plot")),
+                      column(6, plotOutput("win_distribution")))
             )          
     )
     ,

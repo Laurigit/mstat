@@ -115,7 +115,7 @@ aggr_to_turnaus <- molemmat_pfit[, .(sum_voitot = sum(Voittaja), Pakka_form_pct 
 aggr_to_turnaus[, ranking_kpi := (1000-Divari*100 + sum_voitot)]
 aggr_to_turnaus[, ranking := frank(-ranking_kpi, na.last = "keep"), by = Turnaus_NO]
 setorder(aggr_to_turnaus, Pakka_ID, Turnaus_NO)
-aggr_to_turnaus[,  ':=' (cumsum_ranking = cumsum(ranking * Pakka_form_pct), cumsum_pfi = cumsum(Pakka_form_pct)), by = Pakka_ID]
+aggr_to_turnaus[!is.na(Pakka_form_pct),  ':=' (cumsum_ranking = cumsum(ranking * Pakka_form_pct), cumsum_pfi = cumsum(Pakka_form_pct)), by = Pakka_ID]
 aggr_to_turnaus[, cs_ranking_pfi := cumsum_ranking  / cumsum_pfi]
 sscols_agg <- aggr_to_turnaus[, .(Pakka_ID, Turnaus_NO, Turnaus_Ranking_PFI = cs_ranking_pfi)]
 joinrank <- sscols_agg[molemmat_pfit, on = .(Pakka_ID, Turnaus_NO)]

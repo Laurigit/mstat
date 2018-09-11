@@ -106,19 +106,12 @@ for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_
 # tee data mallinnusta varten niin, että käytetään edellisen. Tarvitaan vaan edellisen kierroksen MA_ranking_ero
 
 
-ma_ranking_data <- ADM_PELIT[, . (
-                                                        
-                                                        mean_MA = mean(Turnaus_Ranking_PFI)
-                                                        
-                                                        ),
+ma_ranking_data <- ADM_PELIT[, . (mean_MA = mean(Turnaus_Ranking_PFI)),
                       by = .(Pakka_ID, Turnaus_NO)]
+
 ma_ranking_data[, Turnaus_NO := Turnaus_NO + 1]
 ma_ranking_data_vastustaja <- ADM_PELIT[, . (
-  
-  mean_MA_vastustaja = mean(Vastustajan_Turnaus_Ranking_PFI)
-  
-),
-by = .(Vastustajan_Pakka_ID, Turnaus_NO)]
+  mean_MA_vastustaja = mean(Vastustajan_Turnaus_Ranking_PFI)), by = .(Vastustajan_Pakka_ID, Turnaus_NO)]
 ma_ranking_data_vastustaja[, Turnaus_NO := Turnaus_NO + 1]
 
 fit_data <- ADM_PELIT[, .(Peli_ID, Turnaus_NO, Pakka_ID, Vastustajan_Pakka_ID, Aloittaja, Voittaja, Omistaja_ID)]

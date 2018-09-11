@@ -17,62 +17,7 @@
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
-output$EV_plot <- renderPlot({
-peliData_ja_pfi <-  peliData_ja_pfi_react()
-# peliData_ja_pfi<- funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
-# tulos <- voittoEnnusteMallit(peliData_ja_pfi)
 
-
-maxTurnaus <- peliData_ja_pfi[,max(TurnausNo)]
-#maxTurnaus <- maxTurnaus -1
-turnausData <- peliData_ja_pfi[TurnausNo == maxTurnaus]
-turnausData[, ':=' (alkuaika = oma_timedate(Aloituspvm, Aloitusaika), rivi = seq_len(.N)) ]
-
-ennusteMallit <- voittoEnnusteMallit(peliData_ja_pfi, maxTurnaus -1)
-voittoEnnusteData <- turnausData[, .(voittoEnnusteVar = voittoEnnuste(Laurin_pakka,
-                                                                      Martin_pakka,
-                                                                       ennusteMallit,
-                                                                      0,
-                                                                      0,
-                                                                      Aloittaja,
-                                                                      hinta_lauri,
-                                                                       hinta_martti,
-                                                                      laurin_kortti_lkm,
-                                                                       martin_kortti_lkm)),
-                                 by = rivi]
-#joinbach
-turnaus_ja_voitto <- turnausData[voittoEnnusteData, on = "rivi"][order(alkuaika)]
-ssCols <- turnaus_ja_voitto[, .(alkuaika, Voittaja,
-                                Voittaja_EV = (Voittaja - 0.5) * 2, voittoEnnusteVar,
-                                voittoEnnusteVar_EV = (voittoEnnusteVar - 0.5) * 2)]
-print("UUS")
-
-#deviin arvotaan voittajia
-# ssCols[sample.int(32)[1:8], ':=' (Voittaja_EV = 1, alkuaika = seq_len(.N))]
-# ssCols[sample.int(32)[1:8], ':=' (Voittaja_EV = -1, alkuaika = seq_len(.N))]
-ssCols <- ssCols[order(alkuaika)]
-alkuperainen_ennuste <- ssCols[,sum(voittoEnnusteVar_EV)]
-ssCols[, ':=' (Tilanne = cumsum(Voittaja_EV), cEnnuste = cumsum(voittoEnnusteVar_EV))]
-ssCols[, Ennuste := alkuperainen_ennuste + Tilanne - cEnnuste]
-
-#lisää nollarivi
-nollarivi <- data.table(Tilanne = 0, Ennuste = alkuperainen_ennuste, peliNo = 0)
-kuvaajadata <- ssCols[,. (Tilanne, Ennuste, peliNo = seq_len(.N))]
-bindaa <- rbind(nollarivi, kuvaajadata)
-print(bindaa)
-melttaa <- melt(bindaa, id.vars = "peliNo", measure.vars = c("Tilanne", "Ennuste") )
-melttaa[, Martin_johto := value]
-melttaa[, ottelu_id := (peliNo/2)]
-melttaa_aggr <- melttaa[ottelu_id %% 1 == 0, .(ottelu_id, value, Martin_johto, variable)]
-print(melttaa_aggr)
-plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
-   theme_calc() + scale_color_calc() 
-plot+ theme(legend.title=element_blank(),
-            legend.position = c(0.12, 0.1),
-            legend.background = element_rect(color = "black",
-            fill = "transparent", size = 1, linetype = "solid")) 
-
-})
   #pelijärjestys
 #peliTilanne <- ssCols[!is.na(Voittaja),sum(Voittaja)]
 # pelatut <- ssCols[!is.na(Voittaja)]

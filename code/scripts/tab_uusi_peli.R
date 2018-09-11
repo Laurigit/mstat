@@ -406,6 +406,46 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
                                   return(result)
  })
 
+eR_UID_TURNAUS_EV <- eventReactive(input$tallenna_tulos, {
+  required_data(c("STAT_VOITTOENNUSTE", "ADM_PELIT"))
+  results <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)
+  return(results)
+}, ignoreNULL = FALSE, ignoreInit = FALSE)
+
+output$EV_plot <- renderPlot({
+  
+  melttaa_aggr <-  eR_UID_TURNAUS_EV()
+  plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
+    theme_calc() + scale_color_calc() 
+  plot+ theme(legend.title=element_blank(),
+              legend.position = c(0.12, 0.1),
+              legend.background = element_rect(color = "black",
+                                               fill = "transparent", size = 1, linetype = "solid")) 
+  
+})
+
+eV_UID_MALLI_KOMPONENTIT <- eventReactive(eR_Peli_ID(), {
+  required_data("STAT_VOITTOENNUSTE")
+  tulos <- UID_MALLI_KOMPONENTIT(STAT_VOITTOENNUSTE,
+                                 eR_Peli_ID())
+  return(tulos)
+}, ignoreNULL = FALSE, ignoreInit = FALSE)
+
+output$win_distribution <- renderPlot({
+  melttaa <- eV_UID_MALLI_KOMPONENTIT()
+  plot <- ggplot(melttaa, aes(x = (Turnaus_NO), y = Martin_etu, colour = variable)) + geom_line(size = 1.5) +
+    theme_calc() + scale_color_calc() 
+  
+  plot+ theme(legend.title=element_blank(),
+              legend.position = c(0.12, 0.1),
+              legend.background = element_rect(color = "black",
+                                               fill = "transparent", size = 1, linetype = "solid")) +
+    scale_x_continuous(name = "Turnaus_NO",
+                       breaks = graphs_breaks) +
+    ylim(-0.5,0.50)
+
+})
+
 output$PakkaVSBox <- renderUI({
   #required_data("UID_UUSI_PELI", TRUE)
   #rm(eR_UID_UUSI_PELI)
@@ -417,33 +457,6 @@ output$PakkaVSBox <- renderUI({
 })
 
 
-output$data_vs_taulukko<-renderDataTable({
-  required_data("UID_UUSI_PELI")
-  return(UID_UUSI_PELI)  
-  
-},    options = list(
-  paging = FALSE,
-  
-  searching = FALSE,
-  info=FALSE,
-  columnDefs = list(list(className = 'dt-center', targets = 1:2),
-                    list(className = 'dt-left', targets = 3)),
-  rowCallback = DT::JS(
-    'function(row, data) {
-    if ((data[2]) == "VS")
-    $("td", row).css("background", "PaleTurquoise");
-    else if (data[2] == "Deck" )
-    $("td", row).css("background", "PapayaWhip");
-    else if (data[2] == "pfi" )
-    $("td", row).css("background", "PowderBlue");
-    
-    }')
-    
-  
-  
-  ),rownames=FALSE)
-
-
 mallinnusDataReact <- reactiveValues(mallit = NULL)
 
 observeEvent(input$luo_peleja,{
@@ -453,42 +466,8 @@ observeEvent(input$luo_peleja,{
 })
 
 observeEvent(input$tasuriPeli, {
-
-#  divaridata <-luecsv("divarit.csv")
-  # sarjadata <- sarjataulukkoKaikki(divaridata,
-  #                                  peliData,
-  #                                  0,
-  #                                  17,
-  #                                  FALSE,NA,NA,NA,NA,0,pfi_data)
-    #tarkista, että pelattuja pelejä
-  #eti uusimman turnauksen numero
-  vikaturnausNo <- max(peliDataReact()[, TurnausNo])
-  
-  pelattuja_peleja <- nrow(peliDataReact()[!is.na(Voittaja) & TurnausNo == vikaturnausNo])
-  if (pelattuja_peleja > 0) {
-  sarjadata <- sarjataulukkoKaikki(divaridata(),
-                                 peliDataReact(),
-                                 input$radio_bo_mode,
-                                 vikaturnausNo,
-                                 FALSE,NA,NA,NA,NA,FALSE,pfi_data())
-
-  pelaajat <- sarjadata$pelaajastats
-
-
-  kokonaistilanne <- pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
-
-  print(kokonaistilanne)
-  erotus <- kokonaistilanne[,Voitot_Lauri] - kokonaistilanne[,Voitot_Martti]
-
-    turnausTilanneInput <- ifelse(erotus > 0, "Lauri", ifelse(erotus < 0, "Martti", "Tasan"))
-  } else {
-    #jos ei pelattu pelejä vielä turnauksessa, niin tasan
-
-    turnausTilanneInput <- "Tasan"
-  }
-
-  uusPeliID <- tasuripeli_ID(turnausTilanneInput, pfi_data(), peliDataReact(), ennusteMallitReact())
-
-  paivitaSliderit(uusPeliID,session) 
+required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
+  uusPeliID <- getTasuriPeli(ADM_PELIT, STAT_VOITTOENNUSTE)
+  paivitaSliderit(uusPeliID, session) 
 })
 

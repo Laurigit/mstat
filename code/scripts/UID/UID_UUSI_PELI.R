@@ -16,7 +16,7 @@
 #              input_BO_mode,
 #              input_pfi_mode)
 # 
-# Peli_ID_input <- 800
+# Peli_ID_input <- 896
 # 
 # res <-  UID_UUSI_PELI(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT,
 #                       STAT_VOITTOENNUSTE,
@@ -40,10 +40,10 @@ PakkaVS <- UID_PAKKA_VS[Pakka_ID %in% c(Left_pakka,
 Tilanne <- getTilanne(ADM_PELIT, Peli_ID_input)
 Aloittaja <- ADM_PELIT[Peli_ID == Peli_ID_input , .(Pakka_ID, Aloittaja)]
 sscols_pakat <- STG_PAKAT[, .(Pakka_ID, Pakka_NM, Omistaja_ID)]
-joini <- Tilanne[Pakka,
+joini <- PakkaVS[Tilanne,
+                   on ="Pakka_ID"][Pakka,
                  on = "Pakka_ID"][Aloittaja,
-                                  on ="Pakka_ID"][PakkaVS,
-                                                  on ="Pakka_ID"][sscols_pakat,
+                                  on ="Pakka_ID"][sscols_pakat,
                                                                   on = "Pakka_ID"][STG_OMISTAJA,
                                                                                    on = "Omistaja_ID"]
 joini_ssrows <- joini[Pakka_ID %in%  c(Left_pakka,
