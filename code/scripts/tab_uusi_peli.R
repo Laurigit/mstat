@@ -94,6 +94,34 @@ observeEvent(input$jatka_ottelua,{
 
 
 
+output$mulliganiSlideriLauri<-renderUI({
+  pelitiedot<-luecsv("temp_data_storage.csv")
+  if(nrow(pelitiedot)==0) {
+    laurin_pre_mulligan<-0
+
+  } else {
+    laurin_pre_mulligan<-pelitiedot[muuttuja=="Laurin_mulligan",arvo]
+   
+  }
+  
+sliderInput("slider_laurin_mulligan", label = h4("Laurin mulliganit"), min = 0, 
+                                 max = 6, value =laurin_pre_mulligan)
+
+})
+
+output$mulliganiSlideriMartti<-renderUI({
+  pelitiedot<-luecsv("temp_data_storage.csv")
+  if(nrow(pelitiedot)==0) {
+    martin_pre_mulligan<-0
+  } else {
+    martin_pre_mulligan<-pelitiedot[muuttuja=="Martin_mulligan",arvo]
+  }
+sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
+                                           max = 6, value = martin_pre_mulligan)
+  
+})
+
+
 output$peliKesto <- renderText({
   
   invalidateLater(1000, session)
@@ -199,28 +227,10 @@ observeEvent(c(input$select_laurin_pakka,
 
 #arvopeli
 observeEvent(input$arvo_peli,{
-  print("arvo peli alku")
+#input$divariRadio <- 1
   required_data("ADM_PELIT")
-  #kaikkipelit<-peliDataReact()
-  kaikkipelit <- ADM_PELIT
-  #kato onko divarifiltteri päällä
-  if(input$divariRadio!="Ei väliä") {
-    pelaamattomat <- unique(kaikkipelit[is.na(Voittaja) & Divari==input$divariRadio,Ottelu_ID])  
-  } else {
-    pelaamattomat <- unique(kaikkipelit[is.na(Voittaja),Ottelu_ID])
-  }
-  
-  arpa<-ceiling(runif(1,0,length(pelaamattomat)))
-  arvottu_ottelu_ID<-pelaamattomat[arpa]
-  #eti ottelun pienin pelaamaton peli
-  
-  
-  arvottu_peli_id <- kaikkipelit[Ottelu_ID==arvottu_ottelu_ID & is.na(Voittaja) , .SD[which.min(Ottelu_no)],.SDcols=c("peli_ID")][,peli_ID]
+  arvottu_peli_id <- getRandomPeli_ID(ADM_PELIT, input$divariRadio)
   paivitaSliderit(arvottu_peli_id,session)
-  
-  #print(pfi_data())
-
-  
 })
 
 
@@ -350,14 +360,18 @@ eR_UID_UUSI_PELI <- eventReactive(eR_Peli_ID(), {
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
 
-  required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA"))
+  required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE"))
 
   tulos <- UID_UUSI_PELI(eR_Peli_ID(),
                          eR_UID_PAKKA(),
                          eR_UID_PAKKA_VS(),
                          STG_PAKAT,
                          STG_OMISTAJA,
-                         ADM_PELIT
+                         ADM_PELIT,
+                         STAT_VOITTOENNUSTE,
+                         input$slider_laurin_mulligan,
+                         input$slider_martin_mulligan
+                         
                         )
   return(tulos)
 }, ignoreInit = FALSE, ignoreNULL = FALSE)

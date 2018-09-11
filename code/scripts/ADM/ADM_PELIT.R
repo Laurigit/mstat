@@ -95,6 +95,32 @@ molemmat_pfit[, ':=' (Putki_VS = cumsum(putki_cal)), by = .(perakkaiset, Pakka_I
 molemmat_pfit[, ':=' (perakkaiset = NULL, putki_cal = NULL)]
 
 
+ setorder(molemmat_pfit, Aloitus_DT)
+ molemmat_pfit[!is.na(Voittaja_PFI),  ':=' (PFI_Voitto_pct_cum = (cumsum(Voittaja_PFI) / cumsum(Pelit_PFI))), by = Pakka_ID]
+ molemmat_pfit[!is.na(Voittaja_PFI),  ':=' (Vastustajan_PFI_Voitto_pct_cum = (cumsum(Voittaja_PFI) / cumsum(Pelit_PFI))), by = Vastustajan_Pakka_ID]
+# molemmat_pfit[!is.na(Voittaja_PFI), Voitto_pct_cum := (cumsum(Voittaja) / cumsum(Peli_LKM)), by = Pakka_ID]
+#tässä vähä kuvaajapiirtoa
+# molemmat_pfit[ Pakka_ID == 2 & Turnaus_NO< 26,. (Turnaus_NO, Voittaja, PFI_Voitto_pct_cum,
+#                                                                       Voitto_pct_cum)]
+# res <- meltdf <- melt(molemmat_pfit[!is.na(Voittaja_PFI)],id=c("Pakka_ID", "Peli_ID"))
+# res_ss <- res[Pakka_ID == 7 & variable %in% c("Voitto_pct_cum", "PFI_Voitto_pct_cum")]
+# setorder(res_ss, Peli_ID)
+# res_ss[, rivi := seq_len(.N)]
+# ggplot(res_ss,aes(x=rivi,y=as.numeric(value),colour=variable,group=variable)) + geom_line() + ylim(0, 1)
+# 
+# 
+# options(max.print = 10000)
 
-ADM_PELIT <- molemmat_pfit
+aggr_to_turnaus <- molemmat_pfit[, .(sum_voitot = sum(Voittaja), Pakka_form_pct = max(Pakka_form_pct)), by = .(Pakka_ID, Turnaus_NO, Divari)]
+aggr_to_turnaus[, ranking_kpi := (1000-Divari*100 + sum_voitot)]
+aggr_to_turnaus[, ranking := frank(-ranking_kpi, na.last = "keep"), by = Turnaus_NO]
+setorder(aggr_to_turnaus, Pakka_ID, Turnaus_NO)
+aggr_to_turnaus[,  ':=' (cumsum_ranking = cumsum(ranking * Pakka_form_pct), cumsum_pfi = cumsum(Pakka_form_pct)), by = Pakka_ID]
+aggr_to_turnaus[, cs_ranking_pfi := cumsum_ranking  / cumsum_pfi]
+sscols_agg <- aggr_to_turnaus[, .(Pakka_ID, Turnaus_NO, Turnaus_Ranking_PFI = cs_ranking_pfi)]
+joinrank <- sscols_agg[molemmat_pfit, on = .(Pakka_ID, Turnaus_NO)]
+#sama vastustajalle
+sscols_agg_vihu <- aggr_to_turnaus[, .(Vastustajan_Pakka_ID = Pakka_ID, Turnaus_NO, Vastustajan_Turnaus_Ranking_PFI = cs_ranking_pfi)]
+joinrank_vihu <- sscols_agg_vihu[joinrank, on = .(Vastustajan_Pakka_ID , Turnaus_NO)]
+ ADM_PELIT <- joinrank_vihu
 

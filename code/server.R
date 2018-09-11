@@ -85,10 +85,10 @@ shinyServer(function(input, output, session) {
 
   # divaridata <- reactiveFileReader(2000, session, "divari.csv",luecsv)
   divaridata <- reactive({
-    print("divaritada alku")
+  
     tulos <- luecsv("./divari.csv")
     print(paste(input$tallenna_bannit))
-    print("divaritada loppu")
+
     return(tulos)
   })
 
@@ -120,7 +120,7 @@ humalaData <- reactive({
 
    modelHistoryDataReact <- eventReactive(input$luo_peleja, {
      if (input$luo_peleja > 0) {
-       model_history_data_new <- create_data_for_win_disribution(peliData_ja_pfi_react(), divaridata()) 
+       model_history_data_new <- create_data_for_win_disribution() 
        saveR_and_send(model_history_data,"model_history_data","model_history_data.R")
      } else {
        model_history_data_new <- model_history_data

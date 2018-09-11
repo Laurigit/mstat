@@ -35,9 +35,11 @@ if(BO == TRUE) {
 if(PFI == TRUE) {
   col_Voittaja <- "Voittaja_PFI"
   col_Tasapeli <- "Tasapeli_PFI"
+  col_Peli_LKM <- "Pelit_PFI"
 } else {
   col_Voittaja = "Voittaja"
   col_Tasapeli = "Tasapeli"
+  col_Peli_LKM = "Peli_LKM"
 }
 setorder(setDT(dataset_after_bo),  -Aloitus_DT)
 if (MA == TRUE) {stop()}
@@ -54,6 +56,8 @@ syntax <- parse(text=paste0("Voittaja_Stat := ", col_Voittaja))
 results_ds <- dataset_after_ma[, eval(syntax)]
 syntax2 <- parse(text=paste0("Tasapeli_Stat := ", col_Tasapeli))
 results_ds <- dataset_after_ma[, eval(syntax2)]
+syntax3 <- parse(text=paste0("Peli_LKM_Stat := ", col_Peli_LKM))
+results_ds <- dataset_after_ma[, eval(syntax3)]
 return(results_ds)
 }
 

@@ -3,17 +3,21 @@
 #required_data("UID_UUSI_PELI")
 getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
  
-  lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja1, .(Games = Pelit_ABS_VS,
+  lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja1, .(Prediction = round(Prediction, 2) * 100,
+                                                           Games = round(Pelit_ABS_VS, 1),
                                   'Winpct' = round(Voitto_PCT_VS, 2) * 100,
                                   'WinpctMA' = round(Voitto_PCT_MA_VS, 2) * 100, 
                                   'Streak' = Putki_VS)]
   text_stats <- lauri_stats[, .(idvar ="idvari",
-                                Games,
+                                
                                 'Win%' = paste0(Winpct, "-", 100 - Winpct),
                                 'Win%-MA' = paste0(WinpctMA, '-', 100 - WinpctMA),
                                 Streak = ifelse(Streak > 0,
                                                 paste0(Streak, "-0"),
-                                                paste0("0-", -Streak)))]
+                                                paste0("0-", -Streak)),
+                                Games,
+                                Prediction = paste0(Prediction, "-" , 100 - Prediction)
+                                )]
  
   
   
@@ -31,7 +35,7 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
   takaliite <- ifelse(UID_UUSI_PELI[Omistaja_NM == Omistaja1, Aloittaja] == 0, "*", "")
   otsikko <- ifelse(UID_UUSI_PELI[Omistaja_NM == Omistaja1, Peleja_jaljella_bool] == TRUE,
                     paste0(etuliite, tilanne, takaliite), tilanne)
-  hmtlout <- paste0("<h3>", otsikko, "<br>", paste0(tulos[, riviteksti], collapse =""), "<br>")
+  hmtlout <- paste0("<h3>", otsikko, "<br>", paste0(tulos[, riviteksti], collapse =""))
 
   #hmtlout <- paste0("<h2>",Pakkanimi, "<h2/><br/>", paste0(tulos[, riviteksti], collapse =""))
   #kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",

@@ -8,39 +8,77 @@
 # LKortit <- 50
 # MKortit  <- 50
 # Aloittaja <- 0
-# 
+# maxTurausInclude <- 14
 # peliData <- luecsv("pelit.csv")
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
 # peliData_ja_pfi <-  funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
-voittoEnnusteMallit <- function(peliData_ja_pfi, maxTurausInclude = 1000000000) {
-  print("TEHDÄÄN VOITTOENNUSTEMALLIT")
-  pelidata_joined_pakkatiedot <-  peliData_ja_pfi
-  
+voittoEnnusteMallit <- function(maxTurausInclude = 1000000000) {
+  required_data("ADM_PELIT")
+  peliData_ja_pfi<- ADM_PELIT
+  pelidata_joined_pakkatiedot <-  peliData_ja_pfi[!is.na(Voittaja) & Turnaus_NO <= maxTurausInclude]
+
   #loopataan kaikki pelit
-  Laurin_pakat <- pelidata_joined_pakkatiedot[TurnausNo <= maxTurausInclude,.N, by = ,.(Laurin_pakka)][,N:=NULL][, avain := 1]
-  Martin_pakat <-  pelidata_joined_pakkatiedot[TurnausNo <= maxTurausInclude,.N, by = ,.(Martin_pakka)][,N:=NULL][, avain := 1]
-  pakkayhdistelmat <-merge(Laurin_pakat, Martin_pakat, all = TRUE, by = "avain", allow.cartesian = TRUE)
+#  Laurin_pakat <- pelidata_joined_pakkatiedot[Turnaus_NO <= maxTurausInclude,.N, by = ,.(Pakka_ID)][,N:=NULL][, avain := 1]
+ # Martin_pakat <-  pelidata_joined_pakkatiedot[Turnaus_NO <= maxTurausInclude,.N, by = ,.(Martin_pakka)][,N:=NULL][, avain := 1]
+  pakkayhdistelmat <-pelidata_joined_pakkatiedot[,.N, by = ,.(Pakka_ID, Vastustajan_Pakka_ID)][,N:=NULL]
     #luo muuttujat. Kertoimet sen takia, että otetaan yhteiskerroin vaan VS_peliin.
   #looppaa_kombot
-  pakkayhdistelmat[, avain := NULL]
   #ota vain yhdistelmat
+  
+  #korjaa data vanhaan muotoon
+  laurin_pelit <- pelidata_joined_pakkatiedot[Omistaja_ID == "L", .(Laurin_pakka = Pakka_ID,
+
+                                                                  
+                                                                  Voittaja,
+                                                                  Laurin_mulligan = Mulligan,
+                                                                  Laurin_pysyvyys_pct = Pakka_form_pct,
+                                                                  Aloittaja,
+                                                                  hinta_lauri = Hinta,
+                                                                  laurin_kortti_lkm = Kortti_lkm_manastack, Peli_ID)]
+  #haetaan siihen martin data
+  
+  martin_pelit <- pelidata_joined_pakkatiedot[Omistaja_ID == "M",
+                                                     .(Martin_mulligan = Mulligan,
+                                                       Martin_pysyvyys_pct = Pakka_form_pct,
+                                                       hinta_martti = Hinta,
+                                                       martin_kortti_lkm = Kortti_lkm_manastack,
+                                                       Martin_pakka = Pakka_ID,
+                                                      
+                                                       Peli_ID)]
+  #joinaa
+  joinpelit <- laurin_pelit[martin_pelit, on = "Peli_ID"]
+  
+  
+  Laurin_pakat <- joinpelit[,.N, by = ,.(Laurin_pakka)][, N := NULL][, avain := 1]
+
+  
+  Martin_pakat <-  joinpelit[,.N, by = ,.(Martin_pakka)][,N := NULL][, avain := 1]
+
+  
+  pakkayhdistelmat <-merge(Laurin_pakat, Martin_pakat, all = TRUE, by = "avain", allow.cartesian = TRUE)
+  pakkayhdistelmat[, avain := NULL]
+  
   for(kierros in 1:nrow(pakkayhdistelmat)) {
-    LP <- pakkayhdistelmat[kierros, Laurin_pakka]
-    MP <- pakkayhdistelmat[kierros, Martin_pakka]
-  
-  
   
   #filtteröi data
-  subset_pelit <- pelidata_joined_pakkatiedot[!is.na(Voittaja) & (Laurin_pakka == LP | Martin_pakka == MP) & TurnausNo <= maxTurausInclude,
-                                              .(Laurin_pakka, Martin_pakka, Voittaja, Laurin_mulligan,
-                                                Martin_mulligan, Laurin_pysyvyys_pct, Martin_pysyvyys_pct, Aloittaja, hinta_lauri, hinta_martti, laurin_kortti_lkm, martin_kortti_lkm)]
+    pakat <- pakkayhdistelmat[kierros]
+    LP <- pakat[, Laurin_pakka]
+    MP <- pakat[, Martin_pakka]
+    
+    
+    # LP <-3
+    # MP <- 11
+    
+  subset_pelit <- joinpelit[(Laurin_pakka == LP | Martin_pakka == MP)]
   
   subset_pelit[, ':=' (Mull_diff =  Martin_mulligan - Laurin_mulligan,
                        VS_peli_bool = ifelse(Laurin_pakka == LP & Martin_pakka == MP, 1, 0),
-                       L_kerroin = ifelse(Laurin_pakka == LP, Laurin_pysyvyys_pct,1),
-                       M_kerroin = ifelse(Martin_pakka == MP, Martin_pysyvyys_pct, 1),
+                       # L_kerroin = ifelse(Laurin_pakka == LP, Laurin_pysyvyys_pct,1),
+                       # M_kerroin = ifelse(Martin_pakka == MP, Martin_pysyvyys_pct, 1),
+                       L_kerroin = Laurin_pysyvyys_pct,
+                       M_kerroin = Martin_pysyvyys_pct,
                        laurin_keskihinta = hinta_lauri / laurin_kortti_lkm,
                        martin_keskihinta = hinta_martti / martin_kortti_lkm)]
   

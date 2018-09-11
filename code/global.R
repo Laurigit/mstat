@@ -152,15 +152,6 @@ zipAndSend <- function(){
 print("zipAndSend: THIS FUNC SHOULD NOT BE CALLED ANYMORE")
 }
 
-paivitaSliderit<-function(input_peli_ID,session) {
-  kaikkipelit<-luecsv("pelit.csv")
-  laurin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Laurin_pakka])
-  martin_pakka<-(kaikkipelit[peli_ID==  input_peli_ID ,Martin_pakka])
-  
-  updateSelectInput(session,"select_laurin_pakka",selected=  laurin_pakka)
-  updateSelectInput(session,"select_martin_pakka",selected=  martin_pakka)
-  
-}
 
 
 

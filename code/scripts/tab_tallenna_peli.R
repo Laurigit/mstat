@@ -127,25 +127,7 @@ observeEvent(input$tallenna_tulos, {
 })
 
 
-output$mulliganiSliderit<-renderUI({
-  pelitiedot<-luecsv("temp_data_storage.csv")
-  if(nrow(pelitiedot)==0) {
-    laurin_pre_mulligan<-0
-    martin_pre_mulligan<-0
-  } else {
-    laurin_pre_mulligan<-pelitiedot[muuttuja=="Laurin_mulligan",arvo]
-    martin_pre_mulligan<-pelitiedot[muuttuja=="Martin_mulligan",arvo]
-  }
-  
-  fluidRow(column(3, sliderInput("slider_laurin_mulligan", label = h4("Laurin mulliganit"), min = 0, 
-                                 max = 6, value =laurin_pre_mulligan)),
-           
-           
-           
-           column(3, offset=3, sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
-                                           max = 6, value = martin_pre_mulligan))
-  )
-})
+
 
 
 observeEvent(input$laurin_mulligan,{

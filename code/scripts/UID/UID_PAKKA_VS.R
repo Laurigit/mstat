@@ -3,9 +3,12 @@
 # required_data(c("ADM_PELIT"))
 # required_data(c("INT_PFI"))
 # 
-# input_MA_length = 7,
+# input_MA_length = 7
 # input_BO_mode  = FALSE
 # input_pfi_mode = FALSE
+# 
+# input_P1_mulligan <- 0
+# input_P2_mulligan <- 0
 
 # UID_PAKKA_VS(ADM_PELIT, INT_PFI,input_MA_length = 7,
 #              input_BO_mode  = FALSE,
@@ -16,7 +19,10 @@ UID_PAKKA_VS <- function(ADM_PELIT,
                          INT_PFI,
                          input_MA_length = 7,
                          input_BO_mode  = FALSE,
-                         input_pfi_mode = FALSE
+                         input_pfi_mode = FALSE,
+                         STAT_VOITTOENNUSTE,
+                         input_P1_mulligan,
+                         input_P2_mulligan
                          ){
   
 required_functions("Prepare_Pelit_for_stats")
@@ -26,7 +32,7 @@ Voitto_PCT_MA_VS_data <- Prepare_Pelit_for_stats(ADM_PELIT,
                                                  input_MA = input_MA_length,
                                                  BO = input_BO_mode,
                                                  PFI = input_pfi_mode)
-Voitto_PCT_MA_VS_pakka <- Voitto_PCT_MA_VS_data[,.(Voitto_PCT_MA_VS = mean(Voittaja_Stat, na.rm = TRUE)),
+Voitto_PCT_MA_VS_pakka <- Voitto_PCT_MA_VS_data[!is.na(Voittaja_Stat),.(Voitto_PCT_MA_VS = sum(Voittaja_Stat) / sum(Peli_LKM_Stat)),
                                                 by = .(Pakka_ID, Vastustajan_Pakka_ID)]
 
 #Voitto_PCT
@@ -35,9 +41,9 @@ Voitto_PCT_data <- Prepare_Pelit_for_stats(ADM_PELIT,
                                            BO = input_BO_mode,
                                            PFI = input_pfi_mode)
 
-Voitto_PCT_VS_pakka <- Voitto_PCT_data[!is.na(Voittaja),
-                                       .(Voitto_PCT_VS = mean(Voittaja_Stat, na.rm = TRUE),
-                                         Pelit_ABS_VS = sum(Peli_LKM, na.rm = TRUE)),
+Voitto_PCT_VS_pakka <- Voitto_PCT_data[!is.na(Voittaja_Stat),
+                                       .(Voitto_PCT_VS = sum(Voittaja_Stat) / sum(Peli_LKM_Stat),
+                                         Pelit_ABS_VS = sum(Peli_LKM_Stat, na.rm = TRUE)),
                                        by = .(Pakka_ID, Vastustajan_Pakka_ID)]
 
 
@@ -53,5 +59,6 @@ STAT_PAKKA_VS <-
   Voitto_PCT_MA_VS_pakka[Voitto_PCT_VS_pakka,
                            on = .(Pakka_ID, Vastustajan_Pakka_ID)][Putki_pakka_VS,
                                               on = .(Pakka_ID, Vastustajan_Pakka_ID)]
+
 return(STAT_PAKKA_VS)
 }

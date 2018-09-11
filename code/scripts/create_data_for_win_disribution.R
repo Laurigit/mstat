@@ -8,12 +8,12 @@
 
 
 
-create_data_for_win_disribution <- function(peliData_ja_pfi, divaridata) {
-
-maxTurnaus <- peliData_ja_pfi[, max(TurnausNo)]
+create_data_for_win_disribution <- function() {
+required_data("ADM_PELIT")
+maxTurnaus <- ADM_PELIT[, max(Turnaus_NO)]
 all_data <- NULL
 for (loop_no in (maxTurnaus - 10):(maxTurnaus-1)) {
-  kierrosData <- create_forecast_data_for_stats(peliData_ja_pfi, divaridata, loop_no)
+  kierrosData <- create_forecast_data_for_stats(loop_no)
   kierrosData[, TurnausNo := loop_no]
   all_data <- rbind(all_data, kierrosData)
   print(paste0("kierros", loop_no))
