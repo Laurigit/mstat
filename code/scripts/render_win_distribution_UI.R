@@ -1,5 +1,6 @@
 #render_deck_evolve_plot
 output$win_distribution <- renderPlot({
+  req(eR_Peli_Aloittaja)
   all_data <- modelHistoryDataReact()
   
 # input <- NULL
@@ -11,7 +12,7 @@ output$win_distribution <- renderPlot({
 ss_cols <- all_data[Omistaja == "Martti" &
                       Pakka == input$select_martin_pakka &
                       Vastustajan_Pakka == input$select_laurin_pakka &
-                      Aloittaja == r_valittu_peli$aloittaja,
+                      Aloittaja == eR_Peli_Aloittaja,
                     .(                      
                                             VS_vaikutus,
                                             Aloittajan_vaikutus,

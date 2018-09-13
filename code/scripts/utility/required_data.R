@@ -1,21 +1,38 @@
 #required_data
 #data_vector <- "SRC_PELIT"
-required_data <- function(data_vector, force_update = FALSE) {
+#data_file<- "SRC_PELIT"
+
+required_data <- function(data_vector, force_update = FALSE, saveR = FALSE, saveR_folder = "./temporary_files/",
+                          input_env = parent.frame()) {
   #load("shiny_env.R")
-
-  used_env <- parent.frame()
+  used_env <- input_env
   for(data_file in data_vector) {
-  if(!exists(data_file, envir = used_env ) | force_update == TRUE) {
-  list_of_object <- c(ls(envir = used_env), data_file)
 
-    find_and_source(data_file, used_env)
- 
-  list_after_sourcing <- ls(envir = used_env)
-  newly_created <- setdiff(list_after_sourcing,
-                           list_of_object)
-  funlist <- lsf.str(envir = used_env)
-  delete_list <- setdiff(newly_created, funlist)
-  rm(list = delete_list, envir = used_env)
+    r_file_nm <- paste0(saveR_folder, data_file, ".RData")
+  if(!exists(data_file, envir = used_env ) | force_update == TRUE) {
+    #check if the file exists as R object
+   
+   R_exists <- file.exists(r_file_nm)
+   if(R_exists == FALSE) {
+      list_of_object <- c(ls(envir = used_env), data_file)
+    
+        find_and_source(data_file, used_env)
+        if(saveR == TRUE) {
+          save(list = data_file,
+               file = r_file_nm,
+               compress = TRUE)
+        }
+      list_after_sourcing <- ls(envir = used_env)
+      newly_created <- setdiff(list_after_sourcing,
+                               list_of_object)
+      funlist <- lsf.str(envir = used_env)
+      delete_list <- setdiff(newly_created, funlist)
+      rm(list = delete_list, envir = used_env)
+   } else {
+     load(r_file_nm, envir = used_env)
+   }
   }
+    
+    
   }
 }

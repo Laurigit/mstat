@@ -1,5 +1,5 @@
 #find_and_source
-#source_list <- c("SRC_PELIT", "ölölkj")
+#source_list <- c("STAT_VOITTOENNUSTE", "ölölkj")
 find_and_source <- function(source_list, used_env) {
   #find all files
   #load("shiny_env.R")
@@ -12,7 +12,8 @@ find_and_source <- function(source_list, used_env) {
                   by = rivi]
   source_files_not_found <- source_to_table[source_found == FALSE, source_nm]
   filenames[,  ':=' (match_nm = grepl(paste(source_list, collapse = "|"), filename))]
-  for(source_loop in filenames[match_nm == TRUE, filename]) {
+  filenames[, file_ending :=  toupper(str_sub(filename, -2, -1))]
+  for(source_loop in filenames[match_nm == TRUE & file_ending == ".R", filename]) {
     source(source_loop, local = used_env, encoding="utf-8")
   }
   if(length(source_files_not_found) > 0) {

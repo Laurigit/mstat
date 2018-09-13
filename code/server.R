@@ -8,11 +8,9 @@ shinyServer(function(input, output, session) {
   load("./external_files/saavutusAsetukset.R")
   load("./external_files/model_history_data.R")
   modelHistoryDataReact <- model_history_data
-
+  required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
   
-  #r_valittu_peli on valittu peli millä tahansa menetelmällä
-  r_valittu_peli <-reactiveValues(peliID=1,jatkopeli=NA, aloittajatext="Ladataan", aloittaja = -1)
-  
+ 
 
   source("./scripts/load_scripts.R", local = TRUE)
   # 
@@ -60,12 +58,7 @@ shinyServer(function(input, output, session) {
   
   })
   
- 
 
-  #Serveripuolella tehdyt UI-palikat.
-  output$text_aloittaja <- renderText(({paste(r_valittu_peli$aloittaja_text)}))
-  output$text_tilanne <- renderText(({paste(r_valittu_peli$ottelutilanne_text)}))
-  
  
   #divaricheckbox
   output$checkboxPakat<-renderUI({

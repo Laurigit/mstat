@@ -1,6 +1,6 @@
-# UID_UUSI_PELI
+# # UID_UUSI_PELI
 # required_data(c("STG_PAKAT", "STG_OMISTAJA", "ADM_PELIT", "INT_PFI", "STAT_VOITTOENNUSTE"))
-# required_functions(c("UID_PAKKA", "UID_PAKKA_VS"))
+# required_functions(c("UID_PAKKA", "UID_PAKKA_VS", "UID_UUSI_PELI"))
 # input_MA_length = 7
 # input_BO_mode  = FALSE
 # input_pfi_mode = TRUE

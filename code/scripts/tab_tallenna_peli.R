@@ -1,27 +1,65 @@
 #tallennapeli
+#input_Peli_ID <-909
+# 
+# Aloitusaika <-1
+# Aloituspvm<-1
+# Lopetus_DT = now(tz = "EET")
+# Voittaja<-1
+# Laurin_mulligan<-1
+# Martin_mulligan<-1
+# Laurin_arvosana<-1
+# Martin_arvosana<-1
+# Laurin_landit <-1
+# Martin_landit<-1
+# Laurin_lifet<-1
+# Martin_lifet<-1
+# Vuoroarvio<-1
+# Laurin_kasikortit<-1
+# Martin_kasikortit<-1
+
+# uusrivi<- c(
+#   Aloitusaika=1,
+#   Aloituspvm=1,
+#   Lopetus_DT = now(tz = "EET"),
+#   Voittaja=1,
+#   Laurin_mulligan=1,
+#   Martin_mulligan=1,
+#   Laurin_arvosana=1,
+#   Martin_arvosana=1,
+#   # Laurin_humala=input$slider_laurin_humala,
+#   # Martin_humala=input$slider_martin_humala,
+#   Laurin_landit=1,
+#   Martin_landit=1,
+#   Laurin_lifet=1,
+#   Martin_lifet=1,
+#   Vuoroarvio=1,
+#   Laurin_kasikortit=1,
+#   Martin_kasikortit=1
+# )
+
 observeEvent(input$tallenna_tulos, {
- 
+ input_Peli_ID <- eR_Peli_ID()
+
   print("tallenna tulos alku")
-  tempData<-luecsv("temp_data_storage.csv")
+  tempData<- isolate(eR_UID_temp_data_storage()) #Isolate voi olla tarpeeton tässä
   #vuoroarviolasku
 
-  aloittajaNo <-  r_valittu_peli$aloittaja
-  print(paste0("aloittajano ", aloittajaNo))
+required_data("ADM_PELIT")
+aloittajaNo <- eR_Peli_Aloittaja()
   if(aloittajaNo == 0) {
     vuoroarviolasku <- input$slider_vuoroarvio + input$slider_laurin_mulligan - 6
-    print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
+    # print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
 
   } else {
     vuoroarviolasku <- input$slider_vuoroarvio + input$slider_martin_mulligan - 6
-    print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
+    # print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
   }
-  print("VUOROARVIOLASKU")
-  print(vuoroarviolasku)
+  # print("VUOROARVIOLASKU")
+  # print(vuoroarviolasku)
   uusrivi<- c(
-    Aloitusaika=tempData[muuttuja=="Aloitusaika",arvo],
-    Aloituspvm=tempData[muuttuja=="Aloituspvm",arvo],
-    Lopetusaika=as.ITime(now(tz="Europe/Helsinki")),
-    Lopetuspvm=as.IDate(now(tz="Europe/Helsinki")),
+    Aloitus_DT = tempData[muuttuja=="Aloitus_DT",arvo],
+
+    Lopetus_DT = as.character(now(tz = "EET")),
     Voittaja=as.numeric(input$radio_voittaja),
     Lauri_voitti=(1-as.numeric(input$radio_voittaja)),
     Martti_voitti=as.numeric(input$radio_voittaja),
@@ -29,8 +67,8 @@ observeEvent(input$tallenna_tulos, {
     Martin_mulligan=input$slider_martin_mulligan,
     Laurin_arvosana=input$slider_laurin_virhe,
     Martin_arvosana=input$slider_martin_virhe,
-    Laurin_humala=input$slider_laurin_humala,
-    Martin_humala=input$slider_martin_humala,
+    # Laurin_humala=input$slider_laurin_humala,
+    # Martin_humala=input$slider_martin_humala,
     Laurin_landit=input$slider_laurin_landit,
     Martin_landit=input$slider_martin_landit,
     Laurin_lifet=input$slider_laurin_lifet,
@@ -40,81 +78,34 @@ observeEvent(input$tallenna_tulos, {
     Martin_kasikortit=input$slider_martin_kasikorit
   )
   #tyhjennä tempdata
-  tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c("FALSE","FALSE"))
-  print("tuloksen tallennuksen jälkeen lähetetään pilveen tyhjä taulu")
-  kircsv(tyhjataulu,"temp_data_storage.csv", upload = FALSE) #tässä false sen takia, että täsäs myöhemmin lähettään kaikki
-  
-  
+
   kaikkipelit<-data.table(luecsv("pelit.csv"))
-  
+
   cols<-names(kaikkipelit)
   kaikkipelit[, (cols):= lapply(.SD, as.numeric), .SDcols=cols]
   
-  kaikkipelit[peli_ID==r_valittu_peli$peliID, names(uusrivi) := as.list(uusrivi)][]
-  
-  
-  #laske valmiiksi mahdollinen jatkopeli
-  
-  
-  kaikkipelit[,otteluLKM:=as.double(.N),by=Ottelu_ID]
-  
-  kaikkipelit[,pelatut:=as.double(sum(ifelse(!is.na(Voittaja),1,0))),by=Ottelu_ID]
-  
-  #prosentti sitten
-  kaikkipelit[,peliprosentti:=pelatut/otteluLKM]
-  #palauta pienin keskeneräinen ottelu
-  keskeneraiset_pelit<-kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID]
-  if (length(keskeneraiset_pelit)>0) {
-    keskenpeli<-min(kaikkipelit[is.na(Voittaja) & peliprosentti>0 & peliprosentti <1,peli_ID])
-  } else {
-    keskenpeli<-Inf
-  }
-  if (is.finite(keskenpeli)) {
-    
-    r_valittu_peli$jatkopeli<-keskenpeli 
-    shinyjs::enable("jatka_ottelua") 
-  }else {
-    r_valittu_peli$jatkopeli<-NA
-    shinyjs::disable("jatka_ottelua") 
-    #print("Ei ole peliä kesken")
-    
-  }
-  
-  
-  
-  #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
+  kaikkipelit[peli_ID==input_Peli_ID, names(uusrivi) := as.list(uusrivi)][]
+
+   #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
   #laske otteluiden voittoprosentti
   kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
   kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
   
   #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
-  pelit_jaljella <- kaikkipelit[(!is.na(Voittaja)|MaxVP<=0.5)|BO_mode==0]
-  pelit_jaljella[,':='(MaxVP=NULL,otteluLKM=NULL,pelatut=NULL,peliprosentti=NULL)]
+  pelit_jaljella <- kaikkipelit[(!is.na(Voittaja) | MaxVP <= 0.5) | BO_mode == 0]
+  pelit_jaljella[,':='(MaxVP = NULL)]
   
-  kircsv(pelit_jaljella,"pelit.csv")
+  kircsv(pelit_jaljella,"pelit.csv", TRUE)
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
+
   updateTabItems(session,"sidebarmenu","tab_uusi_peli")
-  
-  
-  #jos pelejä jäljellä disabloi uusien pelien luominen
-  peleja_jaljella <- pelit_jaljella[is.na(Voittaja),.N]
-  if (peleja_jaljella>0) {
-    shinyjs::disable("luo_peleja")
-    shinyjs::enable("tasuri_peli")
-    shinyjs::enable("arvo_peli")
-  } else {
-    shinyjs::enable("luo_peleja")
-    shinyjs::disable("arvo_peli")
-    shinyjs::disable("tasuri_peli")
-    
-  }
-  #nollaa inputit
+ 
   
   updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
   updateSliderInput(session, "slider_martin_mulligan",  value = 0) 
   updateSliderInput(session, "slider_laurin_virhe",  value = 1) 
   updateSliderInput(session, "slider_martin_virhe",  value = 1) 
-  updateSliderInput(session, "slider_laurin_humala",  value = -0.1) 
-  updateSliderInput(session, "slider_martin_humala",  value = -0.1) 
   updateSliderInput(session, "slider_laurin_landit",  value = 0) 
   updateSliderInput(session, "slider_martin_landit",  value = 0) 
   updateSliderInput(session, "slider_laurin_lifet",  value = 0) 
@@ -123,7 +114,7 @@ observeEvent(input$tallenna_tulos, {
   updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
   updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
   updateNumericInput(session,"sarjataulukkokierros",value=0)
-  print("tallenna tulos loppu")
+
 })
 
 
@@ -131,64 +122,39 @@ observeEvent(input$tallenna_tulos, {
 
 
 observeEvent(input$laurin_mulligan,{
-  print("laurin mulligan alku")
-  updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan+1)
-  print("laurin mulligan loppu")
+    updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan+1)
 })
 observeEvent(input$martin_mulligan,{
-  print("martin mulligan alku")
   updateSliderInput(session, "slider_martin_mulligan", value = input$slider_martin_mulligan+1)
-  print("martin mulligan loppu")
 })
 observeEvent(input$laurin_virhe,{
-  print("laurin virhe alku")
-  updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
-  print("laurin virhe loppu")
+   updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
 })
 observeEvent(input$laurin_virhe_uusipeli,{
-  print("laurin virhe alku")
-  updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
-  print("laurin virhe loppu")
+    updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
 })
 
 observeEvent(input$martin_virhe,{
-  print("martin virhe alku")
-  updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
-  print("martin virhe loppu")
+    updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
 })
 observeEvent(input$martin_virhe_uusipeli,{
-  print("martin virhe alku")
-  updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
-  print("martin virhe loppu")
+   updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
 })
 
 observeEvent(input$lauri_voitti,{
-  print("lauri voitti alku")
-  kaikkipelit<-data.table(luecsv("pelit.csv"))
-  #tarkista onko peli pelattu
-  if(!is.na(kaikkipelit[peli_ID==  r_valittu_peli$peliID,Voittaja])){
-    print("peli on jo pelattu")
-  } else {
-    
     updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
     updateRadioButtons(session,"radio_voittaja",selected=0)
-  }
-  print("lauri voitti loppu")
-})
+  })
 
 observeEvent(input$martti_voitti,{
-  print("martti voitti alku")
   updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
   updateRadioButtons(session,"radio_voittaja",selected=1)
-  print("martti voitti loppu")
 })
 
 
 observeEvent(input$slider_vuoroarvio,{
-  print("slider vuoroarvio alku")
-  updateSliderInput(session, "slider_martin_landit", value = round(input$slider_vuoroarvio * 0.42))
+   updateSliderInput(session, "slider_martin_landit", value = round(input$slider_vuoroarvio * 0.42))
   updateSliderInput(session, "slider_laurin_landit", value = round(input$slider_vuoroarvio * 0.42))
-  print("slider vuoroarvio loppu")
 })
 
 observeEvent(input$action_add,{
@@ -241,7 +207,7 @@ output$last_changed_value_text <- renderText({
 #Vuoroarvaus, kumman korttimäärä
 output$vuoroArvausPelaaja <- renderUI({
  
-  aloittajaNo <-  r_valittu_peli$aloittaja
+  aloittajaNo <- eR_Peli_Aloittaja()
   if(aloittajaNo == 0) {
     aloittaja_vuoro_teksti <- "Laurin kortti_lkm"
   } else {
