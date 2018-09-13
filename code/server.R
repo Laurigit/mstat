@@ -8,11 +8,12 @@ shinyServer(function(input, output, session) {
   load("./external_files/saavutusAsetukset.R")
   load("./external_files/model_history_data.R")
   modelHistoryDataReact <- model_history_data
-  required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
-  
+
  
 
   source("./scripts/load_scripts.R", local = TRUE)
+  required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
+  
   # 
   # sourcelist <- dir("./scripts/")
   # tab_sources <- sourcelist[grepl("tab", sourcelist)]

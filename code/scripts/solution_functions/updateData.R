@@ -1,4 +1,4 @@
-required_data("ADM_DI_HIERARKIA")
+#required_data("ADM_DI_HIERARKIA")
 #input_TABLE_NM_vector <- "SRC_DIVARI"
 updateData <- function(input_TABLE_NM_vector, ADM_DI_HIERARKIA, input_env) {
 

@@ -3,7 +3,7 @@
 #data_file<- "SRC_PELIT"
 
 required_data <- function(data_vector, force_update = FALSE, saveR = FALSE, saveR_folder = "./temporary_files/",
-                          input_env = parent.frame()) {
+                          input_env = globalenv()) {
   #load("shiny_env.R")
   used_env <- input_env
   for(data_file in data_vector) {

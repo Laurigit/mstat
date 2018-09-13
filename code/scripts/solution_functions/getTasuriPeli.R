@@ -1,5 +1,5 @@
 
-test <- getTasuriPeli(ADM_PELIT, STAT_VOITTOENNUSTE)
+#test <- getTasuriPeli(ADM_PELIT, STAT_VOITTOENNUSTE)
 #STAT_VOITTOENNUSTE[Peli_ID == test]
 getTasuriPeli <- function(ADM_PELIT, STAT_VOITTOENNUSTE) {
   maxTO <- ADM_PELIT[,max(Turnaus_NO)]

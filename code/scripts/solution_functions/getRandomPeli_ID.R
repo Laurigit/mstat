@@ -1,4 +1,4 @@
-required_data("ADM_PELIT")
+#required_data("ADM_PELIT")
 # input_Divari = "All"
 getRandomPeli_ID <- function(ADM_PELIT, input_Divari = "All") {
   pelaamattomat_ottelut <- ADM_PELIT[is.na(Voittaja) , .(Min_Peli_ID = min(Peli_ID)) , by = .(Ottelu_ID, Divari)]

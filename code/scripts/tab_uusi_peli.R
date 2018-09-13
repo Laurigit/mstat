@@ -68,18 +68,30 @@ observeEvent(input$arvo_peli,{
 eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
                               input$select_martin_pakka,
                               input$tallenna_tulos),{
-
+print("input$select_laurin_pakka")
+                                
+if(!is.null(input$select_martin_pakka) & !is.null(input$select_laurin_pakka)) {
 print("eR_Peli_ID")
 
   # input$select_laurin_pakka <- 1
   # input$select_martin_pakka <-9                              
-  required_data("ADM_PELIT")        
+  required_data(c("ADM_PELIT", "STG_PAKAT"))
                                
   uusi_pelii <-getUusi_Peli_ID(ADM_PELIT,
                   input$select_laurin_pakka,
                    input$select_martin_pakka)
+  
   print(uusi_pelii)
- 
+} else {
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
+  pakat<-STG_PAKAT[Omistaja_ID == "M"]
+  keskenPeliData<- ADM_TEMP_DATA_STORAGE
+  P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
+  P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
+  uusi_pelii <- getPeli_ID_from_pakat(P1, P2, ADM_PELIT)
+}
   return(uusi_pelii)
 }, ignoreInit = FALSE, ignoreNULL = FALSE)
 
@@ -120,6 +132,7 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
 required_functions("UID_PAKKA")
+required_data(c("ADM_PAKKA", "INT_PFI"))                                  
 result <-  UID_PAKKA(ADM_PELIT,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,
@@ -170,6 +183,7 @@ output$EV_plot <- renderPlot({
 
 output$win_distribution <- renderPlot({
   melttaa <- eV_UID_MALLI_KOMPONENTIT()
+  graphs_breaks <- melttaa[, Turnaus_NO]
   plot <- ggplot(melttaa, aes(x = (Turnaus_NO), y = Martin_etu, colour = variable)) + geom_line(size = 1.5) +
     theme_calc() + scale_color_calc() 
   
@@ -203,12 +217,10 @@ required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
 
 
 output$mulliganiSlideriLauri<-renderUI({
-  req(eR_UID_temp_data_storage())
-  print(eR_UID_temp_data_storage())
-  print("output$mulliganiSlideriLauri")
-  pelitiedot<-eR_UID_temp_data_storage()
-  print(pelitiedot)
-  laurin_pre_mulligan<-pelitiedot[muuttuja == "Laurin_mulligan",arvo]
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+  required_data(c("ADM_TEMP_DATA_STORAGE"))
+  laurin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja == "Laurin_mulligan",arvo]
   
   sliderInput("slider_laurin_mulligan",
               label = h4("Laurin mulliganit"),
@@ -218,10 +230,11 @@ output$mulliganiSlideriLauri<-renderUI({
 })
 
 output$mulliganiSlideriMartti<-renderUI({
-  req(eR_UID_temp_data_storage())
-  pelitiedot <- eR_UID_temp_data_storage()
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+  required_data(c("ADM_TEMP_DATA_STORAGE"))
   
-  martin_pre_mulligan<-pelitiedot[muuttuja=="Martin_mulligan",arvo]
+  martin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja=="Martin_mulligan",arvo]
   
   sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
               max = 6, value = martin_pre_mulligan)
@@ -253,7 +266,8 @@ output$peliKesto <- renderText({
 })
 
 output$divariRadio_out <- renderUI({
-  divarit_ilman_peleja <- peliDataReact()[is.na(Voittaja),.N,by=Divari]
+  required_data("ADM_PELIT")
+  divarit_ilman_peleja <- ADM_PELIT[is.na(Voittaja),.N,by=Divari]
   radioButtons("divariRadio", "Division",
                c("All",divarit_ilman_peleja[,Divari]),inline=TRUE)
 })
@@ -263,8 +277,9 @@ output$divariRadio_out <- renderUI({
 
 #tee laurin pakka selectinput
 output$selectInputLauri <- renderUI({
-  print("output$selectInputLauri")
-
+  print("output$selectInputLauri ")
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
   required_data(c("STG_PAKAT", "ADM_TEMP_DATA_STORAGE"))
   pakat<-STG_PAKAT[Omistaja_ID == "L"]
   keskenPeliData <- ADM_TEMP_DATA_STORAGE
@@ -282,6 +297,8 @@ output$selectInputLauri <- renderUI({
 })
 #tee martin pakka selectinput
 output$selectInputMartti <- renderUI({
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
   required_data(c("STG_PAKAT", "ADM_TEMP_DATA_STORAGE"))
   pakat<-STG_PAKAT[Omistaja_ID == "M"]
   keskenPeliData<- ADM_TEMP_DATA_STORAGE

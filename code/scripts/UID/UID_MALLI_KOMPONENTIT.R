@@ -22,7 +22,7 @@ ss_cols <- STAT_VOITTOENNUSTE[Omistaja_ID == "M" &
                                             Ennuste = VS_TN + Aloittaja_TN + Pakka_TN,
                                             Turnaus_NO)]
 ss_cols_sort <- ss_cols[order(Turnaus_NO)]
-graphs_breaks <- ss_cols_sort[, Turnaus_NO]
+
 
 melttaa <- melt(ss_cols_sort, id.vars = "Turnaus_NO", measure.vars = c("VS_TN", "Aloittaja_TN",
                                                                  "Pakka_TN",

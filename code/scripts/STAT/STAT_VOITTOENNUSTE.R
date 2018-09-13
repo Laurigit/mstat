@@ -1,7 +1,7 @@
 #STAT_VOITTOENNUSTE
 required_data("ADM_PELIT")
 #p1, vastpak, turnaus, ennuste
-
+print("TÄMÄ KESTÄÄ")
 
 
 
