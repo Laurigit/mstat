@@ -1,6 +1,6 @@
 #render_deck_evolve_plot
 
-  
+#input_Peli_ID <- 800
   UID_MALLI_KOMPONENTIT <- function(STAT_VOITTOENNUSTE, input_Peli_ID) {
     
 # input_Peli_ID  

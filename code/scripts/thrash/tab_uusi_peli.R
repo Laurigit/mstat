@@ -1,5 +1,32 @@
-#seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
 
+required_data("ADM_DI_HIERARKIA")
+updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+
+#seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
+output$mulliganiSlideriLauri<-renderUI({
+  print("output$mulliganiSlideriLauri")
+  
+  required_data(c("ADM_TEMP_DATA_STORAGE"))
+  print(ADM_TEMP_DATA_STORAGE)
+  laurin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja == "Laurin_mulligan",arvo]
+  print(laurin_pre_mulligan)
+  sliderInput("slider_laurin_mulligan",
+              label = h4("Laurin mulliganit"),
+              min = 0,
+              max = 6,
+              value = laurin_pre_mulligan)
+})
+
+output$mulliganiSlideriMartti<-renderUI({
+  print("output$mulliganiSlideriMartti")
+   required_data(c("ADM_TEMP_DATA_STORAGE"))
+  
+  martin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja=="Martin_mulligan",arvo]
+  
+  sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
+              max = 6, value = martin_pre_mulligan)
+  
+})
 eR_UID_temp_data_storage <- reactive({
 
   print("eR_UID_temp_data_storage")
@@ -52,6 +79,8 @@ observeEvent(c(input$select_laurin_pakka,
                input$select_martin_pakka,
                input$slider_laurin_mulligan,
                input$slider_martin_mulligan), {")
+      #nollaa tempdatalaskuri
+      tempDataLehtysLaskuri$a <- 0
       print(ADM_TEMP_DATA_STORAGE)
 })
 
@@ -75,7 +104,7 @@ print("eR_Peli_ID")
 
   # input$select_laurin_pakka <- 1
   # input$select_martin_pakka <-9                              
-  required_data(c("ADM_PELIT", "STG_PAKAT"))
+  required_data(c("ADM_PELIT"))
                                
   uusi_pelii <-getUusi_Peli_ID(ADM_PELIT,
                   input$select_laurin_pakka,
@@ -83,9 +112,8 @@ print("eR_Peli_ID")
   
   print(uusi_pelii)
 } else {
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
-  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
+ 
+  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "STG_PAKAT"))
   pakat<-STG_PAKAT[Omistaja_ID == "M"]
   keskenPeliData<- ADM_TEMP_DATA_STORAGE
   P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
@@ -104,6 +132,10 @@ required_data("ADM_PELIT")
 )
 
 eR_UID_UUSI_PELI <- reactive({
+  req(input$select_laurin_pakka,
+      input$select_martin_pakka,
+      input$slider_laurin_mulligan,
+      input$slider_martin_mulligan)
   # input$numeric_MA_valinta <- 7
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
@@ -132,7 +164,7 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
 required_functions("UID_PAKKA")
-required_data(c("ADM_PAKKA", "INT_PFI"))                                  
+required_data(c("ADM_PELIT", "INT_PFI"))                                  
 result <-  UID_PAKKA(ADM_PELIT,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,
@@ -216,31 +248,9 @@ required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
 })
 
 
-output$mulliganiSlideriLauri<-renderUI({
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
-  required_data(c("ADM_TEMP_DATA_STORAGE"))
-  laurin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja == "Laurin_mulligan",arvo]
-  
-  sliderInput("slider_laurin_mulligan",
-              label = h4("Laurin mulliganit"),
-              min = 0,
-              max = 6,
-              value = laurin_pre_mulligan)
-})
 
-output$mulliganiSlideriMartti<-renderUI({
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
-  required_data(c("ADM_TEMP_DATA_STORAGE"))
-  
-  martin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja=="Martin_mulligan",arvo]
-  
-  sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
-              max = 6, value = martin_pre_mulligan)
-  
-})
 
+tempDataLehtysLaskuri <- reactiveValues(a = 0)
 
 output$peliKesto <- renderText({
   # required_data("ADM_TEMP_DATA_STORAGE")
@@ -260,6 +270,11 @@ output$peliKesto <- renderText({
                         paste0(str_pad(tunnit, 2, pad = "0"),":"),
                         "")
   
+  tempDataLehtysLaskuri$a <- tempDataLehtysLaskuri$a + 1
+  if ( tempDataLehtysLaskuri$a == 10) {
+    zip_all_and_send()
+  }
+  
   paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
   
   
@@ -278,8 +293,6 @@ output$divariRadio_out <- renderUI({
 #tee laurin pakka selectinput
 output$selectInputLauri <- renderUI({
   print("output$selectInputLauri ")
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
   required_data(c("STG_PAKAT", "ADM_TEMP_DATA_STORAGE"))
   pakat<-STG_PAKAT[Omistaja_ID == "L"]
   keskenPeliData <- ADM_TEMP_DATA_STORAGE
@@ -297,8 +310,7 @@ output$selectInputLauri <- renderUI({
 })
 #tee martin pakka selectinput
 output$selectInputMartti <- renderUI({
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+
   required_data(c("STG_PAKAT", "ADM_TEMP_DATA_STORAGE"))
   pakat<-STG_PAKAT[Omistaja_ID == "M"]
   keskenPeliData<- ADM_TEMP_DATA_STORAGE

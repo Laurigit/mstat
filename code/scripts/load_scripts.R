@@ -1,26 +1,29 @@
 #load_scripts.R
-sourcelist <- c(dir("./scripts/", recursive = TRUE))
-sources_rest_no_ui_no_loop <-  sourcelist[!grepl("load_scripts", sourcelist)]
-sources_rest_no_ui_no_loop_only_R <- sources_rest_no_ui_no_loop[str_sub(sources_rest_no_ui_no_loop, -2 , -1) == ".R"]
-sources_rest_no_ui_no_loop_only_R_no_ADM <- sources_rest_no_ui_no_loop_only_R[!grepl("ADM", sources_rest_no_ui_no_loop_only_R)]
-sources_rest_no_ui_no_loop_only_R_no_ADM_STG <- sources_rest_no_ui_no_loop_only_R_no_ADM[!grepl("STG", sources_rest_no_ui_no_loop_only_R_no_ADM)]
-sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC <- sources_rest_no_ui_no_loop_only_R_no_ADM_STG[!grepl("SRC", sources_rest_no_ui_no_loop_only_R_no_ADM_STG)]
-sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT <- sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC[!grepl("INT", sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC)]
-sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT_STAT <- sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT[!grepl("STAT", sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT)]
-notab <- sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT_STAT[!grepl("tab", sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT_STAT)]
-tab <-  sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT_STAT[grepl("tab", sources_rest_no_ui_no_loop_only_R_no_ADM_STG_SRC_INT_STAT)]
-for(filename in notab) {
-  result = tryCatch({
-    suppressWarnings(source(paste0("./scripts/", filename), local = TRUE))
-  }, error = function(e) {
-    print(paste0("error in loading file: ", filename))
-  })
-}
 
-for(filename in tab) {
-  result = tryCatch({
-    suppressWarnings(source(paste0("./scripts/", filename), local = TRUE))
-  }, error = function(e) {
-    print(paste0("error in loading file: ", filename))
-  })
+sourceLoop <- function(sourcelist, input_kansio) {
+  dir_list <- sourcelist[kansio == input_kansio, polku]
+  for(filename in dir_list) {
+    result = tryCatch({
+      source(paste0("./scripts/", filename), local = TRUE)
+    }, error = function(e) {
+      print(paste0("error in loading file: ", filename))
+    })
+  }
+sourcelist[kansio == input_kansio, ajettu := 1]
+return(sourcelist)
 }
+  
+sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
+sourcelist[, rivi := seq_len(.N)]
+suppressWarnings(sourcelist[, kansio := strsplit(polku, split = "/")[1], by = rivi])
+sourcelist <- sourcelist[!grep("load_scripts.R", polku)]
+sourcelist[, kansio := ifelse(str_sub(kansio, -2, -1) == ".R", "root", kansio)]
+sourcelist <- sourceLoop(sourcelist, "utility")
+warnings()
+sourcelist <- sourceLoop(sourcelist, "solution_functions")
+sourcelist <- sourceLoop(sourcelist, "UID")
+sourcelist <- sourceLoop(sourcelist, "tabstatic")
+sourcelist <- sourceLoop(sourcelist, "tab")
+sourcelist <- sourceLoop(sourcelist, "root")
+
+

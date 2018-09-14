@@ -16,7 +16,7 @@
 #              input_BO_mode,
 #              input_pfi_mode)
 # 
-# Peli_ID_input <- 896
+# Peli_ID_input <- 892
 # 
 # res <-  UID_UUSI_PELI(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT,
 #                       STAT_VOITTOENNUSTE,
@@ -53,6 +53,10 @@ joini_ssrows[, ':=' (Pakka_ID = NULL,
               Vastustajan_Pakka_ID = NULL,
               Colors = NULL)]
 #prediction
+print("UID_UUSI_PELI <- function")
+print(paste(Peli_ID_input, input_left_mulligan,
+            input_right_mulligan
+            ))
 ennuste <- predict_result(Peli_ID_input, input_left_mulligan,
                input_right_mulligan,
                STAT_VOITTOENNUSTE)
