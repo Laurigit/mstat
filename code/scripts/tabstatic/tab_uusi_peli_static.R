@@ -33,7 +33,7 @@ output$divariRadio_out <- renderUI({
   required_data("ADM_PELIT")
   divarit_ilman_peleja <- ADM_PELIT[is.na(Voittaja),.N,by=Divari]
   radioButtons("divariRadio", "Division",
-               c("All",divarit_ilman_peleja[,Divari]),inline=TRUE)
+               c("All", sort(divarit_ilman_peleja[,Divari])), inline = TRUE)
 })
 
 

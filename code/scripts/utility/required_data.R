@@ -4,12 +4,21 @@
 
 required_data <- function(data_vector, force_update = FALSE, saveR = FALSE, saveR_folder = "./temporary_files/",
                           input_env = globalenv()) {
-  #load("shiny_env.R")
+ required_functions("find_and_source")
+   #load("shiny_env.R")
   used_env <- input_env
   for(data_file in data_vector) {
 
-    r_file_nm <- paste0(saveR_folder, data_file, ".RData")
+     r_file_nm <- paste0(saveR_folder, data_file, ".RData")
+    # lsdt <- data.table(object = ls(envir = used_env))
+    # message(lsdt)
+    # lsdt[, upper := toupper(object)]
+    # lsdt[, match := upper == object]
+    # message
+    # message(lsdt[match == TRUE, object])
+   
   if(!exists(data_file, envir = used_env ) | force_update == TRUE) {
+ 
     #check if the file exists as R object
    
    R_exists <- file.exists(r_file_nm)
@@ -26,11 +35,18 @@ required_data <- function(data_vector, force_update = FALSE, saveR = FALSE, save
       newly_created <- setdiff(list_after_sourcing,
                                list_of_object)
       funlist <- lsf.str(envir = used_env)
-      delete_list <- setdiff(newly_created, funlist)
-      rm(list = delete_list, envir = used_env)
+      delete_list <- data.table(delete = setdiff(newly_created, funlist))
+      delete_list[, upper := toupper(delete)]
+      delete_list[, match := upper == delete]
+
+      delete_list[match == FALSE, delete]
+     
+      rm(list = delete_list[match == FALSE, delete], envir = used_env)
    } else {
      load(r_file_nm, envir = used_env)
    }
+  }else {
+   # message("")
   }
     
     

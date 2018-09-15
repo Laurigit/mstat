@@ -44,25 +44,20 @@ observeEvent(c(input$select_laurin_pakka,
       #jos mikään ei muutu, niin älä lähetä
       required_data("ADM_TEMP_DATA_STORAGE")
       ssColsVanhat <- ADM_TEMP_DATA_STORAGE[!muuttuja == "Aloitus_DT"]
-      message("observeEvent(c(input$select_laurin_pakka,
-               input$select_martin_pakka,
-              input$slider_laurin_mulligan,
-              input$slider_martin_mulligan),")
-      message(ssColsVanhat)
+
+
       ssColsUudet <- tempData[!muuttuja == "Aloitus_DT"]
-      message(ssColsUudet)
+
       comparison <- all.equal(ssColsVanhat, ssColsUudet)
-      message(comparison)
-      message("comp", !(comparison == TRUE))
+    
       if(!(comparison == TRUE)) {
-      message("insideTRUE")
+
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
-      message("insideTRUE afterkircsv")
+   
       required_data("ADM_DI_HIERARKIA")
-      message("insideTRUE reqdata")
+
       updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
-      message("update")
-      message(eR_UID_temp_data_storage())
+
       print("observeEvent(c(input$select_laurin_pakka,
                input$select_martin_pakka,
                input$slider_laurin_mulligan,
@@ -113,13 +108,14 @@ if (!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
 }
 }, ignoreInit = FALSE, ignoreNULL = FALSE)
 
-eR_Peli_Aloittaja <- reactive({
+eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
+observe({
 required_data("ADM_PELIT")
-  tulos <- ADM_PELIT[Peli_ID == eR_Peli_ID() & Omistaja_ID =="M", Aloittaja]
+  eR_Peli_Aloittaja$a <- ADM_PELIT[Peli_ID == eR_Peli_ID() & Omistaja_ID =="M", Aloittaja]
+  message("  eR_Peli_Aloittaja$a ",  eR_Peli_Aloittaja$a )
   #0 = Lauri, 1 = martti
-  return(tulos)
-} 
-)
+} )
+
 
 eR_UID_UUSI_PELI <- reactive({
   
@@ -128,7 +124,7 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_pfi_mode <- FALSE
   #create dependency 
   print("eR_UID_UUSI_PELI")
-  print(eR_Peli_ID())
+  print(eR_Peli_ID())#dont del me
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE"))
 required_functions("UID_UUSI_PELI")
   tulos <- isolate(UID_UUSI_PELI(eR_Peli_ID(),
@@ -223,7 +219,6 @@ output$peliKesto <- renderText({
   # required_data("ADM_TEMP_DATA_STORAGE")
   #tempData <- ADM_TEMP_DATA_STORAGE
   tempData <- eR_UID_temp_data_storage()
-  print(tempData)
   invalidateLater(1000, session)
   pelialkuAika <- tempData[muuttuja == "Aloitus_DT", as.POSIXct(arvo, tz = "EET")]
   aikaNyt <- now(tz = "EET")

@@ -7,8 +7,8 @@ temp <- SRC_PELIT
 temp[, ':=' (Lopetuspvm = ifelse(Lopetusaika < 60 * 60 *3, Lopetuspvm + 1, Lopetuspvm),
              Aloituspvm = ifelse(Aloitusaika < 60 * 60 * 3, Aloituspvm +1, Aloituspvm))]
 #siirretään kelloja 3h taaksepäin, koska aiemmin tallennettiin UTC
-temp[, ':=' (Aloitus_DT = convSecsToTime(Aloitusaika, Aloituspvm, 60 * 60 *3),
-             Lopetus_DT = convSecsToTime(Lopetusaika, Lopetuspvm, 60 * 60 *3))]
+temp[is.na(Aloitus_DT), ':=' (Aloitus_DT = as.character(convSecsToTime(Aloitusaika, Aloituspvm, 60 * 60 *3)),
+             Lopetus_DT = as.character(convSecsToTime(Lopetusaika, Lopetuspvm, 60 * 60 *3)))]
 #joinaa pakka_idt
 sscols_divari <- SRC_DIVARI[, .(Pakka_ID = rivi_id,
                                Pakka_NO = Pakka,
@@ -74,7 +74,9 @@ temp_martti <- join_pid_martti[, .(Divari,
                       Lopetus_DT)]
 
 temp_total <- rbind(temp_lauri, temp_martti)
-       
+#conv to posix
+temp_total[, ':=' (Aloitus_DT = as.POSIXct(Aloitus_DT, tz = "EET"),
+                   Lopetus_DT = as.POSIXct(Lopetus_DT, tz = "EET"))]
 STG_PELIT <- temp_total
 # IDt <-STG_PELIT[Lopetusaika < 60 * 60 *3, Ottelu_ID]
 # ottelut <- STG_PELIT[Ottelu_ID %in% IDt]

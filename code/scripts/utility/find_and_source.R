@@ -1,6 +1,6 @@
 #find_and_source
 #source_list <- c("STAT_VOITTOENNUSTE", "ölölkj")
-find_and_source <- function(source_list, used_env) {
+find_and_source <- function(source_list, used_env = globalenv()) {
   #find all files
   #load("shiny_env.R")
   #used_env <- parent.frame()

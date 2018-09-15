@@ -1,3 +1,11 @@
 #SRC_DIVARI
 required_functions("luecsv")
-SRC_DIVARI <- luecsv("divari.csv")
+
+luettu <- luecsv("divari.csv")
+SRC_DIVARI <- luettu[, .(rivi_id,
+               Omistaja = as.numeric(Omistaja),
+               Pakka = as.numeric(Pakka),
+               Divari = as.numeric(Divari),
+               Nimi,
+               Omistaja_nimi,
+               Picked = as.numeric(Picked))]

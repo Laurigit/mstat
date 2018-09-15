@@ -10,8 +10,8 @@ total_result_data <- NULL
 for(loop_row in 1:rivi_lkm) {
   kierrosData <- include_only_selected[loop_row]
 
-print(loop_row)
-result <- supressWarnings(readtext(paste0("./scripts/",kierrosData[, tiedostot])))
+
+result <- suppressWarnings(readtext(paste0("./scripts/",kierrosData[, tiedostot])))
 
 split<- strsplit(x = result$text, split = "\n")
 dt_split <- data.table(sana = split[[1]])

@@ -2,12 +2,12 @@
 
 convSecsToTime <- function(seconds, days, tzfix = 0) {
   total <- seconds + days * 60 * 60 * 24
-  result <- anytime(total,tz = "EET") - tzfix
+  result <- as.character(anytime(total,tz = "EET") - tzfix)
 
   return(result)
 }
-convSecsToTime(10, as.integer(as.IDate("2018-08-18")))
-#M_9_2018-08-18_73167
-
-convSecsToTime(74542,17761)
-	
+# test <- convSecsToTime(10, as.integer(as.IDate("2018-08-18")))
+# #M_9_2018-08-18_73167
+# 
+# convSecsToTime(74542,17761)
+# 	

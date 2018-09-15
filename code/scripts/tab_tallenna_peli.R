@@ -16,36 +16,23 @@
 # Vuoroarvio<-1
 # Laurin_kasikortit<-1
 # Martin_kasikortit<-1
+# 
 
-# uusrivi<- c(
-#   Aloitusaika=1,
-#   Aloituspvm=1,
-#   Lopetus_DT = now(tz = "EET"),
-#   Voittaja=1,
-#   Laurin_mulligan=1,
-#   Martin_mulligan=1,
-#   Laurin_arvosana=1,
-#   Martin_arvosana=1,
-#   # Laurin_humala=input$slider_laurin_humala,
-#   # Martin_humala=input$slider_martin_humala,
-#   Laurin_landit=1,
-#   Martin_landit=1,
-#   Laurin_lifet=1,
-#   Martin_lifet=1,
-#   Vuoroarvio=1,
-#   Laurin_kasikortit=1,
-#   Martin_kasikortit=1
-# )
+#required_data("ADM_TEMP_DATA_STORAGE")
+#tempData <- ADM_TEMP_DATA_STORAGE
 
+# eR_Peli_Aloittaja <- NULL
+# eR_Peli_Aloittaja$a <- 1
+#vuoroarviolasku <- 9
 observeEvent(input$tallenna_tulos, {
  input_Peli_ID <- eR_Peli_ID()
 
-  print("tallenna tulos alku")
+
   tempData<- isolate(eR_UID_temp_data_storage()) #Isolate voi olla tarpeeton tässä
   #vuoroarviolasku
 
 required_data("ADM_PELIT")
-aloittajaNo <- eR_Peli_Aloittaja()
+aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
     vuoroarviolasku <- input$slider_vuoroarvio + input$slider_laurin_mulligan - 6
     # print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
@@ -56,13 +43,13 @@ aloittajaNo <- eR_Peli_Aloittaja()
   }
   # print("VUOROARVIOLASKU")
   # print(vuoroarviolasku)
+#browser()
   uusrivi<- c(
-    Aloitus_DT = tempData[muuttuja=="Aloitus_DT",arvo],
-
+    Aloitus_DT = as.character(tempData[muuttuja=="Aloitus_DT",arvo]),
     Lopetus_DT = as.character(now(tz = "EET")),
-    Voittaja=as.numeric(input$radio_voittaja),
-    Lauri_voitti=(1-as.numeric(input$radio_voittaja)),
-    Martti_voitti=as.numeric(input$radio_voittaja),
+    Voittaja=as.character(input$radio_voittaja),
+    Lauri_voitti=as.character(1-as.numeric(input$radio_voittaja)),
+    Martti_voitti=as.character(input$radio_voittaja),
     Laurin_mulligan=input$slider_laurin_mulligan,
     Martin_mulligan=input$slider_martin_mulligan,
     Laurin_arvosana=input$slider_laurin_virhe,
@@ -77,17 +64,21 @@ aloittajaNo <- eR_Peli_Aloittaja()
     Laurin_kasikortit=input$slider_laurin_kasikortit,
     Martin_kasikortit=input$slider_martin_kasikorit
   )
+
   #tyhjennä tempdata
 
-  kaikkipelit<-data.table(luecsv("pelit.csv"))
 
-  cols<-names(kaikkipelit)
-  kaikkipelit[, (cols):= lapply(.SD, as.numeric), .SDcols=cols]
-  
-  kaikkipelit[peli_ID==input_Peli_ID, names(uusrivi) := as.list(uusrivi)][]
+  kaikkipelit<-data.table(luecsv("pelit.csv"))
+  cols<-names(kaikkipelit) 
+
+  kaikkipelit[, (cols):= lapply(.SD, as.character), .SDcols=cols]
+
+  kaikkipelit[peli_ID==input_Peli_ID, names(uusrivi) := as.list(uusrivi)]
 
    #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
   #laske otteluiden voittoprosentti
+  colsBackToNum <- c("Lauri_voitti", "Martti_voitti", "BO_mode", "Voittaja")
+  kaikkipelit[, (colsBackToNum):= lapply(.SD, as.numeric), .SDcols=colsBackToNum]
   kaikkipelit[,':=' (MaxVP=pmax(sum(Lauri_voitti,na.rm=TRUE)/.N,sum(Martti_voitti,na.rm=TRUE)/.N)),by=Ottelu_ID]
   kaikkipelit[,MaxVP:=ifelse(is.na(MaxVP),0,MaxVP)]
   
@@ -206,14 +197,17 @@ output$last_changed_value_text <- renderText({
 
 #Vuoroarvaus, kumman korttimäärä
 output$vuoroArvausPelaaja <- renderUI({
- 
-  aloittajaNo <- eR_Peli_Aloittaja()
+
+    aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
     aloittaja_vuoro_teksti <- "Laurin kortti_lkm"
-  } else {
+  } else if (aloittajaNo == 1){
     aloittaja_vuoro_teksti <- "Martin kortti_lkm"
+  } else {
+    aloittaja_vuoro_teksti <- "RIKKI"
   }
   sliderInput("slider_vuoroarvio",label=h4(aloittaja_vuoro_teksti),min=4,max=16,value=4)
+ 
 })
   
 
