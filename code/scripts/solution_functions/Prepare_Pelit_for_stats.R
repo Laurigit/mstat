@@ -23,7 +23,7 @@ Prepare_Pelit_for_stats <- function(ADM_PELIT,
                                     PFI = FALSE,
                                     BO = FALSE) {
 
-dataset_orig <- ADM_PELIT
+dataset_orig <- ADM_PELIT[1==1]
 
 if(BO == TRUE) {
   dataset_after_bo <- BO_conversio(dataset_orig)
