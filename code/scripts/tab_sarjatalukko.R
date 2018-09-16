@@ -1,29 +1,85 @@
+
+for (i in 1:10) {
+local({
+  my_i <- i
+  plotname <- paste0("plotdyn", my_i, sep="")
+  
+
+  output[[plotname]] <- renderDataTable({
+    required_data(c("ADM_PELIT", "STG_PAKAT"))
+   # input <- NULL
+   # input$sarjataulukkokierros <- 27
+   # input$radio_bo_mode <- TRUE
+   # Data <- UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
+   # print("LOOP AT TAB_SARJATAULUKKO")
+    Data <-  eR_UID_SARJATAULUKKO()
+    print(eR_UID_SARJATAULUKKO())
+ 
+    print(Data[[my_i]])
+    DivariData <- Data[[my_i]]
+    #print(DivariData)
+    if(!is.null(DivariData)) {
+    outputData <- DivariData[, .(Pakka_NM,
+                                 Matches,
+                                 Wins,
+                                 Draws,
+                                 Losses,
+                                 Score)]
+    } else {
+      outputData <- data.table(not_played = "-")
+    }
+    return(outputData)
+    #print(Data)
+  },    options = list(
+    paging = FALSE,
+    searching = FALSE,
+    info=FALSE
+    
+  )
+  )
+})
+}
+
+
 output$sarjataulukkovalitsin <- renderUI({
   required_data("ADM_PELIT")
+  print("output$sarjataulukkovalitsin")
   maxturnaus<-max(ADM_PELIT[,Turnaus_NO])
-  fluidRow(numericInput("sarjataulukkokierros","Turnauksen numero",value=maxturnaus))
+  message(maxturnaus, "maxturnaus")
+  fluidRow(numericInput("sarjataulukkokierros","Turnauksen numero",value = maxturnaus))
+})
+
+eR_UID_SARJATAULUKKO <- reactive({
+print("eR_UID_SARJATAULUKKO")
+  message(input$sarjataulukkokierros," input$sarjataulukkokierros")
+  result <-  UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
+  return(result)
 })
 
 output$sarjataulukot <-renderUI({
   required_data(c("ADM_PELIT", "STG_PAKAT", "STAT_TURNAUS"))
+  print("output$sarjataulukot")
   #input <- NULL
-  #input$sarjataulukkokierros <- 29
-  #input$radio_bo_mode <- TRUE
-  outputdata <- UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
-  
-  kesken_turnaukset <- ADM_PELIT[is.na(Voittaja), .N, by = Turnaus_NO]
-  valmiit_turnaukset <- STAT_TURNAUS[, .N, by = Turnaus_NO]
+  #input$sarjataulukkokierros <- 27
+  #input$radio_bo_mode <- FALSE
+  #sarjataulukkoData <- UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
+  sarjataulukkoData <- eR_UID_SARJATAULUKKO()
+  #total <- rbindlist(sarjataulukkoData, use.names = TRUE)
+  print(sarjataulukkoData)
+  total <- do.call(rbind, sarjataulukkoData)
+  print(total)
   # 
   # sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
   # divarit<-sarjadata$divarit
   # pelaajat<-sarjadata$pelaajastats
   # 
   # kokonaistilanne<-pelaajat[,.(Voitot_Lauri=sum(Voitot_Lauri),Voitot_Martti=sum(Voitot_Martti))]
-  kokonaistilanne <- STAT_TURNAUS[,]
+
   # print(kokonaistilanne)
   # tilanneteksti <-paste0(kokonaistilanne[,Voitot_Lauri],"-",kokonaistilanne[,Voitot_Martti])
-  Lvoitot <- STAT_TURNAUS[Omistaja_ID == "L" & Turnaus_valmis == FALSE, Voittaja_sum]
-  Mvoitot <- STAT_TURNAUS[Omistaja_ID == "M" & Turnaus_valmis == FALSE, Voittaja_sum]
+  current_turnaus <- STAT_TURNAUS[Turnaus_valmis == FALSE]
+  Lvoitot <- total[Omistaja_ID == "L", sum(Score)]
+  Mvoitot <- total[Omistaja_ID == "M" , sum(Score)]
    tilanneteksti <- paste0(Lvoitot,
                           "-",
                           Mvoitot)
@@ -32,16 +88,17 @@ output$sarjataulukot <-renderUI({
 
   turnaustilanneteksti<-paste0(STAT_TURNAUS[Omistaja_ID == "L",sum(TurnausVoitto, na.rm = TRUE)],
                                "-",STAT_TURNAUS[Omistaja_ID == "M",sum(TurnausVoitto, na.rm = TRUE)])
+  Divarit <- sort(total[Omistaja_ID == "L", unique(Divari)])
   
   fluidPage(
     fluidRow(valueBox(tilanneteksti,subtitle,icon=icon("dashboard",lib = "font-awesome")),
              valueBox(turnaustilanneteksti,"Turnaustilanne",icon=icon("trophy",lib = "font-awesome"))),
     
-    lapply(outputdata,function(i)  {
+    lapply(Divarit,function(i)  {
       plotname <- paste0("plotdyn", i, sep="")
-      L_voitot <- i[Omistajaja_ID == "L", sum(Score)]
-      M_voitot <- i[Omistajaja_ID == "M", sum(Score)]
-      titteli <- paste0(i[, max(Divari)], ". Divari ",
+      L_voitot <- sarjataulukkoData[[i]][Omistaja_ID == "L", sum(Score)]
+      M_voitot <- sarjataulukkoData[[i]][Omistaja_ID == "M", sum(Score)]
+      titteli <- paste0(sarjataulukkoData[[i]][, max(Divari)], ". Divari ",
                         L_voitot,
                         "-",
                         M_voitot)
@@ -54,3 +111,5 @@ output$sarjataulukot <-renderUI({
     })
   )
 })
+
+

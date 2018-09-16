@@ -1,6 +1,9 @@
 #UID_SARJATAULUKKO <- 
+# input_Turnaus_NO <- 11
+# input_BO_mode <- TRUE
 
-
+# testres <- UID_SARJATAULUKKO(27, TRUE, ADM_PELIT, STG_PAKAT)
+# testres
 UID_SARJATAULUKKO <- function(input_Turnaus_NO, input_BO_mode, ADM_PELIT, STG_PAKAT) {
   required_functions("BO_conversio")
   if (input_BO_mode == FALSE) {
@@ -10,9 +13,9 @@ UID_SARJATAULUKKO <- function(input_Turnaus_NO, input_BO_mode, ADM_PELIT, STG_PA
     #convbo
     converted <- BO_conversio(ADM_PELIT)
     turnausData <- converted[Turnaus_NO == input_Turnaus_NO]
-    sspakat <- STG_PAKAT[, .(Pakka_NM, Pakka_ID)]
-    joinPakat <- sspakat[turnausData, on = .(Pakka_ID)]
   }
+  sspakat <- STG_PAKAT[, .(Pakka_NM, Pakka_ID)]
+  joinPakat <- sspakat[turnausData, on = .(Pakka_ID)]
     divarit <- joinPakat[, .N, by = Divari][, N := NULL]
     divari_List <- NULL
     for (divari_loop in divarit[, Divari]) {
@@ -29,5 +32,7 @@ UID_SARJATAULUKKO <- function(input_Turnaus_NO, input_BO_mode, ADM_PELIT, STG_PA
     setorder(divari_List[[listNM]], -Score, Matches)
 
     }
+   # print("UID_SARJATAULUKKO")
+   # print(divari_List)
     return(divari_List)
   }

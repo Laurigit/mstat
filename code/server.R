@@ -101,7 +101,8 @@ shinyServer(function(input, output, session) {
 
 
   observeEvent(input$sidebarmenu,{
-    maxturnaus <-max(peliDataReact()[,TurnausNo])
+    required_data("STAT_TURNAUS")
+    maxturnaus <-max(STAT_TURNAUS[,Turnaus_NO])
     updateNumericInput(session,"sarjataulukkokierros",value=maxturnaus)})
 
 

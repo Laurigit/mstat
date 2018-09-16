@@ -13,6 +13,7 @@ BO_data <- BO_conversio(ADM_PELIT)
 #                            by = .(Turnaus_NO, Omistaja_ID)]
 
 aggr_to_turnaus <- BO_data[,.(Pakka_ID_list = list(unique(Pakka_ID)),
+                              Divari_list = list(unique(Divari)),
                                                 #Vasustajan_ID_list = list(Vastustajan_Pakka_ID),
                                                 Aloitus_DT = min(Aloitus_DT, na.rm = TRUE),
                                                 Lopetus_DT = max(Lopetus_DT, na.rm = TRUE),
