@@ -4,7 +4,7 @@ BO_conversio <- function(ADM_PELIT) {
   
 
 
-testdata <- ADM_PELIT
+testdata <- ADM_PELIT[1 != 0]
 # testdata[, Turnaus_NO := round(Turnaus_NO / 2,0)]
 # testdata[Turnaus_NO %% 2 == 0, BO_mode := 1]
 # testdata[Turnaus_NO %% 2 == 0, Ottelu_NO := 1]
