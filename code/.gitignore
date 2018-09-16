@@ -8,3 +8,4 @@ download_folder
 external_files
 save_deck_here_from_mtg
 upload_folder
+shiny_env.R
