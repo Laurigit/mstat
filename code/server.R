@@ -56,7 +56,10 @@ shinyServer(function(input, output, session) {
   save(shiny_env, "shiny_env", file = "./shiny_env.R")
   
    #obserEventit
-  
+  refresh_counter <- reactiveValues(a = 0)
+  observeEvent(input$refresh,{
+    refresh_counter$a <- refresh_counter$a + 1  
+  }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
     #nollaa temp data
     observeEvent(input$nollaa_temp_data, {
