@@ -16,6 +16,11 @@ output$table_divari2<- renderUI({
   
 })
 
+eR_UID_DIVARI <- reactive({
+  required_data(c("STG_DIVARI", "STG_PAKAT", "STAT_LISAKORTIT", "ADM_PELIT"))
+  results <- UID_DIVARI(STG_DIVARI, STG_PAKAT, STAT_LISAKORTIT, ADM_PELIT)
+  return(results)
+}) 
 
 
 for (i in 0:10) {
@@ -25,26 +30,15 @@ for (i in 0:10) {
   # of when the expression is evaluated.
   local({
     my_i <- i
-    # plotname <- paste0("plotdyn", my_i, sep="")
-    # output[[plotname]] <- renderDataTable({
-    #   Data_all<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,my_i,NA,NA,NA,input$radio_pfi_mode,pfi_data())$sarjataulukko
-    #   Data<-Data_all
-    #   return(Data)
-    #   #print(Data)
-    # },    options = list(
-    #   paging = FALSE,
-    #   searching = FALSE,
-    #   info=FALSE
-    #   
-    # )
-    # )
+
     plotname_divari <- paste0("plotdyndivari", my_i, sep="")
     output[[plotname_divari]] <- renderDataTable({
-      divarit<-divaridata()
-      tempdata<-divarit[Picked==1,.(Omistaja=Omistaja_nimi,Nimi,Divari,Picked)]
+      divarit<-eR_UID_DIVARI()
+      tempdata<-divarit[Picked==1]
       # Data<-tempdata[Divari==my_i]
       Data<-tempdata[Divari==my_i]
-      return(Data)
+      DataOut <- Data[, .(Omistaja_ID, Pakka_NM, Score, Kortit = Lisakortit_lkm)]
+      return(DataOut)
       #print(Data)
     },    options = list(
       paging = FALSE,

@@ -10,7 +10,7 @@ BO_stats <- Prepare_Pelit_for_stats(ADM_PELIT,
 #voittokerroin on 1, jos pelataan paras x tyylillä. JOs ei, niin sitten pelien lukumäärä
 BO_stats[, Voittokerroin := ifelse(BO_mode == 1, 1, Peli_LKM)]
 #BO_stats[, BO_mode := 1]
-aggr_pelit <- BO_stats[!is.na(Voittaja), .(sum_lisakorttivoito = sum(Voittaja * Voittokerroin + Tasapeli / 2 * Voittokerroin)),
+aggr_pelit <- BO_stats[, .(sum_lisakorttivoito = sum(Voittaja * Voittokerroin + Tasapeli / 2 * Voittokerroin, na.rm = TRUE)),
                                            , by = .(Pakka_ID, Turnaus_NO, Divari)]
 #aggr_pelit[, lisakorttivoitot := (sum_Voittaja + sum_Tasapeli / 2) * sum_Voittokerroin]
 
