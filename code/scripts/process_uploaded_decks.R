@@ -31,7 +31,13 @@ valid_teksti<-NULL
     
     repl_pattern <- paste0(', "load_datetime":{"datetime":"', aikaleima, '"}')
     
-    file_content <- fread(paste0("./external_files/", pakka$name), header = FALSE, sep = "¤",
+    # file_content <- fread(paste0("./external_files/", pakka$name), header = FALSE, sep = "¤",
+    #                       stringsAsFactors = FALSE)
+    # 
+    print('   file_content <- fread(paste0(pakka$datapath), header = FALSE, sep = "%",
+                          stringsAsFactors = FALSE)')
+    print("¤")
+    file_content <- fread(paste0(pakka$datapath), header = FALSE, sep = "%",
                           stringsAsFactors = FALSE)
     len_of_string <- nchar(file_content[1])
     start_string <- str_sub(file_content, 1, len_of_string -1)

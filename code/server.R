@@ -165,20 +165,7 @@ humalaData <- reactive({
        defaultStatValue$asetukset<-allvalues
      })
 
-   
-   react_omaReadJson <- reactive({
-     pakat<-omaReadJson("./external_files/",input$file1)
-     pakat
-   })
- 
-pfi_data<-reactive({
-  pakat<-react_omaReadJson()
-  print("TPALAT PAKAT")
- # print(pakat)
-  tulos<-pakkaUutuusProsentti(pakat)
-  tulos
-})
-    
+
 anyFileUpload<-observe({
   req(input$anyfile)
   print(input$anyfile)
@@ -195,6 +182,9 @@ observe({
   if (!is.null(ifile)) {
     validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
   zip_all_and_send()
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_PFI", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = FALSE)
+  refresh_counter$a <- isolate(refresh_counter$a +1 )
 })
 
 peliDataReact<-eventReactive(

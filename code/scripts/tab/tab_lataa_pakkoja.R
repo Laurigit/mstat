@@ -1,5 +1,7 @@
 output$pfi_taulukko <- renderDataTable({
-  
+  #react on 
+  refresh_counter$a
+  ####
   required_data(c("STAT_LISAKORTIT", "ADM_PELIT", "STG_PAKAT"))
   maxturnaus_per_pakka <- STAT_LISAKORTIT[, .(Turnaus_NO = max(Turnaus_NO)), by = .(Pakka_ID)]
   onlymax <- STAT_LISAKORTIT[maxturnaus_per_pakka, on = c("Turnaus_NO", "Pakka_ID")]
@@ -8,9 +10,9 @@ output$pfi_taulukko <- renderDataTable({
   bo_conv_pelit <- BO_conversio(ADM_PELIT)
   sscols_pelit <- bo_conv_pelit[,. (Pakka_ID, Voittaja, Tasapeli, Peli_LKM, Pakka_form_ID)]
   nykypakan_tilastot <- sscols_pelit[current_pfi_by_pakka, on = .(Pakka_form_ID, Pakka_ID)]
-  aggr_to_pakka <- nykypakan_tilastot[!is.na(Voittaja), .(Voitot = sum(Voittaja * Peli_LKM, na.rm = TRUE),
+  aggr_to_pakka <- nykypakan_tilastot[ , .(Voitot = sum(Voittaja * Peli_LKM, na.rm = TRUE),
                                           Tasapelit = sum(Tasapeli * Peli_LKM, na.rm = TRUE),
-                                          Peli_LKM = sum(Peli_LKM) ),
+                                          Peli_LKM = sum(Peli_LKM * !is.na(Voittaja)) ),
                                       by = .(Pakka_ID, Pakka_form_ID)]
   aggr_to_pakka[, Pfi_voitot := (Voitot + Tasapelit * 0.5), by = Pakka_ID]
   aggr_to_pakka[, Pfi_tappiot := Peli_LKM - Pfi_voitot]
