@@ -80,7 +80,8 @@ observeEvent(input$arvo_peli,{
 
 eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
                               input$select_martin_pakka,
-                              input$tallenna_tulos),{
+                              input$tallenna_tulos,
+                              input$luo_peleja),{
 
 if (!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
 

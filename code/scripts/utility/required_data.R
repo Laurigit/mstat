@@ -3,7 +3,7 @@
 #data_file<- "SRC_PELIT"
 
 required_data <- function(data_vector, force_update = FALSE, saveR = FALSE, saveR_folder = "./temporary_files/",
-                          input_env = globalenv()) {
+                          input_env = globalenv(), rewriteSaveR = FALSE) {
  required_functions("find_and_source")
    #load("shiny_env.R")
   used_env <- input_env
@@ -22,11 +22,11 @@ required_data <- function(data_vector, force_update = FALSE, saveR = FALSE, save
     #check if the file exists as R object
    
    R_exists <- file.exists(r_file_nm)
-   if(R_exists == FALSE) {
+   if(R_exists == FALSE | rewriteSaveR == TRUE) {
       list_of_object <- c(ls(envir = used_env), data_file)
     
         find_and_source(data_file, used_env)
-        if(saveR == TRUE) {
+        if(saveR == TRUE | (rewriteSaveR == TRUE & R_exists == TRUE)) {
           save(list = data_file,
                file = r_file_nm,
                compress = TRUE)

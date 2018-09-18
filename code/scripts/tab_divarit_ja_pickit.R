@@ -1,73 +1,15 @@
-# output$table_divari2<- renderUI({
-#   #montakodivaria
-#   print("montako divaria alku")
-#   divarit<-divaridata()
-#   divarit<-divarit[order(Divari)]
-#   eri_divarit<-unique(divarit[,Divari])
-#   
-#   fluidPage(
-#     lapply(eri_divarit,function(i)  {
-#       plotname2 <- paste0("plotdyndivari", i, sep="")
-#       
-#       fluidRow(box( dataTableOutput(plotname2),width=12,title=paste0("Divari: ",i),solidHeader = TRUE,status="primary" ))
-#       
-#     })
-#   )
-#   
-# })
-
-eR_UID_DIVARI <- reactive({
-  refresh_counter$a
-  required_data(c("STG_DIVARI", "STG_PAKAT", "STAT_LISAKORTIT", "ADM_PELIT"))
-  results <- UID_DIVARI(STG_DIVARI, STG_PAKAT, STAT_LISAKORTIT, ADM_PELIT)
-  return(results)
-}) 
-
-
-# for (i in 0:10) {
-#   
-#   # Need local so that each item gets its own number. Without it, the value
-#   # of i in the renderPlot() will be the same across all instances, because
-#   # of when the expression is evaluated.
-#   local({
-#     my_i <- i
-# 
-#     plotname_divari <- paste0("plotdyndivari", my_i, sep="")
-#     output[[plotname_divari]] <- renderDataTable({
-#       divarit<-eR_UID_DIVARI()
-#       tempdata<-divarit[Picked==1]
-#       # Data<-tempdata[Divari==my_i]
-#       Data<-tempdata[Divari==my_i]
-#       DataOut <- Data[, .(Omistaja_ID, Pakka_NM, Score, Kortit = Lisakortit_lkm)]
-#       return(DataOut)
-#       #print(Data)
-#     },    options = list(
-#       paging = FALSE,
-#       searching = FALSE,
-#       info=FALSE
-#       
-#     )
-#     )
-#   })
-# }
-
-eR_UID_PICKIT <- reactive({
-  refresh_counter$a
-  print("eR_UID_PICKIT")
-  required_data(c("STG_DIVARI", "STG_PAKAT"))
-  result <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
-  return(result)
-})
 
 #divariNumericinput
 output$combUI<-renderUI({
+  refresh_counter$a
   message("output$combUI")
-  divarit<-eR_UID_PICKIT()
+  required_data("ADM_PICKIT")
+  divarit<-ADM_PICKIT
   # required_data(c("STG_DIVARI", "STG_PAKAT"))
   # divarit <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
-  message(divarit)
-  ranking <- eR_UID_DIVARI()
-  message(ranking)
+
+  required_data("ADM_DIVARI")
+  ranking <- ADM_DIVARI
   #required_data(c("STG_DIVARI", "STG_PAKAT", "STAT_LISAKORTIT", "ADM_PELIT"))
   
   #ranking <- UID_DIVARI(STG_DIVARI, STG_PAKAT , STAT_LISAKORTIT, ADM_PELIT)

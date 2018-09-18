@@ -15,7 +15,8 @@ sscols_divari <- SRC_DIVARI[, .(Pakka_ID = rivi_id,
                                Omistaja_nimi)]
 join_pid_lauri <- sscols_divari[Omistaja_nimi == "Lauri"][temp, on = .(Pakka_NO = Laurin_pakka)][, Omistaja_nimi := NULL]
 setnames(join_pid_lauri, c("Pakka_NO", "Pakka_ID"), c("Laurin_pakka", "Laurin_Pakka_ID"))
-join_pid_martti <- sscols_divari[Omistaja_nimi == "Martti"][join_pid_lauri, on = .(Pakka_NO = Martin_pakka)][, Omistaja_nimi := NULL]
+martin_pakat <- sscols_divari[Omistaja_nimi == "Martti"]
+join_pid_martti <- martin_pakat[join_pid_lauri, on = .(Pakka_NO = Martin_pakka)][, Omistaja_nimi := NULL]
 setnames(join_pid_martti, c("Pakka_NO", "Pakka_ID"), c("Martin_pakka", "Martin_Pakka_ID"))
 temp_lauri <- join_pid_martti[, .(Divari,
                       Pakka_ID = Laurin_Pakka_ID,

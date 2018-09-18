@@ -12,7 +12,8 @@ BO_data <- BO_conversio(ADM_PELIT)
 #                                 ),
 #                            by = .(Turnaus_NO, Omistaja_ID)]
 
-aggr_to_turnaus <- BO_data[,.(Pakka_ID_list = list(unique(Pakka_ID)),
+
+aggr_to_turnaus <-  suppressWarnings( BO_data[,.(Pakka_ID_list = list(unique(Pakka_ID)),
                               Divari_list = list(unique(Divari)),
                                                 #Vasustajan_ID_list = list(Vastustajan_Pakka_ID),
                                                 Aloitus_DT = min(Aloitus_DT, na.rm = TRUE),
@@ -20,8 +21,8 @@ aggr_to_turnaus <- BO_data[,.(Pakka_ID_list = list(unique(Pakka_ID)),
                                                 Voittaja_sum = sum(Voittaja * Peli_LKM, na.rm = TRUE),
                                                 Peli_LKM_sum = sum(Peli_LKM, na.rm = TRUE),
                                                 Tasapeli_sum = sum(Tasapeli * Peli_LKM, na.rm = TRUE)
-),
-by = .(Turnaus_NO, Omistaja_ID)]
+                                  ),
+                                  by = .(Turnaus_NO, Omistaja_ID)])
 
 aggr_to_turnaus[, Pelatut_pelit := sum(Voittaja_sum + Tasapeli_sum / 2), by = .(Turnaus_NO)]
 aggr_to_turnaus[, Turnaus_valmis := Peli_LKM_sum == Pelatut_pelit]
@@ -48,3 +49,4 @@ join_haviaja[, TurnausVoitto := ifelse(Voittaja_sum  + Tasapeli_sum * 0.5 > (Pel
                                                      0.5))]
 
 STAT_TURNAUS <- join_haviaja
+

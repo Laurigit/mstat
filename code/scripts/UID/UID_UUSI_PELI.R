@@ -16,7 +16,7 @@
 #              input_BO_mode,
 #              input_pfi_mode)
 # 
-# Peli_ID_input <- 892
+# Peli_ID_input <- "937"
 # 
 # res <-  UID_UUSI_PELI(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT,
 #                       STAT_VOITTOENNUSTE,
