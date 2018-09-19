@@ -1,8 +1,38 @@
+tilastoAsetuksetReact<-reactiveValues(
+  
+  data=tilastoAsetukset
+  
+)
 
+output$radio_data_type <- renderUI({
+  required_data("ADM_DI_HIERARKIA")
+  unique_tables <- data.table(TABLE_NM = unique(c(ADM_DI_HIERARKIA[!is.na(TABLE_NM),TABLE_NM],
+                                                  ADM_DI_HIERARKIA[!is.na(PARENT_TABLE_NM), PARENT_TABLE_NM])))
+  unique_tables[, Table_type := word(TABLE_NM, 1, 1, sep = "_")]
+  
+  unique_types <- unique_tables[, .(.N), by = Table_type][, Table_type]
+  
+  radioButtons("radio_data_types", "Select data type", unique_types)
+  
+})
+  
+  output$radio_data_selected<- renderUI({
+    req(input$radio_data_types)
+    required_data("ADM_DI_HIERARKIA")
+    unique_tables <- data.table(TABLE_NM = unique(c(ADM_DI_HIERARKIA[!is.na(TABLE_NM),TABLE_NM],
+                                                    ADM_DI_HIERARKIA[!is.na(PARENT_TABLE_NM), PARENT_TABLE_NM])))
+    unique_tables[, Table_type := word(TABLE_NM, 1, 1, sep = "_")]
+    
+    table_list <- unique_tables[Table_type == input$radio_data_types, TABLE_NM]
+    
+    radioButtons("radio_data_selected", "Select table", table_list)
+             
+  })
+  
 
 output$pivot_cross <- renderRpivotTable({
-  pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
-  ennusteData<-ennusteDataReact()
+  #pivotData<-tilastoMurskain(divaridata(),peliDataReact(),pfi_data(),input_bo_mode=FALSE,input_moving_average=input$numeric_MA_valinta,input_pfiMA=NA)
+  #ennusteData<-ennusteDataReact()
   
   
   #1 jos tallennettu asetus valittu, käytä sitä
@@ -17,7 +47,9 @@ output$pivot_cross <- renderRpivotTable({
     #sorttaus<-tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected,sorttaus]
     
     #paivita valinta
-    updateRadioButtons(session,"radio_tilastoData",selected=dataLahto)
+    datatyyppi <- word(dataLahto, 1, 1, sep = "_")
+    updateRadioButtons(session,"radio_data_types", selected=datatyyppi)
+    updateRadioButtons(session,"radio_data_selected", selected=dataLahto)
     cols_use<-asetukset[[1]]
     rows_use<-asetukset[[2]]
     vals_use<-asetukset[[3]]
@@ -49,15 +81,19 @@ output$pivot_cross <- renderRpivotTable({
   # print(sortAsetus)
   # 
   #lataa oikea data
-  if(input$radio_tilastoData=="Aikasarja") {
-    outputData<-pivotData$aikasarja
-  } else if (input$radio_tilastoData=="Ristidata"){
-    outputData<-pivotData$cross
-  } else if (input$radio_tilastoData == "Ennusteet") {
-    outputData <- ennusteData
-  } else {
-    outputData<-pivotData$turnaus
-  }
+  # input <- NULL
+  # input$radio_data_selected <- "ADM_PELIT"
+  required_data(input$radio_data_selected)
+  outputData <- get(input$radio_data_selected)
+  # if(input$radio_tilastoData=="Aikasarja") {
+  #   outputData<-pivotData$aikasarja
+  # } else if (input$radio_tilastoData=="Ristidata"){
+  #   outputData<-pivotData$cross
+  # } else if (input$radio_tilastoData == "Ennusteet") {
+  #   outputData <- ennusteData
+  # } else {
+  #   outputData<-pivotData$turnaus
+  # }
 
   
   rpivotTable(outputData, 
@@ -118,7 +154,7 @@ observeEvent(input$tallennaSaavutusAsetus,{
   storeList[[1]]<-allvalues
   
   uusrivi<-data.table(
-    datataulu=input$radio_tilastoData,
+    datataulu=input$radio_data_selected,
     kuvaus=input$text_tilastoKuvaus,
     asetukset=(storeList)
   )
@@ -144,7 +180,7 @@ observeEvent(input$tallennaSaavutusAsetus,{
   print("TALLENNA SAAVUTUS")
   print(saavutusAsetukset)
   saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
-  saavutusAsetuksetReact$data<-saavutusAsetukset
+  saavutusAsetuksetReact$data <- saavutusAsetukset
   #tyhjennä tekstikenttä
   updateTextInput(session,"text_tilastoKuvaus",value="")
 })
@@ -164,6 +200,7 @@ output$pivotRefresh <- renderText({
   })
   paste(allvalues, collapse = "\n")
 })
+
 
 observeEvent( input$tallennaTilastoAsetus,{
   
@@ -187,7 +224,7 @@ observeEvent( input$tallennaTilastoAsetus,{
   storeList[[1]]<-allvalues
   
   uusrivi<-data.table(
-    datataulu=input$radio_tilastoData,
+    datataulu=input$radio_data_selected,
     kuvaus=input$text_tilastoKuvaus,
     asetukset=(storeList)
   )

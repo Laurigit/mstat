@@ -30,14 +30,13 @@ shinyServer(function(input, output, session) {
   }
   
   
-  load_data_from_DB()
+
   
   load("./external_files/tilastoAsetukset.R")
-  load("./external_files/saavutusAsetukset.R")
-  load("./external_files/model_history_data.R")
-  modelHistoryDataReact <- model_history_data
+  #load("./external_files/saavutusAsetukset.R")
 
- 
+
+ #write.table(x = saavutusAsetukset[,.(kuvaus, minVaiMax, Esitysmuoto, Palkintonimi)], file = "saavutusAsetukset.csv", sep = ";")
 
 
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
@@ -133,12 +132,7 @@ humalaData <- reactive({
     
    #luo tilasto-asetus-objekti
    
-   
-   tilastoAsetuksetReact<-reactiveValues(
-    
-     data=tilastoAsetukset
 
-   )
    
    ennusteDataReact <- eventReactive(input$luo_peleja, {
      create_forecast_data_for_stats(peliData_ja_pfi_react(), divaridata())
@@ -187,35 +181,14 @@ observe({
   refresh_counter$a <- isolate(refresh_counter$a +1 )
 })
 
-peliDataReact<-eventReactive(
-  c(input$tallenna_tulos,
-  input$luo_peleja), {
 
-  if(input$radio_debug_mode==FALSE) {
-    kaikkipelit<-luecsv("./pelit.csv")   
-  } else {
-    kaikkipelit<-luecsv("pelit_debug.csv")  
-  }
-})
 
-peliData_ja_pfi_react <- reactive({
-  peliData_ja_pfi_react<-  funcLiitaPelit_ja_Pysyvyys(pfi_data(), peliDataReact())
-})
 
-saavutusAsetuksetReact<-reactiveValues(
-  data=saavutusAsetukset
-)
 
 ennusteMallitReact <- eventReactive(input$luo_peleja,{
   voittoEnnusteMallit(peliData_ja_pfi_react())
 }, ignoreNULL = FALSE)
 
-
-turnausSaantoReact<-reactive({
-  print("luettu ./turnaussaanto.csv")
-  turnaussaanto <- luecsv("turnaussaanto.csv")
-  return(turnaussaanto)
-})
 
 
 validointiteksti <-reactiveValues(teksti="Ei ladattu pakkoja")

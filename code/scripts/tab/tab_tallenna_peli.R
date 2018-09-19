@@ -105,7 +105,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
   updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
   updateNumericInput(session,"sarjataulukkokierros",value=0)
-
+  js$collapse("uusipeli_box")
 })
 
 

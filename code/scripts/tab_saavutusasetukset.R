@@ -1,8 +1,14 @@
+required_data("STG_SAAVUTUSASETUKSET")
+saavutusAsetuksetReact<-reactiveValues(
+  
+  data = STG_SAAVUTUSASETUKSET
+)
+
 #poista saavutusAsetus
 observeEvent(input$poista_saavutusAsetus,{
-  print(saavutusAsetuksetReact$data)
+
   saavutusAsetuksetReact$data<- saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
-  print(saavutusAsetuksetReact$data)
+
   saavutusAsetukset<-saavutusAsetuksetReact$data
   saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
   

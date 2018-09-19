@@ -99,6 +99,7 @@ observeEvent(input$arvo_peli,{
 #input$divariRadio <- 1
   required_data("ADM_PELIT")
   arvottu_peli_id <- getRandomPeli_ID(ADM_PELIT, input$divariRadio)
+
   paivitaSliderit(arvottu_peli_id,session)
 })
 
@@ -234,12 +235,18 @@ output$peliKesto <- renderText({
   isolate(tempDataLehtysLaskuri$a <- tempDataLehtysLaskuri$a + 1)
   if ( tempDataLehtysLaskuri$a == 10) {
     zip_all_and_send()
+    shinyjs::addClass(selector = "body", class = "sidebar-collapse")
+
   }
-  
+  if ( tempDataLehtysLaskuri$a == 60) {
+    js$collapse("uusipeli_box")
+  }
+
   paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
   
   
 })
+
 
 
 output$EV_plot <- renderPlot({

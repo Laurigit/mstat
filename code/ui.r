@@ -5,6 +5,8 @@
 
 useShinyalert()
 uusi_peli<-dashboardBody(
+  useShinyjs(),
+  extendShinyjs(text = jscode),
   tags$head(
     tags$style(
       HTML("
@@ -29,7 +31,7 @@ uusi_peli<-dashboardBody(
               useShinyalert(),
               #theme = shinytheme("yeti"),
               shinyjs::useShinyjs(),
-          box(fluidRow(column(4, uiOutput("selectInputLauri")),
+          box(id = "uusipeli_box", fluidRow(column(4, uiOutput("selectInputLauri")),
                        column(4, actionButton("arvo_peli","Random match")),
                        column(4, uiOutput("selectInputMartti"))),
                   fluidRow(column(4, actionButton("laurin_mulligan",
@@ -161,7 +163,9 @@ uusi_peli<-dashboardBody(
             #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
     ),
     tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(2,(radioButtons("radio_tilastoData","Valitse datatyyppi",choices = c("Aikasarja","Ristidata","Ennusteet", "Turnaus"),selected="Aikasarja"))),
+            fluidRow(column(6, uiOutput("radio_data_type")), 
+                     column(6, uiOutput("radio_data_selected"))),
+            fluidRow(
                      #column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
                      
                      #  column(2, verbatimTextOutput("pivotRefresh")),
@@ -232,7 +236,7 @@ uusi_peli<-dashboardBody(
 
 
 #SIDEBAR  
-sidebar <- dashboardSidebar(
+sidebar <- dashboardSidebar(id = "sbSidebar",
   
   sidebarMenu(id="sidebarmenu",
               menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),

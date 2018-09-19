@@ -29,6 +29,7 @@ library(anytime)
 library(readxl)
 library(readtext)
 library(qdapRegex)
+#library(extendShinyjs)
 #library(glob2rx)
 #library(shinythemes)
 #options(shiny.error=browser)
@@ -193,5 +194,11 @@ for(input_kansio in input_kansio_list) {
     })
   }
 }
-print( environment())
+
+jscode <- "
+shinyjs.collapse = function(boxid) {
+$('#' + boxid).closest('.box').find('[data-widget=collapse]').click();
+}
+"
+
 print("Global.R valmis")
