@@ -27,11 +27,10 @@
 observeEvent(input$tallenna_tulos, {
  input_Peli_ID <- eR_Peli_ID()
 
-
-  tempData<- isolate(eR_UID_temp_data_storage()) #Isolate voi olla tarpeeton tässä
   #vuoroarviolasku
 
-required_data("ADM_PELIT")
+required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
+tempData <- ADM_TEMP_DATA_STORAGE 
 aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
     vuoroarviolasku <- input$slider_vuoroarvio + input$slider_laurin_mulligan - 6
@@ -89,6 +88,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   kircsv(pelit_jaljella,"pelit.csv", TRUE)
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
+  updatedTempData$a <- isolate(updatedTempData$a + 1)
 
   updateTabItems(session,"sidebarmenu","tab_uusi_peli")
  

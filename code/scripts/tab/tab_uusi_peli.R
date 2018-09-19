@@ -1,56 +1,81 @@
+eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
+                              input$select_martin_pakka,
+                              updatedTempData$a,
+                              
+                              input$luo_peleja),{
+                                
+                                if (!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
+                                  
+                                  # input$select_laurin_pakka <- 1
+                                  # input$select_martin_pakka <-9    
+                                  required_functions("getUusi_Peli_ID")
+                                  required_data(c("ADM_PELIT"))
+                                  
+                                  normiToiminto <-getUusi_Peli_ID(ADM_PELIT,
+                                                                  input$select_laurin_pakka,
+                                                                  input$select_martin_pakka)
+                                  
+                                  message("palautettu uusi peli id ", normiToiminto)
+                                  return(normiToiminto)
+                                } else {
+                                  
+                                  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
+                                  
+                                  keskenPeliData <- ADM_TEMP_DATA_STORAGE
+                                  
+                                  message("eR_PELI_ID ", keskenPeliData)
+                                  
+                                  P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
+                                  P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
+                                  alkuLataus <- getPeli_ID_from_pakat(P1, P2, ADM_PELIT)
+                                  
+                                  return(alkuLataus)
+                                }
+                              }, ignoreInit = FALSE, ignoreNULL = FALSE)
 
-eR_UID_temp_data_storage <- reactive({
 
-  eR_Peli_ID()
-  input$select_laurin_pakka
-  input$select_martin_pakka
-  input$slider_laurin_mulligan
-  input$slider_martin_mulligan
-  required_data("ADM_TEMP_DATA_STORAGE")
-  return(ADM_TEMP_DATA_STORAGE)
-})
-
-observeEvent(c(input$select_laurin_pakka,
-               input$select_martin_pakka,
-               input$slider_laurin_mulligan,
-               input$slider_martin_mulligan), {
-                 
-     req(input$select_laurin_pakka,
-           input$select_martin_pakka,
-           input$slider_laurin_mulligan,
-           input$slider_martin_mulligan)
+observe({
 #1. päivitä uudet arvot
                  # laurin_pakka<-1
                  # martin_pakka<-10
                  # laurin_mull<-0
                  # martin_mull<-1
       Aloitus_DT <- now(tz = "EET")
-      laurin_pakka<-input$select_laurin_pakka
-      martin_pakka<-input$select_martin_pakka
+      Peli_ID  <- eR_Peli_ID()
+      message("PELI_ID ts storage ", Peli_ID)
+      req( laurin_mull<-input$slider_laurin_mulligan,
+           martin_mull<-input$slider_martin_mulligan)
       laurin_mull<-input$slider_laurin_mulligan
       martin_mull<-input$slider_martin_mulligan
 
-      muuttujat<-c("Laurin_pakka",
-                   "Martin_pakka",
+      muuttujat<-c(
                    "Aloitus_DT",
                    "Laurin_mulligan",
-                   "Martin_mulligan")
-      arvot<-c(laurin_pakka,
-               martin_pakka,
+                   "Martin_mulligan",
+                   "Peli_ID")
+      arvot <- c(
                as.character(Aloitus_DT),
                laurin_mull,
-               martin_mull)
+               martin_mull,
+               Peli_ID)
       tempData <- data.table(muuttuja = muuttujat, arvo = arvot)
+      print("UUDET")
+      print(tempData)
       #jos mikään ei muutu, niin älä lähetä
       required_data("ADM_TEMP_DATA_STORAGE")
-      ssColsVanhat <- ADM_TEMP_DATA_STORAGE[!muuttuja == "Aloitus_DT"]
+      print("VANHAT")
+      print(ADM_TEMP_DATA_STORAGE)
+      ssColsVanhat <- ADM_TEMP_DATA_STORAGE[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
+    message("Vanha ", ssColsVanhat)
+    print(ssColsVanhat)
 
-
-      ssColsUudet <- tempData[!muuttuja == "Aloitus_DT"]
-
+      ssColsUudet <- tempData[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
+      message("uud ", ssColsUudet)
+      print(ssColsUudet)
+      
       comparison <- all.equal(ssColsVanhat, ssColsUudet)
-    
-      if(!(comparison == TRUE)) {
+      print(comparison)
+      if(!comparison == TRUE) {
 
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
    
@@ -66,7 +91,7 @@ observeEvent(c(input$select_laurin_pakka,
       tempDataLehtysLaskuri$a <- 0
       }
   
-}, ignoreInit = TRUE, ignoreNULL = TRUE)
+})
 
 
 #arvopeli
@@ -78,36 +103,7 @@ observeEvent(input$arvo_peli,{
 })
 
 
-eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
-                              input$select_martin_pakka,
-                              input$tallenna_tulos,
-                              input$luo_peleja),{
 
-if (!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
-
-  # input$select_laurin_pakka <- 1
-  # input$select_martin_pakka <-9    
-  required_functions("getUusi_Peli_ID")
-  required_data(c("ADM_PELIT"))
-                               
-  normiToiminto <-getUusi_Peli_ID(ADM_PELIT,
-                  input$select_laurin_pakka,
-                   input$select_martin_pakka)
-  
-
-  return(normiToiminto)
-} else {
- 
-  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "STG_PAKAT"))
-  pakat<-STG_PAKAT[Omistaja_ID == "M"]
-  keskenPeliData<- ADM_TEMP_DATA_STORAGE
-  P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
-  P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
-  alkuLataus <- getPeli_ID_from_pakat(P1, P2, ADM_PELIT)
-
-  return(alkuLataus)
-}
-}, ignoreInit = FALSE, ignoreNULL = FALSE)
 
 eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
 observe({
@@ -197,6 +193,7 @@ required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
 
 
 tempDataLehtysLaskuri <- reactiveValues(a = 0)
+updatedTempData<- reactiveValues(a = 0)
 
 
 
@@ -217,9 +214,9 @@ output$PakkaRightBox <- renderUI({
 
 
 output$peliKesto <- renderText({
-  # required_data("ADM_TEMP_DATA_STORAGE")
-  #tempData <- ADM_TEMP_DATA_STORAGE
-  tempData <- eR_UID_temp_data_storage()
+  required_data("ADM_TEMP_DATA_STORAGE")
+  tempData <- ADM_TEMP_DATA_STORAGE
+
   invalidateLater(1000, session)
   pelialkuAika <- tempData[muuttuja == "Aloitus_DT", as.POSIXct(arvo, tz = "EET")]
   aikaNyt <- now(tz = "EET")
