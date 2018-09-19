@@ -5,7 +5,7 @@
 # pakka <- file.info(paste(folder_in,filename_in,sep=""))
 # filelist <- "L_7"
 # pakka <- data.frame(name = "L_7.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
-process_uploaded_decks<-function(filelist,folder_out) {
+process_uploaded_decks<-function(filelist,folder_out, input_default_decklist = FALSE) {
 filelist <-data.table(filelist)
   #lue json-tiedosto
   #json_pakka <- fromJSON(paste(folder_in,filename_in,sep=""))
@@ -28,6 +28,10 @@ valid_teksti<-NULL
    
     if(omistaja==TRUE & pakkanumero==TRUE & pituus==TRUE) {
     aikaleima <- now(tz = "EET")
+    if (input_default_decklist == TRUE){
+      aikaleima <- as.POSIXct("2018-01-01 01:00:00", tz = "EET")
+    }
+    
     
     repl_pattern <- paste0(', "load_datetime":{"datetime":"', aikaleima, '"}')
     

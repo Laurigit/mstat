@@ -8,8 +8,11 @@ output$combUI<-renderUI({
   # required_data(c("STG_DIVARI", "STG_PAKAT"))
   # divarit <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
 
-  required_data("ADM_DIVARI")
+  required_data(c("ADM_DIVARI", "ADM_PELIT"))
   ranking <- ADM_DIVARI
+  edellinen_divari <- ADM_PELIT[ADM_PELIT[, .I[which.max(Turnaus_NO)], by=Pakka_ID]$V1][, .(Pakka_ID, Divari)]
+
+ 
   #required_data(c("STG_DIVARI", "STG_PAKAT", "STAT_LISAKORTIT", "ADM_PELIT"))
   
   #ranking <- UID_DIVARI(STG_DIVARI, STG_PAKAT , STAT_LISAKORTIT, ADM_PELIT)
@@ -45,7 +48,8 @@ output$combUI<-renderUI({
               Omistaja <- joinrank[Pakka_ID == j, Omistaja_ID]
               Score <- joinrank[Pakka_ID == j, Score]
               Kortit <- joinrank[Pakka_ID == j, Lisakortit_lkm]
-              input_label <- paste0(pakkanimi, ": ", Score, " Cards: ", Kortit)
+              Old_divari <- edellinen_divari[Pakka_ID == j, Divari]
+              input_label <- paste0(pakkanimi, ": ", Score, " Cards: ", Kortit, "Old_Div :", Old_divari)
               
              
               fluidRow(        

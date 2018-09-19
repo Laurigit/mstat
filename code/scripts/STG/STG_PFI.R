@@ -43,13 +43,32 @@ pakkametataulu_sorted[,':=' (Valid_to_DT = as.POSIXct((ifelse(is.na(Valid_to_DT)
 sscols <- SRC_DIVARI[,. (Pakka_ID = rivi_id, Omistaja_ID = substr(Omistaja_nimi, 1, 1),
                          Pakka_NO = Pakka)]
 #join_pakka_ID
-join_pid <- sscols[pakkametataulu_sorted, on = .(Omistaja_ID, Pakka_NO)]
+#join_pid <- sscols[pakkametataulu_sorted, on = .(Omistaja_ID, Pakka_NO)]
+ join_pid <- merge(sscols,pakkametataulu_sorted, by = c("Omistaja_ID", "Pakka_NO"), all = TRUE)
+ missing_decks <- join_pid[is.na(Pakka_form_ID)]
+puuttuvat_pakat <- nrow(missing_decks)
+if(puuttuvat_pakat > 0) {
+  for (looper in 1:puuttuvat_pakat) {
+    new_file_name <- missing_decks[looper, paste0(Omistaja_ID, "_", Pakka_NO, ".json")]
+    new_path <- paste0("./external_files/", new_file_name)
+    pakka_input <- data.frame(name = new_file_name, size = 7790, type ="", datapath = new_path, stringsAsFactors = FALSE)
+    
+    file.copy("./external_files/default_deck_for_new_decks_without_decklist.template",
+              new_path)
+    process_uploaded_decks(pakka_input,
+                           "./external_files/",input_default_decklist = TRUE)
+    file.remove(new_path)
+  }
+}
+
 
 join_pid[, Current_Pakka_form_ID := max(Pakka_form_ID), by = Pakka_ID]
 join_pid[, ':=' (Omistaja_ID = NULL, Pakka_NO = NULL)]
 STG_PFI <- join_pid
 
-
+if(puuttuvat_pakat > 0) {
+updateData("SRC_PFI", ADM_DI_HIERARKIA, input_env = globalenv())
+}
 
 
 # tulos <- omaReadJson("./external_files/")
