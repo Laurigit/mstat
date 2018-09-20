@@ -128,7 +128,9 @@ observeEvent(input$poista_tilastoAsetus,{
   tilastoAsetukset<- tilastoAsetuksetReact$data[-input$tallennetut_tilastoasetukset_rows_selected]
   tilastoAsetuksetReact$data<-tilastoAsetukset
   print( tilastoAsetuksetReact$data)
-  saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.R")
+  saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.RData")
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TILASTOASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
   
 })
 
@@ -178,9 +180,11 @@ observeEvent(input$tallennaSaavutusAsetus,{
   #tallenna rdata
   print("TALLENNA SAAVUTUS")
   print(saavutusAsetukset)
-  saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
+  saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.RData")
   saavutusAsetuksetReact$data <- saavutusAsetukset
   #tyhjennä tekstikenttä
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_SAAVUTUSASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
   updateTextInput(session,"text_tilastoKuvaus",value="")
 })
 
@@ -235,8 +239,10 @@ observeEvent( input$tallennaTilastoAsetus,{
   
   #tallenna rdata
   
-  saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.R")
+  saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.RData")
   
   tilastoAsetuksetReact$data<-tilastoAsetukset
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_TILASTOASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
   
 })

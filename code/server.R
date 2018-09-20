@@ -29,7 +29,7 @@ shinyServer(function(input, output, session) {
     }
   }
   
-  
+  load_data_from_DB()
 
   
  # load("./external_files/tilastoAsetukset.R")

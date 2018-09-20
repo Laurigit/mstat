@@ -7,7 +7,7 @@ temp <- SRC_PELIT
 temp[, ':=' (Lopetuspvm = ifelse(Lopetusaika < 60 * 60 *3, Lopetuspvm + 1, Lopetuspvm),
              Aloituspvm = ifelse(Aloitusaika < 60 * 60 * 3, Aloituspvm +1, Aloituspvm))]
 #siirretään kelloja 3h taaksepäin, koska aiemmin tallennettiin UTC
-temp[is.na(Aloitus_DT), ':=' (Aloitus_DT = as.character(convSecsToTime(Aloitusaika, Aloituspvm, 60 * 60 *3)),
+temp[is.na(Aloitus_DT) | Aloitus_DT == "", ':=' (Aloitus_DT = as.character(convSecsToTime(Aloitusaika, Aloituspvm, 60 * 60 *3)),
              Lopetus_DT = as.character(convSecsToTime(Lopetusaika, Lopetuspvm, 60 * 60 *3)))]
 #joinaa pakka_idt
 sscols_divari <- SRC_DIVARI[, .(Pakka_ID = rivi_id,

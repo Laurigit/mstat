@@ -1,3 +1,5 @@
 #SRC_SAAVUTUSASETUKSET
-load("./external_files/saavutusAsetukset.R")
+rm(saavutusAsetukset)
+load("./external_files/saavutusAsetukset.RData")
+
 SRC_SAAVUTUSASETUKSET <- saavutusAsetukset

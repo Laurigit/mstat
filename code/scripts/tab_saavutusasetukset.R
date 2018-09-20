@@ -10,8 +10,11 @@ observeEvent(input$poista_saavutusAsetus,{
   saavutusAsetuksetReact$data<- saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
 
   saavutusAsetukset<-saavutusAsetuksetReact$data
-  saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
-  
+  print(saavutusAsetukset)
+  saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.RData")
+  print(saavutusAsetukset)
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_SAAVUTUSASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
 })
 
 #paivita saavutusAsetus
@@ -39,7 +42,7 @@ observeEvent(input$paivita_saavutus,{
     print(saavutusAsetuksetReact)
     saavutusAsetuksetReact$data<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
     saavutusAsetukset<-saavutusAsetuksetReact$data
-    saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.R")
+    saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.RData")
     print(saavutusAsetuksetReact)
   }else{
     print("ei riviä valittuna, mitaan ei muutettu")
