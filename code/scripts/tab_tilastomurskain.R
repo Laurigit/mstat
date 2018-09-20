@@ -1,7 +1,6 @@
+required_data("STG_TILASTOASETUKSET")
 tilastoAsetuksetReact<-reactiveValues(
-  
-  data=tilastoAsetukset
-  
+  data = STG_TILASTOASETUKSET
 )
 
 output$radio_data_type <- renderUI({

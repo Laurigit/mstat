@@ -3,22 +3,31 @@
 #required_data("UID_UUSI_PELI")
 getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
  
-  lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja1, .(Prediction = round(Prediction, 2) * 100,
+  stat <- UID_UUSI_PELI[, .(Prediction = round(Prediction, 2) * 100,
                                                            Games = round(Pelit_ABS_VS, 1),
                                   'Winpct' = round(Voitto_PCT_VS, 2) * 100,
                                   'WinpctMA' = round(Voitto_PCT_MA_VS, 2) * 100, 
-                                  'Streak' = Putki_VS)]
-  text_stats <- lauri_stats[, .(idvar ="idvari",
+                                  Voitto_PCT_MA_VS_rank,
+                                  Voitto_PCT_VS_rank,
+                                  Putki_VS_rank,
+                                  'Streak' = Putki_VS,
+                                  Putki_VS_rank), by = Omistaja_NM]
+  text_stats_temp <- stat[, .(idvar ="idvari",
                                 
-                                'Win%' = paste0(Winpct, "-", 100 - Winpct),
-                                'Win%-MA' = paste0(WinpctMA, '-', 100 - WinpctMA),
+                                'Win%' = paste0("(", stat[Omistaja_NM == "Lauri", Voitto_PCT_VS_rank], ") ",
+                                                stat[Omistaja_NM == "Lauri", Winpct], "-", stat[Omistaja_NM == "Martti", Winpct],
+                                                " (", stat[Omistaja_NM == "Martti", Voitto_PCT_VS_rank], ")"),
+                                'Win%-MA%' = paste0("(", stat[Omistaja_NM == "Lauri", Voitto_PCT_MA_VS_rank], ") ",
+                                         stat[Omistaja_NM == "Lauri", WinpctMA], "-", stat[Omistaja_NM == "Martti", WinpctMA],
+                                         " (", stat[Omistaja_NM == "Martti", Voitto_PCT_MA_VS_rank], ")"),
                                 Streak = ifelse(Streak > 0,
-                                                paste0(Streak, "-0"),
-                                                paste0("0-", -Streak)),
+                                                paste0("(", stat[Omistaja_NM == "Lauri", Putki_VS_rank], ") ", Streak, "-0"),
+                                                paste0("0-", -Streak, " (", stat[Omistaja_NM == "Martti", Putki_VS_rank], ")")),
                                 Games,
-                                Prediction = paste0(Prediction, "-" , 100 - Prediction)
+                                Prediction = paste0(Prediction, "-" , 100 - Prediction),
+                         Omistaja_NM
                                 )]
- 
+  text_stats <- text_stats_temp[Omistaja_NM =="Lauri"][, Omistaja_NM := NULL]
   
   
   tulos <-suppressWarnings(melt.data.table(text_stats, id.vars = "idvar")[,idvar := NULL])

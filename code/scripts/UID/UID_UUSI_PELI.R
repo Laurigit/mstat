@@ -16,7 +16,7 @@
 #              input_BO_mode,
 #              input_pfi_mode)
 # 
-# Peli_ID_input <- "937"
+# Peli_ID_input <- "943"
 # 
 # res <-  UID_UUSI_PELI(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT,
 #                       STAT_VOITTOENNUSTE,
@@ -27,18 +27,23 @@
 UID_UUSI_PELI <- function(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT, STAT_VOITTOENNUSTE,
                           input_left_mulligan,
                           input_right_mulligan) {
+  pelidata <- ADM_PELIT[1==1]
+  
+  message(Peli_ID_input, 
+          input_left_mulligan,
+          input_right_mulligan)
   required_functions("predict_result")
-Left_pakka <- ADM_PELIT[Peli_ID == Peli_ID_input & Omistaja_ID=="L", .(Pakka_ID)]
-Right_pakka <- ADM_PELIT[Peli_ID == Peli_ID_input & Omistaja_ID=="M", .(Pakka_ID)]
+Left_pakka <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="L", .(Pakka_ID)]
+Right_pakka <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="M", .(Pakka_ID)]
   
 Pakka <- UID_PAKKA[Pakka_ID %in% c(Left_pakka,
                                       Right_pakka)]
 PakkaVS <- UID_PAKKA_VS[Pakka_ID %in% c(Left_pakka,
                                       Right_pakka) & Vastustajan_Pakka_ID %in% c(Left_pakka,
                                                                                              Right_pakka)]
-
-Tilanne <- getTilanne(ADM_PELIT, Peli_ID_input)
-Aloittaja <- ADM_PELIT[Peli_ID == Peli_ID_input , .(Pakka_ID, Aloittaja)]
+message("PakkaVS ", PakkaVS)
+Tilanne <- getTilanne(pelidata, Peli_ID_input)
+Aloittaja <- pelidata[Peli_ID == Peli_ID_input , .(Pakka_ID, Aloittaja)]
 sscols_pakat <- STG_PAKAT[, .(Pakka_ID, Pakka_NM, Omistaja_ID)]
 joini <- PakkaVS[Tilanne,
                    on ="Pakka_ID"][Pakka,
@@ -52,6 +57,7 @@ joini_ssrows[, ':=' (Pakka_ID = NULL,
               Omistaja_ID = NULL,
               Vastustajan_Pakka_ID = NULL,
               Colors = NULL)]
+
 #prediction
 print("UID_UUSI_PELI <- function")
 print(paste(Peli_ID_input, input_left_mulligan,

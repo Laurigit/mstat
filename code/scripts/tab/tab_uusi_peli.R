@@ -125,6 +125,9 @@ eR_UID_UUSI_PELI <- reactive({
   print(eR_Peli_ID())#dont del me
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE"))
 required_functions("UID_UUSI_PELI")
+print( eR_UID_PAKKA())
+print( eR_UID_PAKKA_VS())
+
   tulos <- isolate(UID_UUSI_PELI(eR_Peli_ID(),
                          eR_UID_PAKKA(),
                          eR_UID_PAKKA_VS(),
@@ -135,6 +138,7 @@ required_functions("UID_UUSI_PELI")
                          input$slider_laurin_mulligan,
                          input$slider_martin_mulligan
                         ))
+  print(tulos)
   return(tulos)
 })
 
@@ -199,9 +203,11 @@ updatedTempData<- reactiveValues(a = 0)
 
 
 output$PakkaLeftBox <- renderUI({
-  # eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
-  
+  print("output$PakkaLeftBox")
+ print(eR_UID_UUSI_PELI())
   result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+
+ 
   # result(eR_UID_UUSI_PELI())
   box(HTML(result), background = "purple", width = NULL)
   
@@ -252,6 +258,8 @@ output$peliKesto <- renderText({
 output$EV_plot <- renderPlot({
   
   melttaa_aggr <-  eR_UID_TURNAUS_EV()
+  # required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
+  # melttaa_aggr <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)
   plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
     theme_calc() + scale_color_calc() 
   plot+ theme(legend.title=element_blank(),

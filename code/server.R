@@ -32,7 +32,7 @@ shinyServer(function(input, output, session) {
   
 
   
-  load("./external_files/tilastoAsetukset.R")
+ # load("./external_files/tilastoAsetukset.R")
   #load("./external_files/saavutusAsetukset.R")
 
 

@@ -236,7 +236,7 @@ uusi_peli<-dashboardBody(
 
 
 #SIDEBAR  
-sidebar <- dashboardSidebar(id = "sbSidebar",
+sidebar <- dashboardSidebar(
   
   sidebarMenu(id="sidebarmenu",
               menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),

@@ -13,7 +13,7 @@ print("TÄMÄ KESTÄÄ")
 #älä ota mukaan keskeneräistä turnausta
 maxTurnaus <- ADM_PELIT[, max(Turnaus_NO)]
 pelatut_turnaukset <-  ADM_PELIT[1==1]
-
+#pelatut_turnaukset <- ADM_PELIT[Pakka_ID == 1 | Vastustajan_Pakka_ID == 9 | Pakka_ID == 9 | Vastustajan_Pakka_ID == 1]
 #dataan tarvitaan P1, Vpak, hinta, vhinta, mull, vmull, kortit, vkortit, pysyvyys, voittaja, aloittaja
 #omadata
 
@@ -106,15 +106,15 @@ for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_
 # tee data mallinnusta varten niin, että käytetään edellisen. Tarvitaan vaan edellisen kierroksen MA_ranking_ero
 
 
-ma_ranking_data <- ADM_PELIT[, . (mean_MA = mean(Turnaus_Ranking_PFI)),
+ma_ranking_data <- pelatut_turnaukset[, . (mean_MA = mean(Turnaus_Ranking_PFI)),
                       by = .(Pakka_ID, Turnaus_NO)]
 
 ma_ranking_data[, Turnaus_NO := Turnaus_NO + 1]
-ma_ranking_data_vastustaja <- ADM_PELIT[, . (
+ma_ranking_data_vastustaja <- pelatut_turnaukset[, . (
   mean_MA_vastustaja = mean(Vastustajan_Turnaus_Ranking_PFI)), by = .(Vastustajan_Pakka_ID, Turnaus_NO)]
 ma_ranking_data_vastustaja[, Turnaus_NO := Turnaus_NO + 1]
 
-fit_data <- ADM_PELIT[, .(Peli_ID, Turnaus_NO, Pakka_ID, Vastustajan_Pakka_ID, Aloittaja, Voittaja, Omistaja_ID)]
+fit_data <- pelatut_turnaukset[, .(Peli_ID, Turnaus_NO, Pakka_ID, Vastustajan_Pakka_ID, Aloittaja, Voittaja, Omistaja_ID)]
 join_MA <- ma_ranking_data[fit_data, on = .(Pakka_ID, Turnaus_NO)]
 join_MA_Vihu <- ma_ranking_data_vastustaja[join_MA, on = .(Vastustajan_Pakka_ID, Turnaus_NO)]
 
@@ -190,9 +190,16 @@ join_model[,  ':=' (rivi = seq_len(.N),
                           ennuste, Turnaus_NO, Peli_ID, malli, Omistaja_ID)]
   ssCols[is.na(ssCols)] <- 0
 
+
   ssCols[, VS_TN := 1 / (1 + exp(-VS_peli_bool_par)) - 0.5 ]
-  ssCols[, Pakka_TN := 1 / (1 + exp ( - (MA_ranking_ero_par * MA_ranking_ero + Intercept_par))) - 0.5]
+  ssCols[, Pakka_TN := 1 / (1 + exp ( - (MA_ranking_ero_par * MA_ranking_ero + Intercept_par + Aloittaja_par / 2))) - 0.5]
   ssCols[, Aloittaja_TN := (ennuste - 0.5) - Pakka_TN - VS_TN]
- 
+  
+  # 
+  # ssCols[, VS_TN := 1 / (1 + exp(-VS_peli_bool_par)) - 0.5 ]
+  # ssCols[, Pakka_TN := 1 / (1 + exp ( - (MA_ranking_ero_par * MA_ranking_ero + Intercept_par))) - 0.5]
+  # ssCols[, Aloittaja_TN := (ennuste - 0.5) - Pakka_TN - VS_TN]
+  # 
 
 STAT_VOITTOENNUSTE <- ssCols
+

@@ -3,10 +3,12 @@
 UID_TURNAUS_EV <- function(ADM_PELIT, STAT_VOITTOENNUSTE)  {
 
   sscols_ennuste <- STAT_VOITTOENNUSTE[Omistaja_ID == "M",.(Peli_ID, Martin_voitto_tn = ennuste)]
-  sscols_pelit <- ADM_PELIT[Omistaja_ID == "M",.(Aloitus_DT, Martti_Voitti =  Voittaja, Turnaus_NO, Laurin_Pakka = Vastustajan_Pakka_ID,
+  pelikopio <- ADM_PELIT[1==1]
+  sscols_pelit <- pelikopio[Omistaja_ID == "M",.(Aloitus_DT, Martti_Voitti =  Voittaja, Turnaus_NO, Laurin_Pakka = Vastustajan_Pakka_ID,
                                                  Martin_pakka = Pakka_ID, Peli_ID)]
  # ADM_PELIT[Turnaus_NO == 29 & !is.na(Voittaja) & Omistaja_ID =="L"]
 peliData_ja_pfi <-  sscols_ennuste[sscols_pelit, on = "Peli_ID"]
+#peliData_ja_pfi <- peliData_ja_pfi[Laurin_Pakka == 1 & Martin_pakka == 9]
 # peliData_ja_pfi<- funcLiitaPelit_ja_Pysyvyys(pfi_data, peliData)
 # tulos <- voittoEnnusteMallit(peliData_ja_pfi)
 

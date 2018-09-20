@@ -1,10 +1,15 @@
 #getDeckStats
+#Omistaja <- "Lauri"
 getDeckStats <- function(Omistaja, UID_UUSI_PELI) {
 lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja, .(Deck = Pakka_NM,
-                                                       'Win%' = round(Voitto_PCT, 2) * 100,
-                                                       'Win%-MA' = round(Voitto_PCT_MA, 2) * 100,
-                                                       Streak = Putki,
-                                                       Cards = Deck_size,
+                                                       'Win%' = paste0(round(Voitto_PCT, 2) * 100,
+                                                                       " (", Voitto_PCT_rank, ")"),
+                                                       'Win%-MA' = paste0(round(Voitto_PCT_MA, 2) * 100,
+                                                                          " (", Voitto_PCT_MA_rank, ")"),
+                                                       Streak = paste0(Putki,
+                                                                       " (",Putki_rank, ")"),
+                                                       Cards = paste0(Deck_size,
+                                                                      " (",Deck_size_rank, ")"),
                                                        Shuffle8)]
 tulos <-suppressWarnings(melt.data.table(lauri_stats, id.vars = "Deck"))
 Pakkanimi <- tulos[1, Deck]
