@@ -8,4 +8,6 @@ draft_boosters <- function(vect_boosters) {
   booster_data <- luecsv("boosters.csv")
   app_rows <- rbind(booster_data, new_rows)
   kircsv(app_rows, "boosters.csv", TRUE)
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_BOOSTERS", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
 }

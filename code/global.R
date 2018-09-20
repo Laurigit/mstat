@@ -1,6 +1,6 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
-GLOBAL_test_mode <- "prod"
+GLOBAL_test_mode <- "dev"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)
@@ -173,7 +173,7 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   print("ladattu taas ja nyt tulostetaan")
   print(get(RdataTallenna))
 }
-
+load_data_from_DB()
 
 sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
 sourcelist[, rivi := seq_len(.N)]

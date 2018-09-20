@@ -5,7 +5,10 @@
 #kolmas funcio lisää boostereita
 
 suggest_boosters <- function(how_many_boosters) {
+  required_data("STG_BOOSTERS")
   booster_data <- luecsv("boosters.csv")
+
+  booster_data <- STG_BOOSTERS
   booster_data[, rivi := seq_len(.N)]
   #find previous increase
   last_increase_row <- booster_data[draft_no <0,max(rivi)]
