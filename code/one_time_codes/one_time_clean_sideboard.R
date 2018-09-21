@@ -1,5 +1,7 @@
-analyse <- STG_PFI[is.na(Pakka_ID), Pakka_form_ID]
-varijako <- ADM_PAKKA_COMPONENTS[Pakka_form_ID == analyse,. (Colors, Name, Count)]
+
+required_data(c("STG_PFI", "ADM_PAKKA_COMPONENTS"), TRUE)
+STG_PFI[Pakka_ID == 21]
+varijako <- ADM_PAKKA_COMPONENTS[Pakka_form_ID == 1,. (Colors, Name, Count)]
 varijako[, colorClass := ifelse(nchar(Colors) > 1 | is.na(Colors), "Other", Colors)]
 loopivarit <- varijako[, .N, by = colorClass][, colorClass]
 for(looppi in loopivarit) {

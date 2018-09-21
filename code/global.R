@@ -1,6 +1,6 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
-GLOBAL_test_mode <- "dev"
+GLOBAL_test_mode <- "prod"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)
@@ -30,6 +30,7 @@ library(readxl)
 library(readtext)
 library(qdapRegex)
 library(httr)
+library(V8)
 #library(extendShinyjs)
 #library(glob2rx)
 #library(shinythemes)
@@ -125,29 +126,6 @@ zip_all_and_send <- function() {
 
 
 
-#pakkaa jsonit ja laheta
-zipAndSend <- function(){
-  # tiedostot <- as.data.table(dir(path = "./decks_unzipped/"))
-  # 
-  # tiedostot[, paate := substr(tiedostot[,V1], nchar(tiedostot[, V1]) - 5 + 1, nchar(tiedostot[, V1]))]
-  # json_files <- tiedostot[paate == ".json", paste0(V1)]
-  # if (length(json_files) > 0) {
-  #   setwd("./decks_unzipped")
-  #     zip(zipfile = "../drop_upload/json.zip",
-  #         files = json_files)
-  #   setwd("..")
-  #   test_mode <- "prod"
-  #   if(exists("GLOBAL_test_mode")) {
-  #     if (GLOBAL_test_mode == "dev") {
-  #       test_mode <- "dev"
-  #     }
-  #   }
-  #   if (test_mode == "prod" | test_mode == "test") {
-  #     zip_all_and_send()
-  #   }
-  # }
-print("zipAndSend: THIS FUNC SHOULD NOT BE CALLED ANYMORE")
-}
 
 
 

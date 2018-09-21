@@ -90,7 +90,8 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
   updatedTempData$a <- isolate(updatedTempData$a + 1)
 
-  updateTabItems(session,"sidebarmenu","tab_uusi_peli")
+  updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
+  js$collapse("uusipeli_box")
  
   
   updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
@@ -105,7 +106,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
   updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
   updateNumericInput(session,"sarjataulukkokierros",value=0)
-  js$collapse("uusipeli_box")
+
 })
 
 

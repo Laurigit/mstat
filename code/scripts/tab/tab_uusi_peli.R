@@ -244,7 +244,7 @@ output$peliKesto <- renderText({
     shinyjs::addClass(selector = "body", class = "sidebar-collapse")
 
   }
-  if ( tempDataLehtysLaskuri$a == 60) {
+  if ( tempDataLehtysLaskuri$a == 150) {
     js$collapse("uusipeli_box")
   }
 
