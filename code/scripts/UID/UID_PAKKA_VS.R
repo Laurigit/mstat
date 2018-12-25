@@ -47,6 +47,7 @@ Voitto_PCT_VS_pakka <- Voitto_PCT_data[!is.na(Voittaja_Stat),
                                          Pelit_ABS_VS = sum(Peli_LKM_Stat, na.rm = TRUE)),
                                        by = .(Pakka_ID, Vastustajan_Pakka_ID)]
 Voitto_PCT_VS_pakka[, Voitto_PCT_VS_rank := rank(-Voitto_PCT_VS, ties.method = "min")]
+Voitto_PCT_VS_pakka[, Pelit_ABS_VS_rank := rank(-Pelit_ABS_VS, ties.method = "min")]
 
 
 #putki_VS

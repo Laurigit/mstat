@@ -203,22 +203,110 @@ updatedTempData<- reactiveValues(a = 0)
 
 
 
-output$PakkaLeftBox <- renderUI({
-  print("output$PakkaLeftBox")
- print(eR_UID_UUSI_PELI())
-  result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+# output$PakkaLeftBox <- renderUI({
+#   print("output$PakkaLeftBox")
+#  print(eR_UID_UUSI_PELI())
+#   result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+# 
+#  
+#   # result(eR_UID_UUSI_PELI())
+#   box(HTML(result), background = "purple", width = NULL)
+#   
+# })
 
- 
-  # result(eR_UID_UUSI_PELI())
-  box(HTML(result), background = "purple", width = NULL)
-  
+output$PakkaLeftBox <- renderUI({
+    
+    result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+    result_data <- result$data
+    
+    box(
+      solidHeader = FALSE,
+      collapsible = FALSE,
+      width = NULL,
+      boxProfile(
+        src = paste0(result_data$Most_same_card, ".jpg"),
+        title = result_data$Deck,
+        boxProfileItemList(
+          bordered = TRUE,
+          boxProfileItem(
+            title = "Win%",
+            description = result_data$`Win%`
+          ),
+          boxProfileItem(
+            title = "Win%-MA",
+            description = result_data$`Win%-MA`
+          ),
+          boxProfileItem(
+            title = "Streak",
+            description = result_data$Streak
+          ),
+          boxProfileItem(
+            title = "Cards",
+            description = result_data$Cards
+          ),
+          boxProfileItem(
+            title = "Shuffle8",
+            description = result_data$Shuffle8
+          )
+        )
+      )
+     )
 })
+
+
 output$PakkaRightBox <- renderUI({
-  
+
   result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
-  box(HTML(result), background = "yellow", width = NULL)
+  result_data <- result$data
   
+  box(
+    tags$head(tags$style(HTML('
+      .boxProfileItem {
+                              font-family: "Georgia", Times, "Times New Roman", serif;
+                              font-weight: bold;
+                              font-size: 24px;
+}
+  '))),
+    solidHeader = FALSE,
+    collapsible = FALSE,
+    width = NULL,
+    boxProfile(
+      src = paste0(result_data$Most_same_card, ".jpg"),
+      title = result_data$Deck,
+      boxProfileItemList(
+        bordered = TRUE,
+        boxProfileItem(
+          title = "Win%",
+          description = result_data$`Win%`
+        ),
+        boxProfileItem(
+          title = "Win%-MA",
+          description = result_data$`Win%-MA`
+        ),
+        boxProfileItem(
+          title = "Streak",
+          description = result_data$Streak
+        ),
+        boxProfileItem(
+          title = "Cards",
+          description = result_data$Cards
+        ),
+        boxProfileItem(
+          title = "Shuffle8",
+          description = result_data$Shuffle8
+        )
+      )
+    )
+  )
+  
+
 })
+# output$PakkaRightBox <- renderUI({
+#   
+#   result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
+#   box(HTML(result), background = "yellow", width = NULL)
+#   
+# })
 
 
 output$peliKesto <- renderText({
@@ -293,7 +381,40 @@ output$PakkaVSBox <- renderUI({
 
     #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
     result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
-    box(HTML(result), background = "aqua", width = NULL, align = "middle")
-  
+    result_data <- result$data
+    #box(HTML(result), background = "aqua", width = NULL, align = "middle")
+    box(
+      
+      solidHeader = FALSE,
+      collapsible = FALSE,
+      width = NULL,
+      boxProfile(
+        src = paste0(result_data$get_aloittaja_image, ".jpg"),
+        title = result_data$otsikko,
+        boxProfileItemList(
+          bordered = TRUE,
+          boxProfileItem(
+            title = "Win%",
+            description = result_data$`Win%`
+          ),
+          boxProfileItem(
+            title = "Win%-MA",
+            description = result_data$`Win%-MA`
+          ),
+          boxProfileItem(
+            title = "Streak",
+            description = result_data$Streak
+          ),
+          boxProfileItem(
+            title = "Games",
+            description = result_data$Games
+          ),
+          boxProfileItem(
+            title = "Prediction",
+            description = result_data$Prediction
+          )
+        )
+      )
+      )
 })
 

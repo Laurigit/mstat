@@ -12,6 +12,10 @@ if(!file.exists(paste0("./external_files/", cardNameInput, ".jpg"))) {
   result_json <- fromJSON(rawToChar(raw.result$content))
   image_url <- result_json$image_uris$art_crop
   download.file(url = image_url, destfile = paste0("./external_files/", cardNameInput, ".jpg"), mode = "wb")
+}
+  if(!file.exists(paste0("./www/", cardNameInput, ".jpg"))) {
+    file.copy(from = paste0("./external_files/", cardNameInput, ".jpg"),
+              to = paste0("./www/", cardNameInput, ".jpg"))
   }
 }
 

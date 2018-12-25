@@ -11,7 +11,8 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
                                   Voitto_PCT_VS_rank,
                                   Putki_VS_rank,
                                   'Streak' = Putki_VS,
-                                  Putki_VS_rank), by = Omistaja_NM]
+                                  Putki_VS_rank,
+                                  Pelit_ABS_VS_rank), by = Omistaja_NM]
   text_stats_temp <- stat[, .(idvar ="idvari",
                                 
                                 'Win%' = paste0("(", stat[Omistaja_NM == "Lauri", Voitto_PCT_VS_rank], ") ",
@@ -23,12 +24,19 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
                                 Streak = ifelse(Streak > 0,
                                                 paste0("(", stat[Omistaja_NM == "Lauri", Putki_VS_rank], ") ", Streak, "-0"),
                                                 paste0("0-", -Streak, " (", stat[Omistaja_NM == "Martti", Putki_VS_rank], ")")),
-                                Games,
+                                Games = paste0(Games, " (", Pelit_ABS_VS_rank, ")"),
                                 Prediction = paste0(Prediction, "-" , 100 - Prediction),
                          Omistaja_NM
                                 )]
-  text_stats <- text_stats_temp[Omistaja_NM =="Lauri"][, Omistaja_NM := NULL]
+  text_stats_temp <- text_stats_temp[Omistaja_NM =="Lauri"][, Omistaja_NM := NULL]
   
+  aloittaja <- UID_UUSI_PELI[Omistaja_NM == Omistaja1, Aloittaja]
+  divari_input <- UID_UUSI_PELI[Omistaja_NM == Omistaja1, Divari]
+  get_aloittaja_image <- aloittaja_image(aloittaja,
+                                         divari_input)
+message(get_aloittaja_image)
+  getCardImg(get_aloittaja_image)
+
   
   tulos <-suppressWarnings(melt.data.table(text_stats, id.vars = "idvar")[,idvar := NULL])
   # tulos[variable == "Win_pct", color :=  ifelse(value > 50, "purple", "yellow")]
@@ -45,6 +53,8 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
   otsikko <- ifelse(UID_UUSI_PELI[Omistaja_NM == Omistaja1, Peleja_jaljella_bool] == TRUE,
                     paste0(etuliite, tilanne, takaliite), tilanne)
   hmtlout <- paste0("<h3>", otsikko, "<br>", paste0(tulos[, riviteksti], collapse =""))
+  
+  text_stats <- cbind(text_stats_temp, get_aloittaja_image, otsikko) 
 
   #hmtlout <- paste0("<h2>",Pakkanimi, "<h2/><br/>", paste0(tulos[, riviteksti], collapse =""))
   #kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",
@@ -53,6 +63,9 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
   #kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",
   #                       saavutusNimi,": <b>",txtResult,"</b><h4/>")]
   
+  result <- NULL
+  result$html <- hmtlout
+  result$data <- text_stats
   
-  return(hmtlout)
+  return(result)
 }

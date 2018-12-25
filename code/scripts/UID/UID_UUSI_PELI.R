@@ -16,7 +16,7 @@
 #              input_BO_mode,
 #              input_pfi_mode)
 # 
-# Peli_ID_input <- "943"
+# Peli_ID_input <- "1000"
 # 
 # res <-  UID_UUSI_PELI(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT,
 #                       STAT_VOITTOENNUSTE,
@@ -44,6 +44,7 @@ UID_UUSI_PELI <- function(Peli_ID_input,
   required_functions("predict_result")
 Left_pakka <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="L", .(Pakka_ID)]
 Right_pakka <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="M", .(Pakka_ID)]
+Divari <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="M", .(Divari)]
   
 Pakka <- UID_PAKKA[Pakka_ID %in% c(Left_pakka,
                                       Right_pakka)]
@@ -62,6 +63,14 @@ sscols_pakat[, Pakka_NM:= paste(word(Pakka_NM, 1, sep = "_"),
                                 word(Pakka_NM, -1, sep = "_"),
                                 sep = "_"),
              by = Pakka_ID]
+
+sscols_pakat[, Pakka_NM_no_color:= paste(word(Pakka_NM, 1, sep = "_"),
+                                word(Pakka_NM, -1, sep = "_"),
+                                sep = "_"),
+             by = Pakka_ID]
+sscols_pakat[, Pakka_color:= sort_MTG_colors(Colors),
+             by = Pakka_ID]
+
 sscols_pakat[, Colors := NULL]
 joini <- PakkaVS[Tilanne,
                    on ="Pakka_ID"][Pakka,
@@ -87,7 +96,7 @@ ennuste <- predict_result(Peli_ID_input, input_left_mulligan,
 ennuste_vector <- c(ennuste, 1 - ennuste)
 ennuste_cols <- data.table(Prediction = ennuste_vector)
 
-join_ennuste <- cbind(joini_ssrows, ennuste_cols)
+join_ennuste <- cbind(joini_ssrows, ennuste_cols, Divari)
 UID_UUSI_PELI <- join_ennuste
 return(UID_UUSI_PELI)
 }
