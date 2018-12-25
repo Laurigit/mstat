@@ -21,12 +21,21 @@
 # res <-  UID_UUSI_PELI(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT,
 #                       STAT_VOITTOENNUSTE,
 #                       input_left_mulligan,
-#                       input_right_mulligan)
+#                       input_right_mulligan,
+#                        STAT_CURRENT_PAKKA)
 # res
 # res
-UID_UUSI_PELI <- function(Peli_ID_input, UID_PAKKA, UID_PAKKA_VS, STG_PAKAT, STG_OMISTAJA, ADM_PELIT, STAT_VOITTOENNUSTE,
+required_functions("sort_MTG_colors")
+UID_UUSI_PELI <- function(Peli_ID_input,
+                          UID_PAKKA,
+                          UID_PAKKA_VS,
+                          STG_PAKAT,
+                          STG_OMISTAJA,
+                          ADM_PELIT,
+                          STAT_VOITTOENNUSTE,
                           input_left_mulligan,
-                          input_right_mulligan) {
+                          input_right_mulligan,
+                          STAT_CURRENT_PAKKA) {
   pelidata <- ADM_PELIT[1==1]
   
   message(Peli_ID_input, 
@@ -44,7 +53,16 @@ PakkaVS <- UID_PAKKA_VS[Pakka_ID %in% c(Left_pakka,
 message("PakkaVS ", PakkaVS)
 Tilanne <- getTilanne(pelidata, Peli_ID_input)
 Aloittaja <- pelidata[Peli_ID == Peli_ID_input , .(Pakka_ID, Aloittaja)]
-sscols_pakat <- STG_PAKAT[, .(Pakka_ID, Pakka_NM, Omistaja_ID)]
+sscols_pakat_temp <- STG_PAKAT[, .(Pakka_ID, Pakka_NM, Omistaja_ID)]
+#join dybamic color
+ssColor <- STAT_CURRENT_PAKKA[, .(Pakka_ID, Colors, Most_same_card)]
+sscols_pakat <- sscols_pakat_temp[ssColor, on = "Pakka_ID"]
+sscols_pakat[, Pakka_NM:= paste(word(Pakka_NM, 1, sep = "_"),
+                                sort_MTG_colors(Colors),
+                                word(Pakka_NM, -1, sep = "_"),
+                                sep = "_"),
+             by = Pakka_ID]
+sscols_pakat[, Colors := NULL]
 joini <- PakkaVS[Tilanne,
                    on ="Pakka_ID"][Pakka,
                  on = "Pakka_ID"][Aloittaja,

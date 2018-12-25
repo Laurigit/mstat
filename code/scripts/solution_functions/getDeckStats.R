@@ -1,5 +1,6 @@
 #getDeckStats
 #Omistaja <- "Lauri"
+required_functions("getCardImg")
 getDeckStats <- function(Omistaja, UID_UUSI_PELI) {
 lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja, .(Deck = Pakka_NM,
                                                        'Win%' = paste0(round(Voitto_PCT, 2) * 100,
@@ -14,6 +15,7 @@ lauri_stats <- UID_UUSI_PELI[Omistaja_NM == Omistaja, .(Deck = Pakka_NM,
 tulos <-suppressWarnings(melt.data.table(lauri_stats, id.vars = "Deck"))
 Pakkanimi <- tulos[1, Deck]
 tulos[, riviteksti := paste0("<h4>", variable, ":<b> ", value, "</b><br>")]
+getCardImg(UID_UUSI_PELI[Omistaja_NM == Omistaja, Most_same_card])
 hmtlout <- paste0("<h3>",Pakkanimi, "<br>", paste0(tulos[, riviteksti], collapse =""))
 #kuvaus[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",
 #                       saavutusNimi,": <b>",txtResult,"</b><h4/>")]

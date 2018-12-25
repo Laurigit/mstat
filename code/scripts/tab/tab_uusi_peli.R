@@ -123,7 +123,7 @@ eR_UID_UUSI_PELI <- reactive({
   #create dependency 
   print("eR_UID_UUSI_PELI")
   print(eR_Peli_ID())#dont del me
-  required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE"))
+  required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 required_functions("UID_UUSI_PELI")
 print( eR_UID_PAKKA())
 print( eR_UID_PAKKA_VS())
@@ -136,7 +136,8 @@ print( eR_UID_PAKKA_VS())
                          ADM_PELIT,
                          STAT_VOITTOENNUSTE,
                          input$slider_laurin_mulligan,
-                         input$slider_martin_mulligan
+                         input$slider_martin_mulligan,
+                         STAT_CURRENT_PAKKA
                         ))
   print(tulos)
   return(tulos)

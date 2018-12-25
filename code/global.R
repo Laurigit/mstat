@@ -151,7 +151,12 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   print("ladattu taas ja nyt tulostetaan")
   print(get(RdataTallenna))
 }
-load_data_from_DB()
+jscode <- "
+shinyjs.collapse = function(boxid) {
+$('#' + boxid).closest('.box').find('[data-widget=collapse]').click();
+}
+"
+
 
 sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
 sourcelist[, rivi := seq_len(.N)]
@@ -173,11 +178,5 @@ for(input_kansio in input_kansio_list) {
     })
   }
 }
-
-jscode <- "
-shinyjs.collapse = function(boxid) {
-$('#' + boxid).closest('.box').find('[data-widget=collapse]').click();
-}
-"
 
 print("Global.R valmis")

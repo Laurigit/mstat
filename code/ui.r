@@ -163,8 +163,9 @@ uusi_peli<-dashboardBody(
             #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
     ),
     tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(6, uiOutput("radio_data_type")), 
-                     column(6, uiOutput("radio_data_selected"))),
+            fluidRow(column(4, uiOutput("radio_data_type")), 
+                     column(4, uiOutput("radio_data_selected")),
+                     column(4, uiOutput("validateSaavutusText"))),
             fluidRow(
                      #column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
                      
@@ -174,6 +175,7 @@ uusi_peli<-dashboardBody(
                             actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
                             
                             actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
+                            actionButton("validateSaavutusAsetus", "Testaa toimiiko saavutus"),
                             
                             
                             

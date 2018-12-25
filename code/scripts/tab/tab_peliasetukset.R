@@ -47,9 +47,9 @@ observeEvent(input$luo_peleja,{
   # input_BO_mode <- as.numeric(input[[paste0("checkbox_BO_mode",divariKierros)]])
   
   
-  kierroksia <-2
-  peleja_per_ottelu <-3
-  input_BO_mode <-1
+  # kierroksia <-1
+  # peleja_per_ottelu <-2
+  # input_BO_mode <-1
   divaripeliParit <- peliparit_vihua[Divari == divariKierros]
   kierros_dt <- data.table(Kierros = 1:kierroksia, dummy_key = "KEY")
   peleja_per_ottelu_dt <- data.table(Ottelu_NO = 1:peleja_per_ottelu, dummy_key = "KEY")
@@ -128,9 +128,9 @@ observeEvent(input$luo_peleja,{
   
   vanahCSV <- luecsv("pelit.csv")
 
-  kaikkipelit<-rbind(vanahCSV, joinM)
+  kaikkipelit <- rbind(vanahCSV, joinM)
 
-  kircsv(kaikkipelit,"pelit.csv", upload = FALSE)
+  kircsv(kaikkipelit,"pelit.csv", upload = TRUE)
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = TRUE)
   

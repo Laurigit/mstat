@@ -18,7 +18,9 @@
 
 # tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
- required_data("saavutusAsetukset")
+# required_data("SRC_SAAVUTUSASETUKSET", TRUE)
+# saavutusDataInput <- SRC_SAAVUTUSASETUKSET
+# saavutusKierrosAsetus <-3
   saavutusKierrosAsetus <- saavutusDataInput[saavutusKierrosAsetus]
   saavutusKierrosAsetus[, asetukset]
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]

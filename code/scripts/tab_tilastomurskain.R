@@ -188,6 +188,46 @@ observeEvent(input$tallennaSaavutusAsetus,{
   updateTextInput(session,"text_tilastoKuvaus",value="")
 })
 
+testSaavutus <- reactiveValues(default = "")
+
+observeEvent(input$validateSaavutusAsetus,{
+  #kato onko siellä dataa
+  if(is.null(saavutusAsetuksetReact$data)){
+    saavutusAsetukset<-data.table(
+      datataulu=character(),
+      kuvaus=character(),
+      asetukset=list(),
+      minVaiMax=character(),
+      minVaiMax_rivi=character(),
+      Palkintonimi=character()
+    )
+  }
+  cnames <- list("cols","rows","vals", "exclusions","aggregatorName", "rendererName")
+  # Apply a function to all keys, to get corresponding values
+  allvalues <- lapply(cnames, function(name) {
+    item <- input$myPivotData[[name]]
+  })
+  storeList<-NULL
+  storeList[[1]]<-allvalues
+  
+  uusrivi<-data.table(
+    datataulu=input$radio_data_selected,
+    kuvaus=input$text_tilastoKuvaus,
+    asetukset=(storeList)
+  )
+
+
+    #lisätään tyhjat sarakkeet puuttuviin tietoihin
+    uusrivi[,':=' (Palkintonimi="",Esitysmuoto="Decimal",minVaiMax="max",minVaiMax_rivi="max")]
+  
+    testSaavutus$default <- laskeSaavtusAsetuksista(1, uusrivi)
+})
+
+output$validateSaavutusText <- renderUI({
+  looppiData <- testSaavutus$default
+  box(HTML(looppiData[,teksti]),background = looppiData[,color])
+})
+
 #voi käyttää debugissa, jos pistää UIsta päälle
 output$pivotRefresh <- renderText({
   

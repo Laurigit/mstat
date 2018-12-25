@@ -4,7 +4,9 @@ shinyServer(function(input, output, session) {
   #load_scripts.R
   
 
- 
+
+
+load_data_from_DB()
   
   sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
   sourcelist[, rivi := seq_len(.N)]
