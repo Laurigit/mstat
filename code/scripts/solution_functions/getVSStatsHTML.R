@@ -38,7 +38,7 @@ message(get_aloittaja_image)
   getCardImg(get_aloittaja_image)
 
   
-  tulos <-suppressWarnings(melt.data.table(text_stats, id.vars = "idvar")[,idvar := NULL])
+  tulos <-suppressWarnings(melt.data.table(text_stats_temp, id.vars = "idvar")[,idvar := NULL])
   # tulos[variable == "Win_pct", color :=  ifelse(value > 50, "purple", "yellow")]
   # tulos[variable == "Win_pct-MA", color :=  ifelse(value > 50, "purple", "yellow")]
   # tulos[variable == "Streak", color :=  ifelse(value > 0, "purple", "yellow")]

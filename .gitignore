@@ -9,3 +9,8 @@ droptoken.rds
 backup
 .Rproj.user
 mstat2.Rproj
+download_folder
+external_files -kehitksen jalkeen
+lastenhoito.R
+humala.csv
+pelit.csv

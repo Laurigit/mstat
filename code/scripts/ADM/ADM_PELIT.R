@@ -10,15 +10,11 @@ temp_hum[, ':=' (Puhallus_DT_alku = (Puhallus_DT - 60 * 30),
 
 temp_pel <- STG_PELIT
 
-#temp_pel <- temp_pel[!is.na(Aloitus_DT)]
-
 temp_pel[ ,':=' (Aloitus_DT_copy = (Aloitus_DT), Lopetus_DT_copy = (Lopetus_DT))]
-#join_humala <- temp_hum[temp_pel, on=.( Puhallus_DT_alku <= Lopetus_DT,
-#                                           Puhallus_DT_loppu >= Lopetus_DT,
-#                                           Omistaja_ID = Omistaja_ID)
-#                       ]
-join_humala <- temp_pel
-join_humala[, Humala := 0]
+join_humala <- temp_hum[temp_pel, on=.( Puhallus_DT_alku <= Lopetus_DT,
+                                        Puhallus_DT_loppu >= Lopetus_DT,
+                                        Omistaja_ID = Omistaja_ID)
+                        ]
 #aggregate over humala, if blown multiple times during a game (window)
 join_humala_aggr <- join_humala[, .(Humala = mean(Humala, na.rm = TRUE)), by = .(Aloitus_DT = Aloitus_DT_copy,
                                                                                  Aloitus_DT_copy,
