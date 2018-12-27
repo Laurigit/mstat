@@ -4,13 +4,14 @@
 # filename_in<-"L_7.json"
 # pakka <- file.info(paste(folder_in,filename_in,sep=""))
 # filelist <- "L_7"
-# pakka <- data.frame(name = "L_7.json", size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
-process_uploaded_decks<-function(filelist,folder_out, input_default_decklist = FALSE) {
+# pakka <- data.frame(name = "L_7.json",
+#size = 7790, type ="", datapath = paste(folder_in,filename_in,sep=""), stringsAsFactors = FALSE)
+process_uploaded_decks <- function(filelist,folder_out, input_default_decklist = FALSE) {
 filelist <-data.table(filelist)
   #lue json-tiedosto
   #json_pakka <- fromJSON(paste(folder_in,filename_in,sep=""))
 valid_teksti<-NULL
-
+valid_teksti_tot <- NULL
   for (rivi in 1:nrow(filelist)){ 
   
     pakka <-filelist[rivi]
@@ -38,9 +39,9 @@ valid_teksti<-NULL
     # file_content <- fread(paste0("./external_files/", pakka$name), header = FALSE, sep = "¤",
     #                       stringsAsFactors = FALSE)
     # 
-    print('   file_content <- fread(paste0(pakka$datapath), header = FALSE, sep = "%",
-                          stringsAsFactors = FALSE)')
-    print("¤")
+   # print('   file_content <- fread(paste0(pakka$datapath), header = FALSE, sep = "%",
+   #                       stringsAsFactors = FALSE)')
+
     file_content <- fread(paste0(pakka$datapath), header = FALSE, sep = "%",
                           stringsAsFactors = FALSE)
     len_of_string <- nchar(file_content[1])
@@ -70,8 +71,9 @@ valid_teksti<-NULL
       valid_teksti<-paste(valid_teksti,"FAILED: ",pakka$name,"\n")
 
     }
-    
+   
   }
+
 return(valid_teksti)
   
 }

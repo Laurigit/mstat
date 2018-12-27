@@ -171,7 +171,7 @@ uusi_peli<-dashboardBody(
                      
                      #  column(2, verbatimTextOutput("pivotRefresh")),
                      
-                     column(4,textInput("text_tilastoKuvaus",label="Tilaston/Saavutuksen nimi"),
+                     column(4, textInput("text_tilastoKuvaus",label="Tilaston/Saavutuksen nimi"),
                             actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
                             
                             actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
@@ -182,10 +182,10 @@ uusi_peli<-dashboardBody(
                             actionButton("poista_tilastoAsetus","Poista tilasto")),
                      column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),
             fluidRow(
-              div(id="myScrollBox",
+              div(id = "myScrollBox",
                   rpivotTableOutput("pivot_cross")
               ))),
-    tabItem(tabName="tab_saavutukset",
+    tabItem(tabName = "tab_saavutukset",
             #fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava"))
             # fluidRow( actionButton("laskeSaavutukset", "Laske saavutukset"))
             uiOutput("saavutus_UI")
@@ -197,27 +197,55 @@ uusi_peli<-dashboardBody(
             
             
     ),
-    tabItem(tabName="pakkaupload",
+    tabItem(tabName = "pakkaupload",
             fluidPage(
               
-                  fluidRow(column(3,fileInput("file1", "Valitse pakkoja .json muodossa",multiple=TRUE,accept = c(".json"))),
-                           column(3,offset=3,fileInput("anyfile", "lähetä mikä tahansa tiedosto",multiple=TRUE))),
+                  fluidRow(column(3,
+                                  fileInput("file1",
+                                            "Valitse pakkoja .json muodossa",
+                                            multiple = TRUE,
+                                            accept = c(".json"))),
+                           column(3,
+                                  offset = 3,
+                                  fileInput("anyfile",
+                                            "lähetä mikä tahansa tiedosto",
+                                            multiple = TRUE)),
+                           column(3,
+                                  actionButton("input_lataa_valitut_pakat", "Update selected decks"))),
                   
                 fluidRow(tableOutput("contents")),
                 fluidRow(verbatimTextOutput("text_validointi")),
-                fluidRow(box(DT::dataTableOutput("pfi_taulukko"),title=("Nykypakkastatsit"),solidHeader = TRUE,status="primary",width=12))
+                fluidRow(box(DT::dataTableOutput("pfi_taulukko"),
+                             title = ("Nykypakkastatsit"),
+                             solidHeader = TRUE,
+                             status = "primary",
+                             width = 12))
             
     )),
-    tabItem(tabName="tab_saavutusasetukset",
+    tabItem(tabName = "tab_saavutusasetukset",
             fluidPage(
-              fluidRow(column(2,radioButtons("radio_minMax_saavutus","Voittajan valinta",choices=c("min", "max"),selected = "max")),
-                       column(2,radioButtons("radio_minMax_saavutus_rivi","Rivitavoite",choices=c("min", "max"),selected = "max")),
-                       column(3,radioButtons("radio_muotoilu","Numeron muotoilu",choices = c("Decimal","Integer","%","e"),selected="%")),
-                       column(3, actionButton("paivita_saavutus","Paivita saavutus"),
-                              actionButton("poista_saavutusAsetus","Poista saavutus")),
-                       column(3,textInput("txt_palkinto","Palkinnon nimi"),
-                              textInput("txt_palkinto_kuvaus","Palkinnon kuvaus"))),
-              fluidRow( column(6,dataTableOutput("tallennetut_saavutusAsetukset")))
+              fluidRow(column(2, radioButtons("radio_minMax_saavutus",
+                                             "Voittajan valinta",
+                                             choices = c("min", "max"), selected = "max")),
+                       column(2, radioButtons("radio_minMax_saavutus_rivi",
+                                              "Rivitavoite",
+                                              choices = c("min", "max"), selected = "max")),
+                       column(3, radioButtons("radio_muotoilu",
+                                              "Numeron muotoilu",
+                                              choices = c("Decimal",
+                                                          "Integer",
+                                                          "%",
+                                                          "e"),
+                                              selected = "%")),
+                       column(3, actionButton("paivita_saavutus",
+                                              "Paivita saavutus"),
+                              actionButton("poista_saavutusAsetus",
+                                           "Poista saavutus")),
+                       column(3,textInput("txt_palkinto",
+                                          "Palkinnon nimi"),
+                              textInput("txt_palkinto_kuvaus",
+                                        "Palkinnon kuvaus"))),
+              fluidRow(column(6, dataTableOutput("tallennetut_saavutusAsetukset")))
             )
     ),
     tabItem(tabName = "tab_boosterit",
@@ -227,7 +255,13 @@ uusi_peli<-dashboardBody(
                        column(3, textOutput("txt_vect_boosters")),
                        column(3, actionButton("action_add_boosters", "Draft these boosters")),
                        column(3, textOutput("txt_confirm_drafted")))
-            ))
+            )),
+    tabItem(tabName = "tab_decks",
+            fluidPage(   
+              fluidRow(
+                column(12, rHandsontableOutput("hot_decks"))),
+              fluidRow(actionButton(inputId = "Save_decks", label = "Save changes and upload"))
+              ))
     
     
     
@@ -239,24 +273,27 @@ uusi_peli<-dashboardBody(
 
 #SIDEBAR  
 sidebar <- dashboardSidebar(
-  
-  sidebarMenu(id="sidebarmenu",
+  sidebarMenu(id = "sidebarmenu",
               menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
-              
-              menuItem("Tallenna peli", icon = icon("th"), tabName = "tab_tallenna_peli"),
-              menuItem("Blow", icon = icon("th"), tabName = "tab_blow"),
-              menuItem("Sarjataulukko", icon = icon("dashboard"), tabName = "tab_sarjataulukko"),
-              menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName="tab_tilastomurskain"),
-              menuItem("Saavutukset",icon=icon("bullseye"),tabName="tab_saavutukset"),
+              menuItem("Tallenna peli", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
+              menuItem("Blow", icon = icon("beer"), tabName = "tab_blow"),
+              menuItem("Sarjataulukko", icon = icon("trophy"), tabName = "tab_sarjataulukko"),
+              menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName = "tab_tilastomurskain"),
+              menuItem("Saavutukset",icon = icon("bullseye"),tabName = "tab_saavutukset"),
               
               #menuItem("Turnausasetukset",tabName="nimeton",
-              menuItem('Divarit ja pickit', icon=icon("signal") ,tabName = 'tab_combined'),
+              menuItem('Divarit ja pickit', icon = icon("tasks") ,tabName = 'tab_combined'),
               #menuSubItem(icon = NULL,actionButton("tallenna_bannit","Tallenna")),
-              menuItem('Peliasetukset',  icon=icon("server"),tabName = 'tab_peliasetukest'),
-              menuItem("Lataa pakkoja", icon=icon("cloud-upload") ,tabName = "pakkaupload"),
-              menuItem("Saavutusasetukset",icon=icon("cloud-upload"), tabName= "tab_saavutusasetukset"),
-              menuItem("Boosterit", icon = icon("box"), tabName = "tab_boosterit"),
-              radioButtons("radio_total_mode",label=h5("Total mode"),choices = list("Pois"=FALSE,"Paalla"=TRUE),selected=FALSE,inline=T),
+              menuItem('Peliasetukset',  icon = icon("sliders-h"),tabName = 'tab_peliasetukest'),
+              menuItem("Download decks", icon = icon("cloud-download-alt") ,tabName = "pakkaupload"),
+              menuItem("Saavutusasetukset", icon = icon("cog"), tabName = "tab_saavutusasetukset"),
+              menuItem("Boosterit", icon = icon("envelope"), tabName = "tab_boosterit"),
+              menuItem("Decks", icon = icon("server"), tabName = "tab_decks"),
+              radioButtons("radio_total_mode",
+                           label = h5("Total mode"),
+                           choices = list("Pois" = FALSE, "Paalla" = TRUE),
+                           selected = FALSE,
+                           inline = T),
               radioButtons("radio_pfi_mode",
                            label = h5("PFI mode"),
                            choices = list("Pois" = FALSE, "Paalla" = TRUE),

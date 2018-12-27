@@ -4,8 +4,8 @@ getCard <- function(mana_stack_id) {
   path <- "card"
   raw.result <- GET(url = url, path = "card")
   result_json <- fromJSON(rawToChar(raw.result$content))
-  names(result_json)
-  names(STG_PAKKA_COMPONENTS)
+  # names(result_json)
+  # names(STG_PAKKA_COMPONENTS)
 
   result_row <- data.table( Card_ID = result_json$id,
                             Name = result_json$name,

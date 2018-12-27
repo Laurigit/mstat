@@ -1,6 +1,11 @@
 #SRC_PFI
 
-pakkalista <- list.files("./external_files")
+pakkalista_raw <- data.table(filenimi = list.files("./external_files"))
+filtered <- pakkalista_raw[ (substr(filenimi, nchar(filenimi)-5+1, nchar(filenimi))==".json")]
+filtered[, pvm_with_json := word(filenimi, 3, 3, sep = "_") ]
+filtered[, pvm := word(pvm_with_json, 1, 1, sep = ".json") ]
+setorder(filtered, pvm)
+pakkalista <- filtered[, filenimi]
 folder <-"./external_files/"
 pakat <- NULL
 counter <- 0

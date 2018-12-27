@@ -162,13 +162,6 @@ humalaData <- reactive({
      })
 
 
-anyFileUpload<-observe({
-  req(input$anyfile)
-  print(input$anyfile)
-  drop_upload(input$anyfile$name, "mstat/csv/", mode = "overwrite", dtoken = token)
-  
-})
-
 observe({
   req(input$file1)
   print(paste("ifile"))
