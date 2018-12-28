@@ -34,7 +34,7 @@ getVSStatsHtml <- function(UID_UUSI_PELI, Omistaja1) {
   divari_input <- UID_UUSI_PELI[Omistaja_NM == Omistaja1, Divari]
   get_aloittaja_image <- aloittaja_image(aloittaja,
                                          divari_input)
-message(get_aloittaja_image)
+
   getCardImg(get_aloittaja_image)
 
   

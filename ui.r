@@ -91,14 +91,33 @@ uusi_peli<-dashboardBody(
                               
                               
                               ),
-                       column(4,sliderInput("slider_martin_virhe",label=h4("Martin arvosana"),min=-1,max=1,value=1),actionButton("martin_virhe","Martin virhe"))
+                       column(4,
+                              sliderInput("slider_martin_virhe",
+                                          label = h4("Martin arvosana"),
+                                          min = -1,
+                                          max = 1,
+                                          value = 1),
+                              actionButton("martin_virhe",
+                                           "Martin virhe"))
               ),
-              fluidRow(column(4,sliderInput("slider_laurin_landit",label=h4("Lauri landit"),min=0,max=10,value=0)),
+              fluidRow(column(4,
+                              sliderInput("slider_laurin_landit",
+                                            label = h4("Lauri landit"),
+                                            min = 0,
+                                            max = 10, 
+                                            value = 0)),
                        #column(4,sliderInput("slider_vuoroarvio",label=h4("Vuoroarvaus"),min=0,max=10,value=0)),
                        column(4, uiOutput("vuoroArvausPelaaja")),
-                       column(4,sliderInput("slider_martin_landit",label=h4("Martin landit"),min=0,max=10,value=0))
+                       column(4, sliderInput("slider_martin_landit",
+                                             label = h4("Martin landit"),
+                                             min = 0,
+                                             max = 10,
+                                             value = 0))
               ),
-              fluidRow(column(6,sliderInput("slider_laurin_kasikortit",label=h4("Laurin kasikortit"),min=-1,max=7,value=-1)),
+              fluidRow(column(6,
+                              sliderInput("slider_laurin_kasikortit",
+                                          label = h4("Laurin kasikortit"),
+                                          min=-1,max=7,value=-1)),
                        
                        column(6, sliderInput("slider_martin_kasikorit",label=h4("Martin kasikortit"),min=-1,max=7,value=-1))),
               fluidRow(column(6,sliderInput("slider_laurin_lifet",label=h4("Laurin lifet"),min=0,max=21,value=0)),

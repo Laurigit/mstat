@@ -145,8 +145,12 @@ observeEvent(input$martti_voitti,{
 
 
 observeEvent(input$slider_vuoroarvio,{
-   updateSliderInput(session, "slider_martin_landit", value = round(input$slider_vuoroarvio * 0.42))
-  updateSliderInput(session, "slider_laurin_landit", value = round(input$slider_vuoroarvio * 0.42))
+#  print("rab_tallenna slider voroarvio")
+ # uusi_arvo <- round(input$slider_vuoroarvio * 0.42)
+
+  #print(uusi_arvo)
+   #updateSliderInput(session, inputId = "slider_martin_landit", value = 5)
+  #updateSliderInput(session, "slider_laurin_landit", value = round(input$slider_vuoroarvio * 0.42))
 })
 
 observeEvent(input$action_add,{
@@ -207,7 +211,12 @@ output$vuoroArvausPelaaja <- renderUI({
   } else {
     aloittaja_vuoro_teksti <- "RIKKI"
   }
-  sliderInput("slider_vuoroarvio",label=h4(aloittaja_vuoro_teksti),min=4,max=16,value=4)
+  sliderInput("slider_vuoroarvio",
+              label = h4(aloittaja_vuoro_teksti),
+              min = 4,
+              max = 16,
+              value = 4)
+  
  
 })
   

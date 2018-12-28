@@ -18,10 +18,12 @@
 
 # tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
-# required_data("SRC_SAAVUTUSASETUKSET", TRUE)
-# saavutusDataInput <- SRC_SAAVUTUSASETUKSET
-# saavutusKierrosAsetus <-3
-  saavutusKierrosAsetus <- saavutusDataInput[saavutusKierrosAsetus]
+#required_data("STG_SAAVUTUSASETUKSET", force_update =  TRUE)
+# saavutusDataInput <- STG_SAAVUTUSASETUKSET
+# saavutusKierrosAsetus <-8
+#print("SAAVUTUSINPUT")
+  #print(saavutusDataInput)
+    saavutusKierrosAsetus <- saavutusDataInput[saavutusKierrosAsetus]
   saavutusKierrosAsetus[, asetukset]
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
   minVaiMax<-saavutusKierrosAsetus[,minVaiMax]
@@ -42,7 +44,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
   })
   
 
-  filters<-asetukset[[4]]
+  filters <- asetukset[[4]]
   filter_col_names<-names(filters)
   aggr<-asetukset[[5]]
   #conver aggr to proper format
@@ -69,8 +71,8 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
   syntax_start<-parse(text=paste0('!',names(filters)[[kierros]],' %in% c("',paste(unlist(kierrosData),collapse='","'),'")'))
   #
   valittuData<-valittuData[eval(syntax_start)]
- #jos null, niin vaadi finite
-  if (unlist(kierrosData) == "null") {
+ #jos yksikin null, niin vaadi finite
+  if (max((unlist(kierrosData)) == "null") == 1) {
     syntax_NA <- parse(text=paste0('!is.na(',names(filters)[[kierros]],')'))
     valittuData <- valittuData[eval(syntax_NA)]
   }
@@ -78,7 +80,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
   
   }
   }
-  if (nrow(valittuData)>0) {
+  if (nrow(valittuData) > 0) {
             
             
             omaCountUnique <- function(inData){

@@ -191,7 +191,9 @@ observeEvent(input$tallennaSaavutusAsetus,{
 testSaavutus <- reactiveValues(default = "")
 
 observeEvent(input$validateSaavutusAsetus,{
+  
   #kato onko siellä dataa
+  #saavutusAsetuksetReact <- NULL
   if(is.null(saavutusAsetuksetReact$data)){
     saavutusAsetukset<-data.table(
       datataulu=character(),
@@ -225,7 +227,12 @@ observeEvent(input$validateSaavutusAsetus,{
 
 output$validateSaavutusText <- renderUI({
   looppiData <- testSaavutus$default
+   print(nrow(looppiData))
+  if (!is.null(nrow(looppiData))) {
   box(HTML(looppiData[,teksti]),background = looppiData[,color])
+  } else {
+    box("Create a stat and then test achievement")
+  }
 })
 
 #voi käyttää debugissa, jos pistää UIsta päälle
