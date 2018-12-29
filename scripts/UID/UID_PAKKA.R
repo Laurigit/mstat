@@ -35,8 +35,7 @@ Voitto_PCT_MA_pakka[, Voitto_PCT_MA_rank := rank(-Voitto_PCT_MA, ties.method = "
 
 
 Lisakortit <- INT_PFI[Pakka_form_ID == Current_Pakka_form_ID,. (Pakka_ID, Deck_size = Kortti_lkm_manastack,
-                                                                Shuffle8 = Kortti_lkm_manastack %% 8,
-                                                                Colors = Pakka_colors)]
+                                                                Shuffle8 = Kortti_lkm_manastack %% 8)]
 Lisakortit[, Deck_size_rank := rank(-Deck_size, ties.method = "min")]
 
 #putki

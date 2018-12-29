@@ -3,10 +3,9 @@ required_data(c("ADM_PAKKA_COMPONENTS", "STG_PAKAT"))
 comp <- ADM_PAKKA_COMPONENTS[is_current_form == TRUE & Maindeck == TRUE]
 
 mode <- comp[comp[Type != "Lands", .I[which.max(Count)], by=Pakka_ID]$V1][, .(Pakka_ID, Card_ID, Most_same_card = Name)]
-
-comp[, ':=' (Power = as.numeric(word(Stats, 1,1, "/")),
+comp[Type == "Creatures" & substr(Stats, 1, 1) != "*" , ':=' (Power = as.numeric(word(Stats, 1,1, "/")),
              Toughness = as.numeric(word(Stats, 2,2, "/")))]
-
+comp[Type == "Planeswalkers", Loyalty := str_sub(Stats,-2, -2)]
 comp[, Cost_clean := gsub("}", "", Cost)]
 comp[, Cost_clean := gsub("\\{", "", Cost_clean)]
 #muutetaan tuplavarisymbolit varittomaksi
@@ -15,15 +14,16 @@ comp[, is_multimana_symbol := as.numeric(grepl("/", Cost_clean)), by = rivi]
 
 
 all_chars <- paste0(comp[, Cost_clean], collapse = "")
+
 uniqchars <- data.table(kirjaimet = strsplit(all_chars, "")[[1]])[, .N, by = kirjaimet]
-uniqchars[, isnum := !is.na(as.numeric(kirjaimet))]
+suppressWarnings(uniqchars[, isnum := !is.na(as.numeric(kirjaimet))])
 manacost_sarakkeet  <- uniqchars[isnum == FALSE  & !kirjaimet %in% c("/", "A", "N"), kirjaimet]
 
 lapply(manacost_sarakkeet, function(inp) {
   comp[, (inp) := str_count(Cost,inp)]
   
 })
-comp[, AnyColor := as.numeric((gsub("([0-9]+).*$", "\\1", Cost_clean)))]
+suppressWarnings(comp[, AnyColor := as.numeric((gsub("([0-9]+).*$", "\\1", Cost_clean)))])
 comp[, AnyColor := ifelse(is.na(AnyColor), 0, AnyColor)]
 
 flatList <- c("Rarity", "Type")
@@ -52,7 +52,7 @@ aggr_comp <- comp[is_multimana_symbol==0,. (
                         G = sum(G * Count, na.rm = TRUE),
                         X = sum(X * Count, na.rm = TRUE),
                         
-                        C = sum(P * Count, na.rm = TRUE) + sum(AnyColor * Count, na.rm = TRUE))
+                        C = as.integer(sum(P * Count, na.rm = TRUE) + sum(AnyColor * Count, na.rm = TRUE)))
                   , by = .(Omistaja_ID,
                                           Pakka_NM,
                                           Pakka_ID
@@ -64,7 +64,8 @@ melt_aggr_comp[variable != "C", maxVariLKM := max(value), by = .(Pakka_ID)]
 melt_aggr_comp[value > 0, ':=' (Kirjain = ifelse(value / maxVariLKM > 0.3, toupper(variable), tolower(variable)))]
 melt_aggr_comp[, Kirjain := ifelse(is.na(Kirjain), "", Kirjain)]
 setorder(melt_aggr_comp, Pakka_ID, -value)
-variNimi <- melt_aggr_comp[Kirjain != "x", .(Count = sum(value), Colors = paste0(Kirjain, collapse = "")), by = .(Pakka_ID)]
+variNimi <- melt_aggr_comp[Kirjain != "x", .(Colors = sort_MTG_colors(paste0(Kirjain, collapse = ""))),
+                           by = .(Pakka_ID)]
 
 aggr_comp_pct <- aggr_comp[,. (  
   W = W / (W + B + U + R + G + X + C),
@@ -73,7 +74,7 @@ aggr_comp_pct <- aggr_comp[,. (
   R = R / (W + B + U + R + G + X + C),
   G = G / (W + B + U + R + G + X + C),
   X = X / (W + B + U + R + G + X + C),
-  C = C / (W + B + U + R + G +X + C))
+  C = C / (W + B + U + R + G + X + C))
   , by = .(Omistaja_ID,
            Pakka_NM,
            Pakka_ID
@@ -82,6 +83,14 @@ aggr_comp_pct <- aggr_comp[,. (
 
 joinVari <- aggr_comp_pct[variNimi, on = "Pakka_ID"]
 joinmode <- mode[joinVari, on = "Pakka_ID"]
-STAT_CURRENT_PAKKA <- joinmode
+joinmode[, ':=' (Pakka_NM_Dynamic = paste(word(Pakka_NM, 1, sep = "_"),
+                                          (Colors),
+                                          word(Pakka_NM, -1, sep = "_"),
+                                          sep = "_"),
+                 Pakka_NM_no_color = paste(word(Pakka_NM, 1, sep = "_"),
+                                           word(Pakka_NM, -1, sep = "_"),
+                                           sep = "_"))]
+
+STAT_CURRENT_PAKKA <- joinmode[order(as.numeric(Pakka_ID))]
 
 #muistaa joinaa mode

@@ -23,7 +23,7 @@ for (pakka_no in 1:count_decks){
                              Hinta_low = price_low,
                              Hinta_high = price_high,
                              Kortti_lkm_manastack = pakkakoko,
-                             Pakka_colors = pakkacolors,
+#                             Pakka_colors = pakkacolors, #not used as colors are calculated based on the deck
                              Valid_from_DT = valid_from
                              )
     

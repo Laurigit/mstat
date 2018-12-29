@@ -54,24 +54,10 @@ PakkaVS <- UID_PAKKA_VS[Pakka_ID %in% c(Left_pakka,
 #message("PakkaVS ", PakkaVS)
 Tilanne <- getTilanne(pelidata, Peli_ID_input)
 Aloittaja <- pelidata[Peli_ID == Peli_ID_input , .(Pakka_ID, Aloittaja)]
-sscols_pakat_temp <- STG_PAKAT[, .(Pakka_ID, Pakka_NM, Omistaja_ID)]
+
 #join dybamic color
-ssColor <- STAT_CURRENT_PAKKA[, .(Pakka_ID, Colors, Most_same_card)]
-sscols_pakat <- sscols_pakat_temp[ssColor, on = "Pakka_ID"]
-sscols_pakat[, Pakka_NM:= paste(word(Pakka_NM, 1, sep = "_"),
-                                sort_MTG_colors(Colors),
-                                word(Pakka_NM, -1, sep = "_"),
-                                sep = "_"),
-             by = Pakka_ID]
+sscols_pakat <- STAT_CURRENT_PAKKA[, .(Pakka_NM, Pakka_ID, Colors, Most_same_card, Pakka_NM_Dynamic, Omistaja_ID)]
 
-sscols_pakat[, Pakka_NM_no_color:= paste(word(Pakka_NM, 1, sep = "_"),
-                                word(Pakka_NM, -1, sep = "_"),
-                                sep = "_"),
-             by = Pakka_ID]
-sscols_pakat[, Pakka_color:= sort_MTG_colors(Colors),
-             by = Pakka_ID]
-
-sscols_pakat[, Colors := NULL]
 joini <- PakkaVS[Tilanne,
                    on ="Pakka_ID"][Pakka,
                  on = "Pakka_ID"][Aloittaja,

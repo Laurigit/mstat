@@ -21,8 +21,8 @@ updateData("SRC_MANASTACK_CARDS", ADM_DI_HIERARKIA, input_env = globalenv())
 join_additional_data <- MANASTACK_CARDS[STG_PAKKA_COMPONENTS, on = "Card_ID"][, i.Name := NULL]
 sscols_pfi <- STG_PFI[, .(Pakka_ID, Pakka_form_ID, is_current_form = Pakka_form_ID == Current_Pakka_form_ID)]
 join_pakka_id <- sscols_pfi[join_additional_data, on = "Pakka_form_ID"]
-sspakat <- STG_PAKAT[,. (Omistaja_ID, Pakka_NM, Pakka_ID)]
+sspakat <- STG_PAKAT[,. (Omistaja_ID, Pakka_NM, Pakka_ID, Side)]
 joininmi <- sspakat[join_pakka_id, on = "Pakka_ID"]
-ADM_PAKKA_COMPONENTS <- joininmi
+ADM_PAKKA_COMPONENTS <- joininmi[Side == 0]
 #MANASTACK_CARDS <- new_cards
 #save(MANASTACK_CARDS,  file =  "./external_files/MANASTACK_CARDS.RData")

@@ -10,4 +10,6 @@ SRC_DIVARI <- luettu[, .(rivi_id,
                Omistaja_nimi,
                Picked = as.numeric(Picked),
                Manastack_Deck_ID,
-               Json_Prefix)]
+               Json_Prefix,
+               Retired,
+               Side)]

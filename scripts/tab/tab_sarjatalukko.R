@@ -52,7 +52,8 @@ output$sarjataulukkovalitsin <- renderUI({
 eR_UID_SARJATAULUKKO <- reactive({
 print("eR_UID_SARJATAULUKKO")
   message(input$sarjataulukkokierros," input$sarjataulukkokierros")
-  result <-  UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
+  result <-  UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT,
+                               input$radio_total_mode)
   return(result)
 })
 
@@ -65,9 +66,9 @@ output$sarjataulukot <-renderUI({
   #sarjataulukkoData <- UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
   sarjataulukkoData <- eR_UID_SARJATAULUKKO()
   #total <- rbindlist(sarjataulukkoData, use.names = TRUE)
-  print(sarjataulukkoData)
+
   total <- do.call(rbind, sarjataulukkoData)
-  print(total)
+
   # 
   # sarjadata<-sarjataulukkoKaikki(divaridata(),peliDataReact(),input$radio_bo_mode,input$sarjataulukkokierros,input$radio_total_mode,NA,NA,NA,NA,input$radio_pfi_mode,pfi_data())
   # divarit<-sarjadata$divarit
