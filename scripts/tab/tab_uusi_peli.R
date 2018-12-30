@@ -15,7 +15,7 @@ eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
                                                                   input$select_laurin_pakka,
                                                                   input$select_martin_pakka)
                                   
-                                  message("palautettu uusi peli id ", normiToiminto)
+                                 # message("palautettu uusi peli id ", normiToiminto)
                                   return(normiToiminto)
                                 } else {
                                   
@@ -23,7 +23,7 @@ eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
                                   
                                   keskenPeliData <- ADM_TEMP_DATA_STORAGE
                                   
-                                  message("eR_PELI_ID ", keskenPeliData)
+                                 # message("eR_PELI_ID ", keskenPeliData)
                                   
                                   P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
                                   P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
@@ -42,7 +42,7 @@ observe({
                  # martin_mull<-1
       Aloitus_DT <- now(tz = "EET")
       Peli_ID  <- eR_Peli_ID()
-      message("PELI_ID ts storage ", Peli_ID)
+   
       req( laurin_mull<-input$slider_laurin_mulligan,
            martin_mull<-input$slider_martin_mulligan)
       laurin_mull<-input$slider_laurin_mulligan
@@ -59,22 +59,14 @@ observe({
                martin_mull,
                Peli_ID)
       tempData <- data.table(muuttuja = muuttujat, arvo = arvot)
-      print("UUDET")
-      print(tempData)
       #jos mikään ei muutu, niin älä lähetä
       required_data("ADM_TEMP_DATA_STORAGE")
-      print("VANHAT")
-      print(ADM_TEMP_DATA_STORAGE)
       ssColsVanhat <- ADM_TEMP_DATA_STORAGE[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
-    message("Vanha ", ssColsVanhat)
-    print(ssColsVanhat)
+
 
       ssColsUudet <- tempData[muuttuja %in% c("Peli_ID", "Laurin_mulligan", "Martin_mulligan"), arvo]
-      message("uud ", ssColsUudet)
-      print(ssColsUudet)
-      
+
       comparison <- all.equal(ssColsVanhat, ssColsUudet)
-      print(comparison)
       if(!comparison == TRUE) {
 
       kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
@@ -83,10 +75,6 @@ observe({
 
       updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
 
-      print("observeEvent(c(input$select_laurin_pakka,
-               input$select_martin_pakka,
-               input$slider_laurin_mulligan,
-               input$slider_martin_mulligan), {")
       #nollaa tempdatalaskuri
       tempDataLehtysLaskuri$a <- 0
       }
@@ -109,8 +97,11 @@ observeEvent(input$arvo_peli,{
 eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
 observe({
 required_data("ADM_PELIT")
-  eR_Peli_Aloittaja$a <- ADM_PELIT[Peli_ID == eR_Peli_ID() & Omistaja_ID =="M", Aloittaja]
-  message("  eR_Peli_Aloittaja$a ",  eR_Peli_Aloittaja$a )
+ 
+  pelidata <- ADM_PELIT[1 != 0]
+  result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]
+  print(result)
+  eR_Peli_Aloittaja$a <- result
   #0 = Lauri, 1 = martti
 } )
 
@@ -121,12 +112,9 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
   #create dependency 
-  print("eR_UID_UUSI_PELI")
-  print(eR_Peli_ID())#dont del me
+  eR_Peli_ID()
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 required_functions("UID_UUSI_PELI")
-print( eR_UID_PAKKA())
-print( eR_UID_PAKKA_VS())
 
   tulos <- isolate(UID_UUSI_PELI(eR_Peli_ID(),
                          eR_UID_PAKKA(),
@@ -139,7 +127,7 @@ print( eR_UID_PAKKA_VS())
                          input$slider_martin_mulligan,
                          STAT_CURRENT_PAKKA
                         ))
-  print(tulos)
+
   return(tulos)
 })
 
@@ -203,22 +191,16 @@ updatedTempData<- reactiveValues(a = 0)
 
 
 
-# output$PakkaLeftBox <- renderUI({
-#   print("output$PakkaLeftBox")
-#  print(eR_UID_UUSI_PELI())
-#   result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
-# 
-#  
-#   # result(eR_UID_UUSI_PELI())
-#   box(HTML(result), background = "purple", width = NULL)
-#   
-# })
-
 output$PakkaLeftBox <- renderUI({
     
     result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
     result_data <- result$data
     
+  #  print("output$PakkaLeftBox")
+  
+    #luo riippuvuus
+    print(eR_UID_UUSI_PELI())
+    ############
     box(
       solidHeader = FALSE,
       collapsible = FALSE,
@@ -255,7 +237,9 @@ output$PakkaLeftBox <- renderUI({
 
 
 output$PakkaRightBox <- renderUI({
-
+  #luo riippuvuus
+  eR_UID_UUSI_PELI()
+  ############
   result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
   result_data <- result$data
   
@@ -378,7 +362,9 @@ output$PakkaVSBox <- renderUI({
   #required_data("UID_UUSI_PELI", TRUE)
   #rm(eR_UID_UUSI_PELI)
 
-
+  #luo riippuvuus
+  (eR_UID_UUSI_PELI())
+  ############
     #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
     result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
     result_data <- result$data

@@ -45,7 +45,10 @@ uusi_peli<-dashboardBody(
                                                   style = "color: #fff; background-color: #b73338; border-color: #2e6da4"))),
               fluidRow(column(4, uiOutput("mulliganiSlideriLauri")),
                        column(4, uiOutput("divariRadio_out")),
-                       column(4, uiOutput("mulliganiSlideriMartti"))), width = NULL, collapsible = TRUE),
+                       column(4,  sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
+                                              max = 6, value = 0))),
+              width = NULL,
+              collapsible = TRUE),
               fluidRow(column(2, actionButton("lauri_voitti","Lauri voitti")),
                        column(2, actionButton("laurin_virhe_uusipeli","Laurin virhe", icon = icon("exclamation-circle"))
                        ),
@@ -174,8 +177,7 @@ uusi_peli<-dashboardBody(
             )
     ),
     tabItem(tabName="tab_sarjataulukko",
-            fluidRow(column(3,offset=1,uiOutput("sarjataulukkovalitsin"))
-            ),
+            uiOutput("sarjataulukkovalitsin"),
             #fluidRow(numericInput("sarjataulukkokierros","Valitse turnauksen numero",value=1)),
             fluidRow(dataTableOutput("sarjataulukko")),
             fluidRow(uiOutput("sarjataulukot"))
@@ -308,11 +310,6 @@ sidebar <- dashboardSidebar(
               menuItem("Saavutusasetukset", icon = icon("cog"), tabName = "tab_saavutusasetukset"),
               menuItem("Boosterit", icon = icon("envelope"), tabName = "tab_boosterit"),
               menuItem("Decks", icon = icon("server"), tabName = "tab_decks"),
-              radioButtons("radio_total_mode",
-                           label = h5("Total mode"),
-                           choices = list("Pois" = FALSE, "Paalla" = TRUE),
-                           selected = FALSE,
-                           inline = T),
               radioButtons("radio_pfi_mode",
                            label = h5("PFI mode"),
                            choices = list("Pois" = FALSE, "Paalla" = TRUE),
@@ -322,7 +319,7 @@ sidebar <- dashboardSidebar(
              actionButton("blow_timer", label = h5("Blow timer")),
              actionButton("refresh", label = "Update data"),
              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
-             radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+             #radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
               numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7)
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))

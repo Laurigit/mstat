@@ -114,10 +114,10 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 
 
 observeEvent(input$laurin_mulligan,{
-    updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan+1)
+      updateSliderInput(session, "slider_laurin_mulligan", value = input$slider_laurin_mulligan + 1)
 })
 observeEvent(input$martin_mulligan,{
-  updateSliderInput(session, "slider_martin_mulligan", value = input$slider_martin_mulligan+1)
+  updateSliderInput(session, "slider_martin_mulligan", value = input$slider_martin_mulligan + 1)
 })
 observeEvent(input$laurin_virhe,{
    updateSliderInput(session, "slider_laurin_virhe", value = input$slider_laurin_virhe-1)
@@ -146,11 +146,11 @@ observeEvent(input$martti_voitti,{
 
 observeEvent(input$slider_vuoroarvio,{
 #  print("rab_tallenna slider voroarvio")
- # uusi_arvo <- round(input$slider_vuoroarvio * 0.42)
+  uusi_arvo <- round(input$slider_vuoroarvio * 0.42)
 
   #print(uusi_arvo)
-   #updateSliderInput(session, inputId = "slider_martin_landit", value = 5)
-  #updateSliderInput(session, "slider_laurin_landit", value = round(input$slider_vuoroarvio * 0.42))
+   updateSliderInput(session, inputId = "slider_martin_landit", value = uusi_arvo)
+   updateSliderInput(session, "slider_laurin_landit", value = uusi_arvo)
 })
 
 observeEvent(input$action_add,{
@@ -202,7 +202,7 @@ output$last_changed_value_text <- renderText({
 
 #Vuoroarvaus, kumman korttimäärä
 output$vuoroArvausPelaaja <- renderUI({
-
+req(eR_Peli_Aloittaja$a)
     aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
     aloittaja_vuoro_teksti <- "Laurin kortti_lkm"

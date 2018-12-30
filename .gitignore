@@ -13,3 +13,8 @@ www
 MANASTACK_CARDS.RData
 Rprojekti_siirretty_code_kansioon_tassa_BU
 .Rproj.user
+temporary_files
+mstat2.Rproj
+droptoken.rds
+.httr-oauth
+.Rhistory

@@ -20,7 +20,7 @@
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
 #required_data("STG_SAAVUTUSASETUKSET", force_update =  TRUE)
 # saavutusDataInput <- STG_SAAVUTUSASETUKSET
-# saavutusKierrosAsetus <-8
+# saavutusKierrosAsetus <-11
 #print("SAAVUTUSINPUT")
   #print(saavutusDataInput)
     saavutusKierrosAsetus <- saavutusDataInput[saavutusKierrosAsetus]
@@ -68,8 +68,16 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
   if(length(filters)>0){
   for(kierros in 1:length(filters)) {
   kierrosData<-filters[[kierros]]
-  syntax_start<-parse(text=paste0('!',names(filters)[[kierros]],' %in% c("',paste(unlist(kierrosData),collapse='","'),'")'))
-  #
+  filterVals <- toupper(paste(unlist(kierrosData),collapse='","'))
+  #create new vars for filters an convert to upper
+  filterName <- names(filters[kierros])
+  filterNameUpper <- paste0(filterName, "_Upper")
+  valittuData[, (filterNameUpper) := toupper(get((filterName)))]
+
+  #fix false or true to upper
+  
+  syntax_start<-parse(text=paste0('!',filterNameUpper,' %in% c("',filterVals,'")'))
+
   valittuData<-valittuData[eval(syntax_start)]
  #jos yksikin null, niin vaadi finite
   if (max((unlist(kierrosData)) == "null") == 1) {

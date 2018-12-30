@@ -43,10 +43,20 @@ local({
 
 output$sarjataulukkovalitsin <- renderUI({
   required_data("ADM_PELIT")
-  print("output$sarjataulukkovalitsin")
-  maxturnaus<-max(ADM_PELIT[,Turnaus_NO])
+  #print("output$sarjataulukkovalitsin")
+  maxturnaus <- max(ADM_PELIT[,Turnaus_NO])
   message(maxturnaus, "maxturnaus")
-  fluidRow(numericInput("sarjataulukkokierros","Turnauksen numero",value = maxturnaus))
+  fluidRow(column(4, numericInput("sarjataulukkokierros",
+                        "Turnauksen numero",
+                        value = maxturnaus)),
+           column(width = 4,
+                  
+                  radioButtons("radio_total_mode",
+                        label = ("Total mode"),
+                        choices = list("Pois" = FALSE, "Paalla" = TRUE),
+                        selected = FALSE,
+                        inline = T))
+           )
 })
 
 eR_UID_SARJATAULUKKO <- reactive({
