@@ -282,10 +282,9 @@ uusi_peli<-dashboardBody(
               fluidRow(
                 column(12, rHandsontableOutput("hot_decks"))),
               fluidRow(actionButton(inputId = "Save_decks", label = "Save changes and upload"))
-              ))
-    
-    
-    
+              )),
+    source("./scripts/tab/ui_life_counter.R",local = TRUE)$value
+
     
     
   ))
@@ -297,6 +296,7 @@ sidebar <- dashboardSidebar(
   sidebarMenu(id = "sidebarmenu",
               menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
               menuItem("Tallenna peli", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
+              menuItem("LifeCounter", tabName = "tab_LifeCounter", icon = icon("gamepad")),
               menuItem("Blow", icon = icon("beer"), tabName = "tab_blow"),
               menuItem("Sarjataulukko", icon = icon("trophy"), tabName = "tab_sarjataulukko"),
               menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName = "tab_tilastomurskain"),
