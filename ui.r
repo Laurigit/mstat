@@ -321,7 +321,8 @@ sidebar <- dashboardSidebar(
              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
              #radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
-              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7)
+              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7),
+             actionButton("loginbutton", "Login")
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
   )
   
@@ -332,8 +333,10 @@ sidebar <- dashboardSidebar(
 dashboardPage(
   
   #dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode, " ", textOutput('blow_timer')),
-  dashboardHeader(title = textOutput('blow_timer'),
-                  titleWidth = 450),
+#  dashboardHeader(title = textOutput('blow_timer'),
+#                 titleWidth = 450),
+  dashboardHeader(title = textOutput('Username')),
+ 
   sidebar,
   uusi_peli
 )

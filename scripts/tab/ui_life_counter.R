@@ -105,13 +105,11 @@ tabItem(tabName = "tab_LifeCounter",
                 )
                    
           ),
-          fluidRow(column(width = 3,
-                          actionButton(inputId = "Lose_Non_combat",
-                                       label = "Non-combat damage")),
+          fluidRow(
                    column(width = 3,
                           actionButton(inputId = "Lose_other",
                                        label = "Other")),
-                   column(width = 3,
+                   column(width = 6,
                           actionButton(inputId = "Deal_Non_combat",
                                        label = "Non-combat damage")),
                    column(width = 3,
@@ -120,6 +118,35 @@ tabItem(tabName = "tab_LifeCounter",
         ),
         fluidRow(actionButton(inputId = "CHARTPLACEHOLDER",
                               label = "CHARTPLACEHOLDER",
-                              style = "height: 420px"))
+                              style = "height: 420px")),
+        fluidRow(column(width = 6,
+                        textOutput("Omat_lifet")),
+                 column(width = 6,
+                        textOutput("Vihun lifet"))),
+        fluidRow(
+          column(6,
+          box(
+            
+            actionButton(inputId = "ab_Vaihda_vuoro",
+                         label = "End turn")
+          )),
+          column(3,
+          box(
+              actionButton(inputId = "ab_Vaihda_vuoro_virhe",
+                           label = "End turn, add mistake")
+              )),
+          column(3,
+          box(
+            fluidRow(
+              actionButton(inputId = "ab_Undo",
+                           label = "Undo")
+            ),
+            fluidRow(
+              actionButton(inputId = "ab_fix_lifes",
+                           label = "Fix lifes")
+            )
+            )
+          )
+        )
 )
 )

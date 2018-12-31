@@ -11,7 +11,7 @@ eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
                                   required_functions("getUusi_Peli_ID")
                                   required_data(c("ADM_PELIT"))
                                   
-                                  normiToiminto <-getUusi_Peli_ID(ADM_PELIT,
+                                  normiToiminto <- getUusi_Peli_ID(ADM_PELIT,
                                                                   input$select_laurin_pakka,
                                                                   input$select_martin_pakka)
                                   

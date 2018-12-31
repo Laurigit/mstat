@@ -1,10 +1,17 @@
-# Define server logic required to draw a histogram 
+
+################
+#Life counter data
+turnData <- reactiveValues(life = "a",
+                           turn = "b")
+
+
+###############
 
 shinyServer(function(input, output, session) {
   #load_scripts.R
   
 
-
+session$user <- "Lauri"
 
 load_data_from_DB()
   
@@ -260,6 +267,29 @@ blow_timer_react <- reactive({
   }
   minuutit
 })  
+
+observeEvent(input$loginbutton, {
+  shinyalert(
+    callbackR = function(x) {
+      session$user <- x
+    },
+    
+    title = "Login", text = "Type owner name", type = "input", closeOnEsc = TRUE,
+    closeOnClickOutside = FALSE, html = TRUE, showCancelButton = TRUE,
+    showConfirmButton = TRUE, inputType = "text",
+     confirmButtonText = "OK",
+    confirmButtonCol = "#AEDEF4", cancelButtonText = "Cancel", timer = 0,
+    animation = TRUE, imageUrl = NULL, imageWidth = 100,
+    imageHeight = 100, className = "",
+    callbackJS = NULL)
+  
+})
+output$Username <- renderText({
+
+  req(session)
+  invalidateLater(1000, session)
+  session$user
+})
 
 #tätä voi käyttää, jos haluaa tallentaa inputtien arvot.
 # observeEvent(input$arvo_peli,{

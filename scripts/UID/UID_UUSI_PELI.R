@@ -25,7 +25,7 @@
 #                        STAT_CURRENT_PAKKA)
 # res
 # res
-required_functions("sort_MTG_colors")
+
 UID_UUSI_PELI <- function(Peli_ID_input,
                           UID_PAKKA,
                           UID_PAKKA_VS,
@@ -82,7 +82,7 @@ ennuste <- predict_result(Peli_ID_input, input_left_mulligan,
 ennuste_vector <- c(ennuste, 1 - ennuste)
 ennuste_cols <- data.table(Prediction = ennuste_vector)
 
-join_ennuste <- cbind(joini_ssrows, ennuste_cols, Divari)
+join_ennuste <- cbind(joini_ssrows, ennuste_cols, Divari, Peli_ID_input)
 UID_UUSI_PELI <- join_ennuste
 return(UID_UUSI_PELI)
 }
