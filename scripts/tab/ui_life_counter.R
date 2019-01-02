@@ -4,7 +4,7 @@ tabItem(tabName = "tab_LifeCounter",
             box(
               fluidRow(column(width = 4,
                           actionButton(inputId = "Lose_1",
-                                       label = "1",
+                                       label = "Lose 1",
                                        width = '100%',
                                        style = "height: 126px;")),
                    column(width = 4,
