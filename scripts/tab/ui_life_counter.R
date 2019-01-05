@@ -1,5 +1,28 @@
 tabItem(tabName = "tab_LifeCounter",
         fluidPage(
+            tabBox(id = "lifeBox", 
+                title = NULL,
+                width = 12,
+                height = "560px",
+                tabPanel(id = "life_input",
+                         title = "Input life",
+                         fluidRow(
+                            checkboxGroupButtons(inputId = "dmg_settings",
+                                                 label  = NULL,
+                                                 choices = c("Non-combat damage",
+                                                             "Lifegain",
+                                                             "Reverse Source"),
+                                                 status = "success",
+                                                 size = "lg",
+                                                 direction = "horizontal",
+                                                 justified = TRUE,
+                                                 individual = TRUE,
+                                                 checkIcon = list(
+                                                   yes = icon("ok", 
+                                                              lib = "glyphicon"),
+                                                   no = icon("remove",
+                                                             lib = "glyphicon"))),
+            
           fluidRow(
             box(
               fluidRow(column(width = 4,
@@ -102,27 +125,42 @@ tabItem(tabName = "tab_LifeCounter",
                                       label = "9",
                                       width = '100%',
                                       style = "height: 126px;"))
-                )
+                  ))))),
+            tabPanel(value = "waiting_panel",
+                     title = "Waiting",
+                
                    
-          ),
           fluidRow(
                    column(width = 3,
-                          actionButton(inputId = "Lose_other",
-                                       label = "Other")),
-                   column(width = 6,
-                          actionButton(inputId = "Deal_Non_combat",
-                                       label = "Non-combat damage")),
+                          actionBttn(inputId = "Lifegain",
+                                       label = "Lifeloss selected",
+                                     style = "material-flat",
+                                     size = "md",
+                                     color = "primary",
+                                     block = TRUE)),
+                   box(column(width = 6,
+                          actionBttn(inputId = "Deal_Non_combat",
+                                       label = "Non-combat damage",
+                                     style = "material-flat",
+                                     size = "md",
+                                     color = "warning",
+                                     block = TRUE,
+                                     no_outline = TRUE))),
                    column(width = 3,
-                          actionButton(inputId = "Deal_other",
-                                       label = "Other")))
-        ),
+                          actionBttn(inputId = "Reverse_source",
+                                       label = "Reverse source",
+                                       style = "material-flat",
+                                       size = "lg",
+                                     color = "danger",
+                                       block = TRUE)))
+            )),
+                
+          
         fluidRow(actionButton(inputId = "CHARTPLACEHOLDER",
                               label = "CHARTPLACEHOLDER",
                               style = "height: 420px")),
-        fluidRow(column(width = 6,
-                        textOutput("Omat_lifet")),
-                 column(width = 6,
-                        textOutput("Vihun lifet"))),
+        uiOutput(outputId = "life_total_row"),
+       
         fluidRow(
           column(6,
           box(

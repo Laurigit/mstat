@@ -13,7 +13,7 @@ if (!dir.exists("./dmg_turn_files/")) {
 }
 
 
-
+library(shinyWidgets)
 library(shiny)
 library(shinydashboard)
 library(shinyjs)

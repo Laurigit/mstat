@@ -4,7 +4,10 @@
 turnData <- reactiveValues(life = "a",
                            turn = "b")
 
-
+required_data("ADM_DI_HIERARKIA")
+updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
+required_data("ADM_CURRENT_DMG")
+life_totals <- reactiveValues(data = calc_life_totals(ADM_CURRENT_DMG))
 ###############
 
 shinyServer(function(input, output, session) {
