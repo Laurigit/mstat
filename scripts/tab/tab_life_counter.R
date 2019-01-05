@@ -23,7 +23,7 @@ if ("Non-combat damage" %in% listz) {
 }
 
 
-if ("Reverse Sourcee" %in% listz) {
+if ("Reverse Source" %in% listz) {
   reverse_DMG_reacive$Reverse_DMG <- TRUE
 } else {
   reverse_DMG_reacive$Reverse_DMG <- FALSE
@@ -152,7 +152,9 @@ observe({
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
  isolate(amount_DMG_reactive$dmg <- NULL)
- 
+ updateCheckboxGroupButtons(session,
+                            "dmg_settings",
+                            selected = c(""))
  life_totals$data <- calc_life_totals(ADM_CURRENT_DMG)
  
  #disabloi kaikki napit
@@ -184,12 +186,20 @@ observe({
  # updateActionButton(session, "Deal_7", icon = icon("times-circle")) 
  # updateActionButton(session, "Deal_8", icon = icon("times-circle"))     
  # updateActionButton(session, "Deal_9", icon = icon("times-circle"))
-          
+ waiting_opponent_input$waiting <- !waiting_opponent_input$waiting 
+ if( waiting_opponent_input$waiting == TRUE) {
  updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
- 
+ }
 })
 
-
+observe({
+  print("OBSERVE WAITING")
+  print(waiting_opponent_input$waiting)
+  print(session$user)
+  if (waiting_opponent_input$waiting  == FALSE) {
+    updateTabsetPanel(session, "lifeBox", selected = "life_input") 
+  }
+})
 
 
 output$life_total_row <- renderUI({

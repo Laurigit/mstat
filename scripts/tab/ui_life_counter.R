@@ -4,7 +4,7 @@ tabItem(tabName = "tab_LifeCounter",
                 title = NULL,
                 width = 12,
                 height = "560px",
-                tabPanel(id = "life_input",
+                tabPanel(value = "life_input",
                          title = "Input life",
                          fluidRow(
                             checkboxGroupButtons(inputId = "dmg_settings",
