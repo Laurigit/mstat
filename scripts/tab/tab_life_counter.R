@@ -145,47 +145,36 @@ observe({
                        Reverse_source = isolate(reverse_DMG_reacive$Reverse_DMG),
                        input_session_user = session$user,
                        input_TSID = input_TSID,
-                       current_dmg = ADM_CURRENT_DMG,
+                       current_dmg = damage_data$data,
                        input_UID_UUSI_PELI = isolate(eR_UID_UUSI_PELI())
   )
   print(tulos)
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
+ 
  isolate(amount_DMG_reactive$dmg <- NULL)
  updateCheckboxGroupButtons(session,
                             "dmg_settings",
                             selected = c(""))
- life_totals$data <- calc_life_totals(ADM_CURRENT_DMG)
- 
- #disabloi kaikki napit
- # shinyjs::disable("Lose_1")
- # shinyjs::disable("Lose_2")
- # shinyjs::disable("Lose_3")
- # shinyjs::disable("Lose_4")
- # shinyjs::disable("Lose_5")
- # shinyjs::disable("Lose_6")
- # shinyjs::disable("Lose_7")
- # shinyjs::disable("Lose_8")
- # shinyjs::disable("Lose_9")
- # shinyjs::disable("Deal_1")
- # shinyjs::disable("Deal_2")
- # shinyjs::disable("Deal_3")
- # shinyjs::disable("Deal_4")
- # shinyjs::disable("Deal_5")
- # shinyjs::disable("Deal_6")
- # shinyjs::disable("Deal_7")
- # shinyjs::disable("Deal_8")
- # shinyjs::disable("Deal_9")
+  damage_data$data <- tulos
+  templife <- calc_life_totals(tulos)
+  #validate input
+  if(templife$count_missing_rows == 0){
+    #write to csv
+    write.table(x = tulos,
+                file = paste0("./dmg_turn_files/", "current_dmg.csv"),
+                sep = ";",
+                row.names = FALSE,
+                dec = ",")
+    required_data("ADM_DI_HIERARKIA")
+    updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
+    
+    life_totals$data <- templife
+  } else if (templife$count_missing_rows == 2) {
+    #error
+    #show both players input and let them choose the correct.
+    input_error$error <- TRUE
+    
+  }
 
- # updateActionButton(session, "Deal_1", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_2", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_3", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_4", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_5", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_6", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_7", icon = icon("times-circle")) 
- # updateActionButton(session, "Deal_8", icon = icon("times-circle"))     
- # updateActionButton(session, "Deal_9", icon = icon("times-circle"))
  waiting_opponent_input$waiting <- !waiting_opponent_input$waiting 
  if( waiting_opponent_input$waiting == TRUE) {
  updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
@@ -193,9 +182,30 @@ observe({
 })
 
 observe({
-  print("OBSERVE WAITING")
-  print(waiting_opponent_input$waiting)
-  print(session$user)
+  if(input_error$error == TRUE) {
+    #calc error
+    choose_input <- calc_life_totals(isolate(damage_data$data))$input_error
+    
+    shinyalert(title = "Difference in damage input",
+               text = paste0(choose_input[, text], collapse = "\n"),
+               type = "warning",
+               closeOnClickOutside = FALSE,
+               closeOnEsc = FALSE,
+               showCancelButton = TRUE,
+               showConfirmButton = TRUE,
+               confirmButtonText = "Accept opponent input",
+               cancelButtonText = "My input is correct",
+               callbackR = function(x) {
+                 new_row <- data.table(user = session$user,
+                                       response = x)
+                 input_error_response$response <- rbind(input_error_response$response , new_row)
+                 print(input_error_response$response)
+               }
+               )
+  } 
+})
+
+observe({
   if (waiting_opponent_input$waiting  == FALSE) {
     updateTabsetPanel(session, "lifeBox", selected = "life_input") 
   }
@@ -204,12 +214,21 @@ observe({
 
 output$life_total_row <- renderUI({
   req(life_totals$data)
+  print(session$user)
  print(life_totals$data)
-  
+  lifedata <- life_totals$data$Lifetotal
+  lifetext <- life_totals$data$dmg_text
   fluidRow(column(5,
-                  valueBox( life_totals$data[Omistaja_NM == "Lauri", Life_total], -2, icon = NULL, color = "aqua", width = 12)),
+                  valueBox( lifedata[Omistaja_NM == session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)),
            column(5, offset = 2,
-                  valueBox( life_totals$data[Omistaja_NM == "Martti", Life_total], -2, icon = NULL, color = "aqua", width = 12)))
+                  valueBox( lifedata[Omistaja_NM != session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)))
+})
+
+output$offer_turn <- renderUI({
+  turnData$turn
+  button_text <- 
+  actionButton(inputId = "act_offer_turn",
+               label = button_text)
 })
 
 # 

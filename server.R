@@ -1,13 +1,15 @@
 
 ################
 #Life counter data
-turnData <- reactiveValues(life = "a",
-                           turn = "b")
+turnData <- reactiveValues(turn = NULL)
 
 required_data("ADM_DI_HIERARKIA")
 updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
 required_data("ADM_CURRENT_DMG")
 life_totals <- reactiveValues(data = calc_life_totals(ADM_CURRENT_DMG))
+damage_data <- reactiveValues(data = ADM_CURRENT_DMG)
+input_error <- reactiveValues(error = FALSE)
+input_error_response <- reactiveValues(response = NULL)
 
 waiting_opponent_input <- reactiveValues(waiting = FALSE)
 ###############

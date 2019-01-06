@@ -41,10 +41,6 @@ mark_damage <- function(Amount,
                         TSID = input_TSID,
                         Peli_ID)
   appendaa <- rbind(current_dmg, new_row)
-  write.table(x = appendaa,
-             file = paste0("./dmg_turn_files/", "current_dmg.csv"),
-             sep = ";",
-             row.names = FALSE,
-             dec = ",")
+  
   return(appendaa)
 }
