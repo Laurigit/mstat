@@ -148,7 +148,7 @@ observe({
                        current_dmg = damage_data$data,
                        input_UID_UUSI_PELI = isolate(eR_UID_UUSI_PELI())
   )
-  print(tulos)
+ # print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
  updateCheckboxGroupButtons(session,
@@ -156,6 +156,7 @@ observe({
                             selected = c(""))
   damage_data$data <- tulos
   templife <- calc_life_totals(tulos)
+ # print(templife)
   #validate input
   if(templife$count_missing_rows == 0){
     #write to csv
@@ -172,21 +173,33 @@ observe({
     #error
     #show both players input and let them choose the correct.
     input_error$error <- TRUE
-    
+    message("input error",  input_error$error)
   }
 
  waiting_opponent_input$waiting <- !waiting_opponent_input$waiting 
- if( waiting_opponent_input$waiting == TRUE) {
+ if ( waiting_opponent_input$waiting == TRUE) {
  updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
  }
 })
 
 observe({
-  if(input_error$error == TRUE) {
+  if (input_error$error == TRUE) {
     #calc error
+    #debug
+    #damage_data <- NULL
+    #damage_data$data <- ADM_CURRENT_DMG
+   # print("dmg data")
+ #  print(damage_data$data)
     choose_input <- calc_life_totals(isolate(damage_data$data))$input_error
-    
-    shinyalert(title = "Difference in damage input",
+   # print(choose_input)
+
+    #print(damage_data_for_observe)
+   # print(input_error_response$response)
+    shinyalert(callbackR = function(x) {
+      new_row <- data.table(user = session$user,response = x)
+      input_error_response$response <- (rbind(input_error_response$response , new_row))
+    },
+              title = "Difference in damage input",
                text = paste0(choose_input[, text], collapse = "\n"),
                type = "warning",
                closeOnClickOutside = FALSE,
@@ -194,16 +207,74 @@ observe({
                showCancelButton = TRUE,
                showConfirmButton = TRUE,
                confirmButtonText = "Accept opponent input",
-               cancelButtonText = "My input is correct",
-               callbackR = function(x) {
-                 new_row <- data.table(user = session$user,
-                                       response = x)
-                 input_error_response$response <- rbind(input_error_response$response , new_row)
-                 print(input_error_response$response)
-               }
-               )
-  } 
+               cancelButtonText = "My input is correct")
+  }
+ # print( input_error_response$response)
 })
+               
+ 
+    #tää jäi loooppiin, pitäs ehkä siirtää niin, että input$shiny alert on omassa observessa ja se muuttaa input_errorresponsen arvoja
+    #print( input_error_response$response )
+  observe({
+    req(input_error_response$response)
+    damage_data_for_observe <- isolate(damage_data$data)[DID > 0]
+                 if (nrow(input_error_response$response) == 2) {
+                   if (input_error_response$response[1, response] != input_error_response$response[2, response]
+                       ) {
+                     print("TRUEN puoelella")
+                     #case inputit meni oikein
+                     ##tallenna valittu inputti
+                     ###tuhoa oma viimeisin ja lisää sinne vihun asetukset omalla inputilla
+                     
+                     #debug
+                     #input_error_response <- NULL
+                     #input_error_response$response <- data.table(user = c("Lauri", "Martti"), response = c(TRUE, FALSE))
+                  
+                     tuhottava <- damage_data_for_observe[Input_Omistaja_NM ==
+                                        input_error_response$response[response ==
+                                                                        FALSE,
+                                                                      user], .(DID = max(DID)), by = .(Input_Omistaja_NM)]
+                     uuden_rivin_omistaja <- tuhottava[, Input_Omistaja_NM]
+                     uuden_rivin_DID <-  tuhottava[, DID]
+                     kopioitava <- damage_data_for_observe[Input_Omistaja_NM ==
+                                                      input_error_response$response[response ==
+                                                                                      TRUE,
+                                                                                    user], max(DID)]
+                     uusi_rivi <- damage_data_for_observe[DID == kopioitava]
+                     uusi_rivi[, ':=' (Input_Omistaja_NM = uuden_rivin_omistaja,
+                                       DID = uuden_rivin_DID)]
+                     data_josta_tuhottu <- damage_data_for_observe[DID != tuhottava[, DID]]
+                     data_mihin_lisatty  <- rbind(data_josta_tuhottu, uusi_rivi)
+                     setorder(data_mihin_lisatty, DID)
+                     damage_data$data <- data_mihin_lisatty
+                     life_totals$data <- calc_life_totals(data_mihin_lisatty)
+                     
+                   } else {
+                     #case inputit meni väärin
+                     #tuhoa molempien viimeisin input ja ilmoita pelaajille
+                     print("elsen puolella")
+                     tuhottava <- damage_data_for_observe[, .(DID = max(DID)), by = .(Input_Omistaja_NM)]
+                    # print(tuhottava)
+                     damage_data$data <- damage_data_for_observe[!DID %in% tuhottava[, DID]]
+                   #  print(damage_data$data)
+                     life_totals$data <- isolate(calc_life_totals(damage_data$data))
+                     #print( life_totals$data)
+                     shinyalert(title = "Damage disagreement",
+                                text = "Both inputs have been deleted. Please input damage again",
+                                type = "error",
+                                closeOnClickOutside = TRUE,
+                                closeOnEsc = TRUE,
+                                showCancelButton = TRUE,
+                                showConfirmButton = TRUE,
+                                confirmButtonText = "Sorry, my bad",
+                                cancelButtonText = "He's a drunk idiot")
+                   }
+                   #jälkitoimet. UI kohdilleen
+                   waiting_opponent_input$waiting <- FALSE
+                 }
+  
+})
+
 
 observe({
   if (waiting_opponent_input$waiting  == FALSE) {

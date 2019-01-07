@@ -1,0 +1,26 @@
+tabItem(tabName = "tab_saavutusasetukset",
+        fluidPage(
+          fluidRow(column(2, radioButtons("radio_minMax_saavutus",
+                                          "Voittajan valinta",
+                                          choices = c("min", "max"), selected = "max")),
+                   column(2, radioButtons("radio_minMax_saavutus_rivi",
+                                          "Rivitavoite",
+                                          choices = c("min", "max"), selected = "max")),
+                   column(3, radioButtons("radio_muotoilu",
+                                          "Numeron muotoilu",
+                                          choices = c("Decimal",
+                                                      "Integer",
+                                                      "%",
+                                                      "e"),
+                                          selected = "%")),
+                   column(3, actionButton("paivita_saavutus",
+                                          "Paivita saavutus"),
+                          actionButton("poista_saavutusAsetus",
+                                       "Poista saavutus")),
+                   column(3,textInput("txt_palkinto",
+                                      "Palkinnon nimi"),
+                          textInput("txt_palkinto_kuvaus",
+                                    "Palkinnon kuvaus"))),
+          fluidRow(column(6, dataTableOutput("tallennetut_saavutusAsetukset")))
+        )
+)

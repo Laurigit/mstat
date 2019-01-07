@@ -14,11 +14,28 @@ input_error_response <- reactiveValues(response = NULL)
 waiting_opponent_input <- reactiveValues(waiting = FALSE)
 ###############
 
+user_logged <- reactiveValues(count = 0)
+
+
 shinyServer(function(input, output, session) {
   #load_scripts.R
-  
 
-session$user <- "Lauri"
+    
+
+func_login <- function(input_user_count) {
+
+    if (input_user_count == 1) {
+    result <- "Lauri"    
+  } else {
+    result <- "Martti"    
+  }
+  return(result)
+}
+#user_logged$count <- user_logged$count + 1
+isolate(user_logged$count <- user_logged$count + 1)
+session$user <- isolate(func_login(user_logged$count))
+
+
 
 load_data_from_DB()
   
@@ -54,9 +71,10 @@ load_data_from_DB()
 
  #write.table(x = saavutusAsetukset[,.(kuvaus, minVaiMax, Esitysmuoto, Palkintonimi)], file = "saavutusAsetukset.csv", sep = ";")
 
+print(now())
 
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
-  
+  print(now()) 
   # 
   # sourcelist <- dir("./scripts/")
   # tab_sources <- sourcelist[grepl("tab", sourcelist)]
@@ -294,7 +312,7 @@ observeEvent(input$loginbutton, {
 output$Username <- renderText({
 
   req(session)
-  invalidateLater(1000, session)
+  invalidateLater(10000, session)
   session$user
 })
 

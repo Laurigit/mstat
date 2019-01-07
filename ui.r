@@ -3,8 +3,9 @@
 
 # Define UI for application that draws a histogram
 
-useShinyalert()
-uusi_peli<-dashboardBody(
+
+uusi_peli <- dashboardBody(
+  useShinyalert(),
   useShinyjs(),
   extendShinyjs(text = jscode),
   tags$head(
@@ -25,119 +26,19 @@ uusi_peli<-dashboardBody(
     
       ),
   tabItems(
-  source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
-  source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
-  source("./scripts/ui/ui_blow.R",local = TRUE)$value,
-  source("./scripts/ui/ui_combined.R",local = TRUE)$value,
-  source("./scripts/ui/ui_peliasetukset.R",local = TRUE)$value,
-    tabItem(tabName="tab_sarjataulukko",
-            uiOutput("sarjataulukkovalitsin"),
-            #fluidRow(numericInput("sarjataulukkokierros","Valitse turnauksen numero",value=1)),
-            fluidRow(dataTableOutput("sarjataulukko")),
-            fluidRow(uiOutput("sarjataulukot"))
-            #fluidRow(box(DT::dataTableOutput("sarjataulukot_all"),width=12,title="Kaikki pelit", solidHeader = TRUE,status="primary"))
-    ),
-    tabItem(tabName="tab_tilastomurskain",
-            fluidRow(column(4, uiOutput("radio_data_type")), 
-                     column(4, uiOutput("radio_data_selected")),
-                     column(4, uiOutput("validateSaavutusText"))),
-            fluidRow(
-                     #column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
-                     
-                     #  column(2, verbatimTextOutput("pivotRefresh")),
-                     
-                     column(4, textInput("text_tilastoKuvaus",label="Tilaston/Saavutuksen nimi"),
-                            actionButton("tallennaTilastoAsetus","Tallenna tilasto"),
-                            
-                            actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
-                            actionButton("validateSaavutusAsetus", "Testaa toimiiko saavutus"),
-                            
-                            
-                            
-                            actionButton("poista_tilastoAsetus","Poista tilasto")),
-                     column(4,(DT::dataTableOutput("tallennetut_tilastoasetukset")))),
-            fluidRow(
-              div(id = "myScrollBox",
-                  rpivotTableOutput("pivot_cross")
-              ))),
-    tabItem(tabName = "tab_saavutukset",
-            #fluidRow(valueBoxOutput("vb_voittoputki"),valueBoxOutput("paras_countteri"),valueBoxOutput("vaikein_counteroitava"))
-            # fluidRow( actionButton("laskeSaavutukset", "Laske saavutukset"))
-            uiOutput("saavutus_UI")
-            
-            # fluidPage(
-            #   DT::dataTableOutput('aSummaryTable'),
-            #   rpivotTableOutput('RESULTS')
-            # )
-            
-            
-    ),
-    tabItem(tabName = "pakkaupload",
-            fluidPage(
-              
-                  fluidRow(column(3,
-                                  fileInput("file1",
-                                            "Valitse pakkoja .json muodossa",
-                                            multiple = TRUE,
-                                            accept = c(".json"))),
-                           column(3,
-                                  offset = 3,
-                                  fileInput("anyfile",
-                                            "lähetä mikä tahansa tiedosto",
-                                            multiple = TRUE)),
-                           column(3,
-                                  actionButton("input_lataa_valitut_pakat", "Update selected decks"))),
-                  
-                fluidRow(tableOutput("contents")),
-                fluidRow(verbatimTextOutput("text_validointi")),
-                fluidRow(box(DT::dataTableOutput("pfi_taulukko"),
-                             title = ("Nykypakkastatsit"),
-                             solidHeader = TRUE,
-                             status = "primary",
-                             width = 12))
-            
-    )),
-    tabItem(tabName = "tab_saavutusasetukset",
-            fluidPage(
-              fluidRow(column(2, radioButtons("radio_minMax_saavutus",
-                                             "Voittajan valinta",
-                                             choices = c("min", "max"), selected = "max")),
-                       column(2, radioButtons("radio_minMax_saavutus_rivi",
-                                              "Rivitavoite",
-                                              choices = c("min", "max"), selected = "max")),
-                       column(3, radioButtons("radio_muotoilu",
-                                              "Numeron muotoilu",
-                                              choices = c("Decimal",
-                                                          "Integer",
-                                                          "%",
-                                                          "e"),
-                                              selected = "%")),
-                       column(3, actionButton("paivita_saavutus",
-                                              "Paivita saavutus"),
-                              actionButton("poista_saavutusAsetus",
-                                           "Poista saavutus")),
-                       column(3,textInput("txt_palkinto",
-                                          "Palkinnon nimi"),
-                              textInput("txt_palkinto_kuvaus",
-                                        "Palkinnon kuvaus"))),
-              fluidRow(column(6, dataTableOutput("tallennetut_saavutusAsetukset")))
-            )
-    ),
-    tabItem(tabName = "tab_boosterit",
-            fluidPage(
-              fluidRow(
-                       column(3, numericInput("numeric_count_boosters", "How many boosters to draft?", 4, 1, 16, step = 1)),
-                       column(3, textOutput("txt_vect_boosters")),
-                       column(3, actionButton("action_add_boosters", "Draft these boosters")),
-                       column(3, textOutput("txt_confirm_drafted")))
-            )),
-    tabItem(tabName = "tab_decks",
-            fluidPage(   
-              fluidRow(
-                column(12, rHandsontableOutput("hot_decks"))),
-              fluidRow(actionButton(inputId = "Save_decks", label = "Save changes and upload"))
-              )),
-    source("./scripts/tab/ui_life_counter.R",local = TRUE)$value
+  # source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_blow.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_combined.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_peliasetukset.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_sarjataulukko.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_tilastomurskain.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_saavutukset.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_pakkaupload.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
+  # source("./scripts/ui/ui_decks.R",local = TRUE)$value,
+  source("./scripts/tab/ui_life_counter.R",local = TRUE)$value
 
     
     
