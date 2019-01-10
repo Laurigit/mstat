@@ -14,7 +14,10 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   #                                                 Input_Omistaja_NM
   #                                                )]
   #input_current_dmg[, rivi := seq_len(.N)]
-  row_count <-  input_current_dmg[TSID > 0, .(count_rows = .N,
+#  message("missing rows")
+  dmg_table_for_calc <- input_current_dmg[DID >0]
+  dmg_table_for_calc[, dmg_pari := ceiling(seq_len(.N) / 2)]
+  row_count <-  dmg_table_for_calc[TSID > 0, .(count_rows = .N,
                                       Omistaja_NM = paste0(Input_Omistaja_NM, collapse = ""))
                                      # rows = paste0(rivi, collapse = " ")
                                      , by = .(Amount,
@@ -22,11 +25,14 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
                                       Target_player,
                                       Combat_dmg,
                                       TSID,
-                                      Peli_ID)]
+                                      Peli_ID,
+                                      dmg_pari)]
   accepted_rows <- row_count[count_rows %% 2 == 0]
   missing_rows <- row_count[count_rows %% 2 == 1]
   #there are 0, 1 or 2 missing rows.
   row_texts <- NULL
+
+  print(missing_rows)
   if(nrow(missing_rows) > 0) {
   for (loop_rows in 1:nrow(missing_rows)) {
     missing_rows_own_input <- missing_rows[loop_rows]
@@ -37,6 +43,8 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
            ifelse(missing_rows_own_input[, Combat_dmg] == 1, " @ Cmbt: (", ": ("),
            missing_rows_own_input[,Amount],
            ")")
+ #   message("loopissa")
+  #  print(missing_rows_own_input)
     loop_dt <- data.table(Omistaja_NM = missing_rows_own_input[, Omistaja_NM], text = loop_text)
     row_texts <- rbind(row_texts, loop_dt)
   }

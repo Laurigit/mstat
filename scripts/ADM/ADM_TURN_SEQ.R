@@ -3,4 +3,5 @@
 ADM_TURN_SEQ <- data.table(TSID = seq(1:1000),
                      Turn = ceiling(seq(1:1000) / 4),
                      End_phase = seq(1:1000) %% 2 == 0,
-                     Starters_turn = ceiling(seq(1:1000) / 2) %% 2 == 1)
+                     Starters_turn = ceiling(seq(1:1000) / 2) %% 2 == 1,
+                     Next_turn_TSID = ceiling(seq(1:1000) / 2) * 2 + 1)

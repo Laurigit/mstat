@@ -1,7 +1,7 @@
 
 ################
 #Life counter data
-turnData <- reactiveValues(turn = NULL)
+turnData <- reactiveValues(turn = 1)
 
 required_data("ADM_DI_HIERARKIA")
 updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
@@ -11,7 +11,7 @@ damage_data <- reactiveValues(data = ADM_CURRENT_DMG)
 input_error <- reactiveValues(error = FALSE)
 input_error_response <- reactiveValues(response = NULL)
 
-waiting_opponent_input <- reactiveValues(waiting = FALSE)
+
 ###############
 
 user_logged <- reactiveValues(count = 0)
@@ -19,8 +19,7 @@ user_logged <- reactiveValues(count = 0)
 
 shinyServer(function(input, output, session) {
   #load_scripts.R
-
-    
+   
 
 func_login <- function(input_user_count) {
 
@@ -71,10 +70,10 @@ load_data_from_DB()
 
  #write.table(x = saavutusAsetukset[,.(kuvaus, minVaiMax, Esitysmuoto, Palkintonimi)], file = "saavutusAsetukset.csv", sep = ";")
 
-print(now())
+
 
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
-  print(now()) 
+ 
   # 
   # sourcelist <- dir("./scripts/")
   # tab_sources <- sourcelist[grepl("tab", sourcelist)]

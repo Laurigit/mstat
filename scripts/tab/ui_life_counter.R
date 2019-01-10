@@ -155,19 +155,24 @@ tabItem(tabName = "tab_LifeCounter",
                                        block = TRUE)))
             )),
                 
-          
+        fluidRow(h3(textOutput("debug_text"))),
         fluidRow(actionButton(inputId = "CHARTPLACEHOLDER",
                               label = "CHARTPLACEHOLDER",
-                              style = "height: 420px")),
+                              style = "height: 40px")),
         uiOutput(outputId = "life_total_row"),
        
         fluidRow(
-          column(6,
+          column(3,
           box(
             
             actionButton(inputId = "ab_Vaihda_vuoro",
                          label = "End turn")
           )),
+          column(3,
+                 box(
+                   actionBttn(inputId = "ab_pakita_endille",
+                              label = "Reject turn, go to end step")
+                 )),
           column(3,
           box(
               actionButton(inputId = "ab_Vaihda_vuoro_virhe",

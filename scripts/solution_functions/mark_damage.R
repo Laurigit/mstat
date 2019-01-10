@@ -15,7 +15,7 @@ mark_damage <- function(Amount,
   } else {
     Target_player <- input_session_user
   }
-  print(paste0("target_player=", Target_player ))
+#  print(paste0("target_player=", Target_player ))
   
   #defaul_dmg_source != Target
   Dmg_source <- input_UID_UUSI_PELI[Omistaja_NM != Target_player, Omistaja_NM]

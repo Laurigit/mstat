@@ -5,11 +5,11 @@ combat_DMG_reactive$combat_dmg <- TRUE
 lifegain_DMG_reactive <- reactiveValues("Lifegain" = FALSE)
 reverse_DMG_reacive <- reactiveValues("Reverse_DMG" = FALSE)
 amount_DMG_reactive <- reactiveValues("dmg" = NULL, "opp" = TRUE)
-
+waiting_opponent_input <- reactiveValues(waiting = FALSE)
 
 observeEvent(input$dmg_settings,{
 listz <- input$dmg_settings
-print(listz)
+#print(listz)
 if ("Lifegain" %in% listz) {
   lifegain_DMG_reactive$Lifegain <- TRUE
 } else {
@@ -144,7 +144,7 @@ observe({
                        Combat_dmg =  isolate(combat_DMG_reactive$combat_dmg),
                        Reverse_source = isolate(reverse_DMG_reacive$Reverse_DMG),
                        input_session_user = session$user,
-                       input_TSID = input_TSID,
+                       input_TSID = isolate(turnData$turn),
                        current_dmg = damage_data$data,
                        input_UID_UUSI_PELI = isolate(eR_UID_UUSI_PELI())
   )
@@ -155,12 +155,26 @@ observe({
                             "dmg_settings",
                             selected = c(""))
   damage_data$data <- tulos
-  templife <- calc_life_totals(tulos)
- # print(templife)
+ 
+
+ #waiting_opponent_input$waiting <- !waiting_opponent_input$waiting 
+ 
+})
+
+
+#observeEvent damage_data$data 
+#handles changed in damagedate
+observe({
+  #jos muuttuu, niin validoi ja kirjota, jos validi
+ # print(damage_data$data)
+  templife <- calc_life_totals(damage_data$data)
+  # print(templife)
   #validate input
   if(templife$count_missing_rows == 0){
+    print("kirjotetaan csv")
+    print(damage_data$data)
     #write to csv
-    write.table(x = tulos,
+    write.table(x = damage_data$data,
                 file = paste0("./dmg_turn_files/", "current_dmg.csv"),
                 sep = ";",
                 row.names = FALSE,
@@ -168,20 +182,28 @@ observe({
     required_data("ADM_DI_HIERARKIA")
     updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
     
+   
     life_totals$data <- templife
+    input_error$error <- FALSE
+    waiting_opponent_input$waiting <- FALSE
   } else if (templife$count_missing_rows == 2) {
     #error
     #show both players input and let them choose the correct.
     input_error$error <- TRUE
     message("input error",  input_error$error)
+    waiting_opponent_input$waiting <- FALSE
+    
+  } else if (tail(damage_data$data, 1)[, Input_Omistaja_NM] == session$user ) {
+    #if I did the input, then I am waiting opponent
+    waiting_opponent_input$waiting <- TRUE
   }
-
- waiting_opponent_input$waiting <- !waiting_opponent_input$waiting 
- if ( waiting_opponent_input$waiting == TRUE) {
- updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
- }
+  
+  if ( waiting_opponent_input$waiting == TRUE) {
+    updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
+  }
 })
 
+#obseveEVent input_error$error
 observe({
   if (input_error$error == TRUE) {
     #calc error
@@ -191,12 +213,13 @@ observe({
    # print("dmg data")
  #  print(damage_data$data)
     choose_input <- calc_life_totals(isolate(damage_data$data))$input_error
-   # print(choose_input)
+  #  print("choose_input")
+  # print(choose_input)
 
     #print(damage_data_for_observe)
    # print(input_error_response$response)
     shinyalert(callbackR = function(x) {
-      new_row <- data.table(user = session$user,response = x)
+      new_row <- data.table(user = session$user, response = x, done = FALSE)
       input_error_response$response <- (rbind(input_error_response$response , new_row))
     },
               title = "Difference in damage input",
@@ -222,42 +245,48 @@ observe({
                    if (input_error_response$response[1, response] != input_error_response$response[2, response]
                        ) {
                      print("TRUEN puoelella")
-                     #case inputit meni oikein
+                     #case inputit meni oikein eli oltiin samaa mieltä virheestä
                      ##tallenna valittu inputti
                      ###tuhoa oma viimeisin ja lisää sinne vihun asetukset omalla inputilla
                      
+                     my_response <- input_error_response$response[user  == session$user, response]
+                     if (my_response == TRUE) {
+                     #  "Accept opponent input"
+                       # damage_data_for_observe <- ADM_CURRENT_DMG
+                       # session <- NULL
+                       # session$user <- "Lauri"
+                       damage_undone <- isolate(undo_damage(damage_data_for_observe, session$user))
+
+                       row_to_copy <- damage_undone[which.max(DID)]
+                       row_to_copy[, ':=' (Input_Omistaja_NM = session$user,
+                                           DID = max(DID) + 1)]
+                       damage_data$data <- rbind(damage_undone, row_to_copy)
+                       
+                     }
                      #debug
                      #input_error_response <- NULL
                      #input_error_response$response <- data.table(user = c("Lauri", "Martti"), response = c(TRUE, FALSE))
-                  
-                     tuhottava <- damage_data_for_observe[Input_Omistaja_NM ==
-                                        input_error_response$response[response ==
-                                                                        FALSE,
-                                                                      user], .(DID = max(DID)), by = .(Input_Omistaja_NM)]
-                     uuden_rivin_omistaja <- tuhottava[, Input_Omistaja_NM]
-                     uuden_rivin_DID <-  tuhottava[, DID]
-                     kopioitava <- damage_data_for_observe[Input_Omistaja_NM ==
-                                                      input_error_response$response[response ==
-                                                                                      TRUE,
-                                                                                    user], max(DID)]
-                     uusi_rivi <- damage_data_for_observe[DID == kopioitava]
-                     uusi_rivi[, ':=' (Input_Omistaja_NM = uuden_rivin_omistaja,
-                                       DID = uuden_rivin_DID)]
-                     data_josta_tuhottu <- damage_data_for_observe[DID != tuhottava[, DID]]
-                     data_mihin_lisatty  <- rbind(data_josta_tuhottu, uusi_rivi)
-                     setorder(data_mihin_lisatty, DID)
-                     damage_data$data <- data_mihin_lisatty
-                     life_totals$data <- calc_life_totals(data_mihin_lisatty)
+                    
+                     # tuhottava <- damage_data_for_observe[Input_Omistaja_NM ==
+                     #                    input_error_response$response[response ==
+                     #                                                    FALSE,
+                     #                                                  user], .(DID = max(DID)), by = .(Input_Omistaja_NM)]
+                     # message("Tuhottava rivi", tuhottava)
+
+                     
+                     # print(data_mihin_lisatty)
+                     # life_totals$data <- calc_life_totals(data_mihin_lisatty)
                      
                    } else {
+                   
                      #case inputit meni väärin
-                     #tuhoa molempien viimeisin input ja ilmoita pelaajille
-                     print("elsen puolella")
-                     tuhottava <- damage_data_for_observe[, .(DID = max(DID)), by = .(Input_Omistaja_NM)]
-                    # print(tuhottava)
-                     damage_data$data <- damage_data_for_observe[!DID %in% tuhottava[, DID]]
-                   #  print(damage_data$data)
-                     life_totals$data <- isolate(calc_life_totals(damage_data$data))
+                     #tuhoa oma viimeisin input ja ilmoita pelaajalle
+                   #  print("elsen puolella")
+                     tuhottava <- damage_data_for_observe[Input_Omistaja_NM == session$user, .(DID = max(DID))]
+                #   print(tuhottava)
+                    damage_data$data <- damage_data_for_observe[!DID %in% tuhottava[, DID]]
+                   # print(damage_data$data)
+                   #  life_totals$data <- isolate(calc_life_totals(damage_data$data))
                      #print( life_totals$data)
                      shinyalert(title = "Damage disagreement",
                                 text = "Both inputs have been deleted. Please input damage again",
@@ -269,13 +298,35 @@ observe({
                                 confirmButtonText = "Sorry, my bad",
                                 cancelButtonText = "He's a drunk idiot")
                    }
-                   #jälkitoimet. UI kohdilleen
-                   waiting_opponent_input$waiting <- FALSE
+                   #when second user confirms, delete global var row
+                 
+                   if (input_error_response$response[1, done ] == FALSE) {
+                      isolate(input_error_response$response[1, done := TRUE ])
+                   } else {
+                     input_error_response$response <- NULL
+                   }
                  }
+  
   
 })
 
+output$debug_text <- renderText({
+ resp <-  paste0("input_error_response: ", input_error$response, "\n",
+         "waiting_opponent_input: ", waiting_opponent_input$waiting, "\n",
+         "input_error: ", input_error$error, "\n",
+         "turnData: ", turnData$turn
+       #  "damage_data: ", damage_data$data, "\n"
+         )
+ print(resp)
+ return(resp)
 
+})
+
+
+
+  
+  
+  
 observe({
   if (waiting_opponent_input$waiting  == FALSE) {
     updateTabsetPanel(session, "lifeBox", selected = "life_input") 
@@ -285,8 +336,8 @@ observe({
 
 output$life_total_row <- renderUI({
   req(life_totals$data)
-  print(session$user)
- print(life_totals$data)
+ # print(session$user)
+# print(life_totals$data)
   lifedata <- life_totals$data$Lifetotal
   lifetext <- life_totals$data$dmg_text
   fluidRow(column(5,
@@ -295,11 +346,42 @@ output$life_total_row <- renderUI({
                   valueBox( lifedata[Omistaja_NM != session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)))
 })
 
-output$offer_turn <- renderUI({
-  turnData$turn
-  button_text <- 
-  actionButton(inputId = "act_offer_turn",
-               label = button_text)
+observeEvent(input$ab_Vaihda_vuoro, {
+  
+  turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
+})
+
+observeEvent(input$ab_pakita_endille, {
+  turnData$turn <- turnData$turn - 1
+})
+
+observe({
+  Aloittaja <- isolate(eR_UID_UUSI_PELI()[Aloittaja == 1, Omistaja_NM])
+ if (Aloittaja == session$user) {
+   I_start <- TRUE
+ } else {
+   I_start <- FALSE
+ }
+  print(session$user)
+  message("I_START", I_start)
+  required_data("ADM_TURN_SEQ")
+  my_turn <- I_start == ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
+  end_phase <-  ADM_TURN_SEQ[TSID == turnData$turn, End_phase]
+  message("my_turn", my_turn)
+  if (my_turn == 1 & end_phase == FALSE) {
+    shinyjs::enable("ab_Vaihda_vuoro")
+    shinyjs::enable("ab_pakita_endille")
+  } else if  (my_turn == 1 & end_phase == TRUE) {
+    shinyjs::enable("ab_Vaihda_vuoro")
+    shinyjs::disable("ab_pakita_endille")
+  } else {
+    shinyjs::disable("ab_Vaihda_vuoro")
+    shinyjs::disable("ab_pakita_endille") 
+  }
+  
+  
+  #my_turn <- ifelse((turnData$turn) - I_start)
+ # if( )
 })
 
 # 
