@@ -6,6 +6,7 @@ lifegain_DMG_reactive <- reactiveValues("Lifegain" = FALSE)
 reverse_DMG_reacive <- reactiveValues("Reverse_DMG" = FALSE)
 amount_DMG_reactive <- reactiveValues("dmg" = NULL, "opp" = TRUE)
 waiting_opponent_input <- reactiveValues(waiting = FALSE)
+inputLife <- reactiveValues(amount = "")
 
 observeEvent(input$dmg_settings,{
 listz <- input$dmg_settings
@@ -74,7 +75,7 @@ observeEvent(input$Lose_8, {
 })
 
 observeEvent(input$Lose_9, {
-  amount_DMG_reactive$dmg <- 9
+  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel") 
   amount_DMG_reactive$opp <- FALSE
 })
 
@@ -120,16 +121,58 @@ observeEvent(input$Deal_8, {
 })
 
 observeEvent(input$Deal_9, {
-  amount_DMG_reactive$dmg <- 9
+  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel") 
   amount_DMG_reactive$opp <- TRUE
 })
 
+observeEvent(input$Edit_1, {
+  inputLife$amount <- paste0(inputLife$amount, "1")
+})
+
+observeEvent(input$Edit_2, {
+  inputLife$amount <- paste0(inputLife$amount, "2")
+})
+
+observeEvent(input$Edit_3, {
+  inputLife$amount <- paste0(inputLife$amount, "3")
+})
+
+observeEvent(input$Edit_4, {
+  inputLife$amount <- paste0(inputLife$amount, "4")
+})  
+
+observeEvent(input$Edit_5, {
+  inputLife$amount <- paste0(inputLife$amount, "5")
+})
+
+observeEvent(input$Edit_6, {
+  inputLife$amount <- paste0(inputLife$amount, "6")
+})
+
+observeEvent(input$Edit_7, {
+  inputLife$amount <- paste0(inputLife$amount, "7")
+})
+
+observeEvent(input$Edit_8, {
+  inputLife$amount <- paste0(inputLife$amount, "8")
+})
+
+observeEvent(input$Edit_9, {
+  inputLife$amount <- paste0(inputLife$amount, "9")
+})
+
+observeEvent(input$Edit_0, {
+  inputLife$amount <- paste0(inputLife$amount, "0")
+})
+
+observeEvent(input$backSpace, {
+  inputLife$amount <- str_sub(inputLife$amount, 1, -2)
+})
 
 observe({
   #Amount damage should be the only thing triggering this
   req(amount_DMG_reactive$dmg)
-  required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_DMG"))
-  input_TSID <- ADM_CURRENT_TURN[, max(TSID)] + 1
+  input_TSID <- isolate(turnData$turn)
   isolate(
     if(lifegain_DMG_reactive$Lifegain == TRUE) {
       life_kerroin <- -1
@@ -356,12 +399,29 @@ observeEvent(input$ab_pakita_endille, {
 })
 
 observe({
-  Aloittaja <- isolate(eR_UID_UUSI_PELI()[Aloittaja == 1, Omistaja_NM])
+  
+  peli_id_data <- isolate(eR_UID_UUSI_PELI())
+  
+  Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
  if (Aloittaja == session$user) {
    I_start <- TRUE
  } else {
    I_start <- FALSE
  }
+
+  new_row <- data.table(TSID = turnData$turn,
+                        Peli_ID = peli_id_data[, max(Peli_ID_input)],
+                        time_stamp =  as.character(now(tz = "EET")))
+  required_data("ADM_CURRENT_TURN")
+  new_data <- rbind(ADM_CURRENT_TURN, new_row)
+  write.table(x = new_data,
+              file = paste0("./dmg_turn_files/", "current_turn.csv"),
+              sep = ";",
+              row.names = FALSE,
+              dec = ",")
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
+  
   print(session$user)
   message("I_START", I_start)
   required_data("ADM_TURN_SEQ")
@@ -384,48 +444,33 @@ observe({
  # if( )
 })
 
-# 
-# observeEvent(input$Deal_Non_combat, {
-#   
-#   if (combat_DMG_reactive$combat_dmg == FALSE) {
-#     updateActionButton(session,
-#                        inputId = "Deal_Non_combat",
-#                        label = "Deal combat dmg")
-#     combat_DMG_reactive$combat_dmg <- TRUE
-#   } else {
-#     updateActionButton(session,
-#                        inputId = "Deal_Non_combat",
-#                        label = "Non-combat damage")
-#     combat_DMG_reactive$combat_dmg <- FALSE
-#   }
-# })
-# 
-# 
-# observeEvent(input$Lifegain, {
-#   if (lifegain_DMG_reactive$Lifegain == FALSE) {
-#     updateActionButton(session,
-#                        inputId = "Lifegain",
-#                        label = "Lifeloss selected")
-#     lifegain_DMG_reactive$Lifegain <- TRUE
-#   } else {
-#     updateActionButton(session,
-#                        inputId = "Lifegain",
-#                        label = "Lifegain selected")
-#     lifegain_DMG_reactive$Lifegain <- FALSE
-#   }
-#     
-# })
-# observeEvent(input$Reverse_source, {
-#   if (reverse_DMG_reacive$Reverse_DMG == FALSE) {
-#     updateActionButton(session,
-#                        inputId = "Reverse_source",
-#                        label = "Normal source selected")
-#     reverse_DMG_reacive$Reverse_DMG <- TRUE
-#   } else {
-#     updateActionButton(session,
-#                        inputId = "Reverse_source",
-#                        label = "Reverse source selected")
-#     reverse_DMG_reacive$Reverse_DMG <- FALSE
-#   }
-#   
-# })
+observeEvent(input$ab_Undo,{
+  damage_data$data <- undo_damage(damage_data$data, session$user)
+})
+
+observeEvent(input$ab_Vaihda_vuoro_virhe, {
+  if (session$user == "Lauri") {
+   # input$laurin_virhe <- input$laurin_virhe + 1
+    click("laurin_virhe")
+  } else {
+    click("martin_virhe")
+   #input$martin_virhe <- input$martin_virhe + 1
+  }
+
+})
+
+observeEvent(input$save_9_damage, {
+  amount_DMG_reactive$dmg <- as.numeric(inputLife$amount)
+  inputLife$amount <- ""
+  
+              
+})
+output$value_type_life <- renderUI({
+  inputValue <- inputLife$amount
+  valueBox(value = inputValue,
+           subtitle = "laita tähän damagen type",
+           color = "aqua",
+           width = 6)
+})
+ 
+

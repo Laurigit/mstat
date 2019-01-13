@@ -26,8 +26,8 @@ uusi_peli <- dashboardBody(
     
       ),
   tabItems(
-  # source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
+   source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
+   source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
   # source("./scripts/ui/ui_blow.R",local = TRUE)$value,
   # source("./scripts/ui/ui_combined.R",local = TRUE)$value,
   # source("./scripts/ui/ui_peliasetukset.R",local = TRUE)$value,
