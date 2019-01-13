@@ -473,4 +473,27 @@ output$value_type_life <- renderUI({
            width = 6)
 })
  
+output$damage_rows_dt <- renderDataTable({
+#  required_data("ADM_CURRENT_DMG")
+  damage_data$data[, .N, by = .(Amount,
+                       Target_player,
+                       Dmg_source,
+                       Combat_dmg,
+                       TSID)][, N := NULL]
+}, options = list(
+  searching = FALSE,
+  scrollY = "400px",
+  scrollX = FALSE,
+  lengthChange = FALSE,
+  paging = FALSE,
+  bInfo =  FALSE
+  ),
+rownames = FALSE
+)
 
+observeEvent(input$Delete_dmg_row,{
+  required_functions("delete_damage")
+  #times too as the visible data has been aggregated
+  damage_data$data <- delete_damage(input$damage_rows_dt_rows_selected * 2, 
+                                    damage_data$data)
+})

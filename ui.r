@@ -38,7 +38,7 @@ uusi_peli <- dashboardBody(
   # source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
   # source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
   # source("./scripts/ui/ui_decks.R",local = TRUE)$value,
-  source("./scripts/tab/ui_life_counter.R",local = TRUE)$value
+  source("./scripts/ui/ui_life_counter.R",local = TRUE)$value
 
     
     
