@@ -168,19 +168,11 @@ tabItem(tabName = "tab_LifeCounter",
                                                              width = '100%',
                                                              style = "height: 126px;")),
                                          column(width = 3,
-                                                radioGroupButtons(inputId = "editTurnOrLife",
-                                                                  direction = "vertical",
-                                                                  justified = TRUE,
-                                                                  individual = TRUE,
-                                                                  label = "Input type",
-                                                                  choices = c("Life", 
-                                                                              "Turn"), 
-                                                                  status = "primary",
-                                                                  checkIcon = list(
-                                                                    yes = icon("ok", 
-                                                                               lib = "glyphicon"),
-                                                                    no = icon("remove",
-                                                                              lib = "glyphicon"))))),
+                                                actionButton(inputId = "ab_fix_lifes",
+                                                             label = "Edit turn",
+                                                             width = '100%',
+                                                             style = "height: 126px;"#tästä jäi ehkä sulku pois
+                                                ))),
                                 fluidRow(column(width = 3,
                                                 actionButton(inputId = "Edit_7",
                                                              label = "7",
@@ -206,13 +198,27 @@ tabItem(tabName = "tab_LifeCounter",
                             ),
                             box(width = 4,
                                 fluidRow(uiOutput(outputId = "value_type_life")),
+                                fluidRow(radioGroupButtons(inputId = "editTurnOrLife",
+                                                           direction = "horizontal",
+                                                           justified = TRUE,
+                                                           individual = TRUE,
+                                                           label = "Input type",
+                                                           choices = c("Life", 
+                                                                       "Turn"), 
+                                                           status = "primary",
+                                                           checkIcon = list(
+                                                             yes = icon("ok", 
+                                                                        lib = "glyphicon"),
+                                                             no = icon("remove",
+                                                                       lib = "glyphicon")))),
                                 fluidRow(
                                   
                                   radioGroupButtons(inputId = "isMyTurn", 
                                                     justified = TRUE,
                                                     individual = TRUE,
-                                                    choices = c("My turn", 
+                                                    choiceNames = c("My turn", 
                                                               "Opponent turn"), 
+                                                    choiceValues = c(TRUE, FALSE),
                                                     status = "primary",
                                                     checkIcon = list(
                                                       yes = icon("ok", 
@@ -232,8 +238,9 @@ tabItem(tabName = "tab_LifeCounter",
                                       no = icon("remove",
                                                 lib = "glyphicon")),
                                     
-                                   choices = c("Main phase", 
+                                    choiceNames = c("Main phase", 
                                                               "End step"), 
+                                    choiceValues = c(FALSE, TRUE),
                                       status = "primary")),
                                 fluidRow(actionButton(inputId = "save_9_damage",
                                                       label = "Save damage",
@@ -306,11 +313,7 @@ tabItem(tabName = "tab_LifeCounter",
                    box(
                      fluidRow(
                        actionButton(inputId = "ab_Undo",
-                                    label = "Undo")
-                     ),
-                     fluidRow(
-                       actionButton(inputId = "ab_fix_lifes",
-                                    label = "Add missed damage")
+                                    label = "Undo input (not delete)")
                      )
                    )
             )

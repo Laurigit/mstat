@@ -40,6 +40,9 @@ mark_damage <- function(Amount,
                         Input_Omistaja_NM = input_session_user,
                         TSID = input_TSID,
                         Peli_ID)
+  print(current_dmg)
+  print("nre_row")
+  print(new_row)
   appendaa <- rbind(current_dmg, new_row)
   
   return(appendaa)

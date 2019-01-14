@@ -7,6 +7,20 @@ reverse_DMG_reacive <- reactiveValues("Reverse_DMG" = FALSE)
 amount_DMG_reactive <- reactiveValues("dmg" = NULL, "opp" = TRUE)
 waiting_opponent_input <- reactiveValues(waiting = FALSE)
 inputLife <- reactiveValues(amount = "")
+#if user clicked to add previous life
+fix_life <- reactiveValues(enabled = FALSE)
+#if user has selected to input turn instead of life
+turn_overwrite <- reactiveValues(enabled = FALSE, value = "")
+#one variable to hold keypad input.
+complex_input <- reactiveValues(value = "")
+
+#one time init settings for UI
+shinyjs::disable("isEndStep")
+shinyjs::disable("isMyTurn")
+shinyjs::disable("editTurnOrLife")
+
+
+
 
 observeEvent(input$dmg_settings,{
 listz <- input$dmg_settings
@@ -126,47 +140,48 @@ observeEvent(input$Deal_9, {
 })
 
 observeEvent(input$Edit_1, {
-  inputLife$amount <- paste0(inputLife$amount, "1")
+ 
+  complex_input$value <- paste0(complex_input$value, "1")
 })
 
 observeEvent(input$Edit_2, {
-  inputLife$amount <- paste0(inputLife$amount, "2")
+   complex_input$value<- paste0(complex_input$value, "2")
 })
 
 observeEvent(input$Edit_3, {
-  inputLife$amount <- paste0(inputLife$amount, "3")
+   complex_input$value<- paste0(complex_input$value, "3")
 })
 
 observeEvent(input$Edit_4, {
-  inputLife$amount <- paste0(inputLife$amount, "4")
+   complex_input$value<- paste0(complex_input$value, "4")
 })  
 
 observeEvent(input$Edit_5, {
-  inputLife$amount <- paste0(inputLife$amount, "5")
+   complex_input$value<- paste0(complex_input$value, "5")
 })
 
 observeEvent(input$Edit_6, {
-  inputLife$amount <- paste0(inputLife$amount, "6")
+   complex_input$value<- paste0(complex_input$value, "6")
 })
 
 observeEvent(input$Edit_7, {
-  inputLife$amount <- paste0(inputLife$amount, "7")
+   complex_input$value<- paste0(complex_input$value, "7")
 })
 
 observeEvent(input$Edit_8, {
-  inputLife$amount <- paste0(inputLife$amount, "8")
+   complex_input$value<- paste0(complex_input$value, "8")
 })
 
 observeEvent(input$Edit_9, {
-  inputLife$amount <- paste0(inputLife$amount, "9")
+   complex_input$value<- paste0(complex_input$value, "9")
 })
 
 observeEvent(input$Edit_0, {
-  inputLife$amount <- paste0(inputLife$amount, "0")
+   complex_input$value <- paste0(complex_input$value, "0")
 })
 
 observeEvent(input$backSpace, {
-  inputLife$amount <- str_sub(inputLife$amount, 1, -2)
+   complex_input$value <- str_sub(complex_input$value, 1, -2)
 })
 
 observe({
@@ -180,6 +195,40 @@ observe({
       life_kerroin <- 1
     }
   )
+  
+  extract_pelidata <- isolate(eR_UID_UUSI_PELI())
+  
+  #jos on menossa damagen erityisfiksaus, niin ota turni inputeista
+  if (fix_life$enabled == TRUE) {
+    #check who started
+    Aloittaja <- extract_pelidata[Aloittaja == 1, Omistaja_NM]
+    if (Aloittaja == session$user) {
+      I_start <- TRUE
+    } else {
+      I_start <- FALSE
+    }
+    
+    Stareters_turn_boo <- I_start == input$isMyTurn
+    required_data("ADM_TURN_SEQ")
+    turnValue <-  ADM_TURN_SEQ[End_phase == input$isEndStep &
+                                 Starters_turn == Stareters_turn_boo &
+                                 Turn == as.numeric(turn_overwrite$value), TSID]
+    #cleanup
+    fix_life$enabled  <- FALSE
+    turn_overwrite$value <- ""
+    shinyjs::disable("isEndStep")
+    shinyjs::disable("isMyTurn")
+    shinyjs::disable("editTurnOrLife")
+    updateRadioGroupButtons(session,
+                            "editTurnOrLife",
+                            selected = "Life")
+
+  } else {
+    turnValue <- turnData$turn
+  }
+  
+  
+  
   #uuspeli <- data.table(Omistaja_NM = c("Lauri", "Martti"), Peli_ID_input = 1033)
   #testitulos <- mark_damage(3, "Lauri", 1, TRUE, "Lauri", 1, ADM_CURRENT_DMG, uuspeli)
   tulos <- mark_damage(Amount = amount_DMG_reactive$dmg * life_kerroin,
@@ -187,11 +236,11 @@ observe({
                        Combat_dmg =  isolate(combat_DMG_reactive$combat_dmg),
                        Reverse_source = isolate(reverse_DMG_reacive$Reverse_DMG),
                        input_session_user = session$user,
-                       input_TSID = isolate(turnData$turn),
+                       input_TSID = turnValue,
                        current_dmg = damage_data$data,
-                       input_UID_UUSI_PELI = isolate(eR_UID_UUSI_PELI())
+                       input_UID_UUSI_PELI = extract_pelidata
   )
- # print(tulos)
+  print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
  updateCheckboxGroupButtons(session,
@@ -401,7 +450,6 @@ observeEvent(input$ab_pakita_endille, {
 observe({
   
   peli_id_data <- isolate(eR_UID_UUSI_PELI())
-  
   Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
  if (Aloittaja == session$user) {
    I_start <- TRUE
@@ -462,18 +510,28 @@ observeEvent(input$ab_Vaihda_vuoro_virhe, {
 observeEvent(input$save_9_damage, {
   amount_DMG_reactive$dmg <- as.numeric(inputLife$amount)
   inputLife$amount <- ""
-  
+  complex_input$amount <- ""
               
 })
 output$value_type_life <- renderUI({
   inputValue <- inputLife$amount
+  if (fix_life$enabled == TRUE) {
+    turnValue <- turn_overwrite$value
+  } else {
+    required_data("ADM_TURN_SEQ")
+    turnValue <- ADM_TURN_SEQ[TSID == turnData$turn, Turn]
+  }
+
+TurnText <- paste0("Turn: ", turnValue)
+  
   valueBox(value = inputValue,
-           subtitle = "laita tähän damagen type",
+           subtitle = TurnText,
            color = "aqua",
            width = 6)
 })
  
 output$damage_rows_dt <- renderDataTable({
+ 
 #  required_data("ADM_CURRENT_DMG")
   damage_data$data[, .N, by = .(Amount,
                        Target_player,
@@ -497,3 +555,58 @@ observeEvent(input$Delete_dmg_row,{
   damage_data$data <- delete_damage(input$damage_rows_dt_rows_selected * 2, 
                                     damage_data$data)
 })
+
+observeEvent(input$ab_fix_lifes, {
+  fix_life$enabled <- TRUE
+  shinyjs::enable("isEndStep")
+  shinyjs::enable("isMyTurn")
+  shinyjs::enable("editTurnOrLife")
+  updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel")
+
+  updateRadioGroupButtons(session,
+                          inputId = "isMyTurn",
+                          selected = TRUE)
+  
+  updateRadioGroupButtons(session,
+                          inputId = "isEndStep",
+                          selected = FALSE)
+  
+    updateRadioGroupButtons(session,
+                          inputId = "editTurnOrLife",
+                          selected = "Turn")
+})
+
+
+#observeEvent complex_input
+observe({
+  
+  if (isolate(input$editTurnOrLife == "Turn")) {
+ #   print("write turns")
+    turn_overwrite$value <- complex_input$value
+  } else {
+#    print("write life")
+   inputLife$amount <-   complex_input$value
+  }
+  
+})
+# 
+#   
+#   input$isEndStep
+#   input$isMyTurn
+#   
+#   turn_overwrite$enabled <- 
+
+ 
+
+observeEvent(input$editTurnOrLife, {
+
+ 
+  if (input$editTurnOrLife == "Turn") {
+    turn_overwrite$enabled <- TRUE
+    isolate(complex_input$value <- turn_overwrite$value )
+  } else {
+    turn_overwrite$enabled <- FALSE
+    isolate(complex_input$value <-   inputLife$amount )
+  }
+
+}, ignoreInit = TRUE, ignoreNULL = TRUE)
