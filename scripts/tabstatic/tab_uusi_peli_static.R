@@ -62,6 +62,7 @@ output$selectInputLauri <- renderUI({
   
   selectInput("select_laurin_pakka","Laurin pakka",choices = selectinputListLauri,selected=preSelect)
   
+  
 })
 #tee martin pakka selectinput
 output$selectInputMartti <- renderUI({

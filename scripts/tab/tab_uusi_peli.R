@@ -1,19 +1,19 @@
-eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
-                              input$select_martin_pakka,
+eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
+                              select_martin_pakka$value,
                               updatedTempData$a,
                               
                               input$luo_peleja),{
                                 
-                                if (!is.null(input$select_laurin_pakka) & !is.null(input$select_martin_pakka)) {
+                                if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
                                   
-                                  # input$select_laurin_pakka <- 1
-                                  # input$select_martin_pakka <-9    
+                                  # select_laurin_pakka$value <- 1
+                                  # select_martin_pakka$value <-9    
                                   required_functions("getUusi_Peli_ID")
                                   required_data(c("ADM_PELIT"))
                                   
                                   normiToiminto <- getUusi_Peli_ID(ADM_PELIT,
-                                                                  input$select_laurin_pakka,
-                                                                  input$select_martin_pakka)
+                                                                  select_laurin_pakka$value,
+                                                                  select_martin_pakka$value)
                                   
                                  # message("palautettu uusi peli id ", normiToiminto)
                                   return(normiToiminto)
@@ -404,3 +404,23 @@ output$PakkaVSBox <- renderUI({
       )
 })
 
+#select_laurin_pakka
+observeEvent(input$select_laurin_pakka,{
+    select_laurin_pakka$value <- input$select_laurin_pakka
+}, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+ observe({
+   updateSelectInput(session,
+                     inputId = "select_laurin_pakka", selected = (select_laurin_pakka$value))
+ })
+ 
+ #select_martin_pakka
+ observeEvent(input$select_martin_pakka,{
+   select_martin_pakka$value <- input$select_martin_pakka
+ }, ignoreNULL = TRUE, ignoreInit = TRUE)
+ 
+ observe({
+   updateSelectInput(session,
+                     inputId = "select_martin_pakka", selected = (select_martin_pakka$value))
+ })
+ 
