@@ -12,6 +12,19 @@ input_error <- reactiveValues(error = FALSE)
 input_error_response <- reactiveValues(response = NULL)
 
 
+################GLOBAL UI control
+slider_laurin_mulligan <-  reactiveValues(value = 0) 
+slider_martin_mulligan <-  reactiveValues(value = 0) 
+slider_laurin_virhe <-  reactiveValues(value = 1) 
+slider_martin_virhe <-  reactiveValues(value = 1) 
+slider_laurin_landit <-  reactiveValues(value = 0) 
+slider_martin_landit <-  reactiveValues(value = 0) 
+slider_laurin_lifet <-  reactiveValues(value = 0) 
+slider_martin_lifet <-  reactiveValues(value = 0)
+slider_vuoroarvio <-  reactiveValues(value = 0) 
+slider_laurin_kasikortit <-  reactiveValues(value = -1) 
+slider_martin_kasikorit <-  reactiveValues(value = -1) 
+
 ###############
 
 user_logged <- reactiveValues(count = 0)
