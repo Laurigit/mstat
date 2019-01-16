@@ -145,7 +145,7 @@ observe({
 #slider_martin_kasikorit
 observeEvent(input$slider_martin_kasikorit,{
   slider_martin_kasikorit$value <- input$slider_martin_kasikorit
-  
+
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
@@ -233,6 +233,24 @@ observe({
 })
 
 
+#observe if tallenna is enabled
+observe({
+
+  if(!is.null(slider_martin_kasikorit$value) & !is.null(slider_laurin_kasikortit$value)) {
+  if ( slider_martin_kasikorit$value >= 0 &  slider_laurin_kasikortit$value >= 0) {
+    shinyjs::enable("tallenna_tulos")
+  } else {
+    
+    shinyjs::disable("tallenna_tulos")
+  }
+  } else {
+    shinyjs::disable("tallenna_tulos")
+  }
+})
+
+#lauri_voitti
+
+
 
 
 observeEvent(input$laurin_mulligan,{
@@ -255,14 +273,25 @@ observeEvent(input$martin_virhe_uusipeli,{
    updateSliderInput(session, "slider_martin_virhe", value = input$slider_martin_virhe-1)
 })
 
+#lauri voitto globaali
 observeEvent(input$lauri_voitti,{
-    updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
-    updateRadioButtons(session,"radio_voittaja",selected=0)
+  react_lauri_voitti$value <- input$lauri_voitti
   })
-
-observeEvent(input$martti_voitti,{
+observe({
+  react_lauri_voitti$value 
   updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
-  updateRadioButtons(session,"radio_voittaja",selected=1)
+  updateRadioButtons(session,"radio_voittaja",selected = 0)
+})
+
+#martti voitti globaali
+observeEvent(input$martti_voitti,{
+  react_martti_voitti$value <- input$martti_voitti
+})
+
+observe({
+  react_martti_voitti$value
+  updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
+  updateRadioButtons(session,"radio_voittaja",selected = 1)
 })
 
 

@@ -28,6 +28,8 @@ slider_martin_kasikorit <-  reactiveValues(value = -1)
 
 select_laurin_pakka <- reactiveValues(value = NULL) 
 select_martin_pakka <- reactiveValues(value = NULL) 
+react_lauri_voitti<- reactiveValues(value = 0)
+react_martti_voitti <- reactiveValues(value = 0)
 ###############
 
 user_logged <- reactiveValues(count = 0)
