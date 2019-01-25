@@ -287,9 +287,7 @@ tabItem(tabName = "tab_LifeCounter",
                  )),
           
           fluidRow(h3(textOutput("debug_text"))),
-          fluidRow(actionButton(inputId = "CHARTPLACEHOLDER",
-                                label = "CHARTPLACEHOLDER",
-                                style = "height: 40px")),
+          fluidRow(plotOutput(outputId = "lifeChart")),
           uiOutput(outputId = "life_total_row"),
           
           fluidRow(

@@ -1,12 +1,6 @@
 required_data("ADM_CURRENT_DMG")
 required_data("ADM_TURN_SEQ")
 
-library(tidyverse)
-library(ggplot2)
-library(reshape2)
-library(lubridate)
-library(grid)
-library(gridExtra)
 
 
 
@@ -30,9 +24,9 @@ curr_data <- cbind(Amount, Target_player, Dmg_source, Combat_damage, TSID)
 dtLCurr<- cbind(dtL, curr_data)
 dtMCurr<- cbind(dtM, curr_data)
 
-dtLCurr_Turn <- dtLCurr[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Lauri", Target_player)]
-dtMCurr_Turn <- dtMCurr[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Martti", Target_player)]
-total_all <- rbind(dtLCurr_Turn, dtMCurr_Turn)[order(TSID, DID)]
+#dtLCurr_Turn <- dtLCurr[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Lauri", Target_player)]
+#dtMCurr_Turn <- dtMCurr[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Martti", Target_player)]
+total_all <- rbind(dtLCurr, dtMCurr)[order(TSID, DID)]
 total <- total_all[, .(DID,
                        Amount = ifelse(is.na(Amount), 0, Amount),
                        Target_player,
@@ -40,10 +34,10 @@ total <- total_all[, .(DID,
                        Combat_damage,
                        Input_Omistaja_NM,
                        TSID,
-                       Peli_ID,
-                       End_phase,
-                       Starters_turn,
-                       Turn)]
+                       Peli_ID
+                       
+                       
+                       )]
 graphInput <- total[,. (DID,
                       Amount,
                       Target_player,
@@ -51,18 +45,28 @@ graphInput <- total[,. (DID,
                       Combat_damage,
                       Input_Omistaja_NM,
                       TSID,
-                      Peli_ID,
-                      End_phase,
-                      Starters_turn,
-                      Turn)]
+                      Peli_ID
+                      
+                      
+                      )]
+
+#split to two players
+splitL <- graphInput[Target_player == "Lauri"]
+splitM <- graphInput[Target_player == "Martti"]
+dtLCurr_Turn <- splitL[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Lauri", Target_player)]
+dtMCurr_Turn <- splitM[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Martti", Target_player)]
+appendForProcessing <- rbind(dtLCurr_Turn, dtMCurr_Turn)
+appendForProcessing[, Amount := ifelse(is.na(Amount), 0, Amount)]
 Aloittaja <- "Lauri"
+session <- NULL
+session$user <- "Lauri"
 starting_life <-  20
 
 # tse <- ADM_TURN_SEQ
 # join_tse <- graphInput[ADM_TURN_SEQ, on = "TSID"]
 # join_tse[,':=' (Amount = ifelse(is.na(Amount), 0, Amount))]
 #only for simul
-join_tse <- graphInput
+join_tse <- appendForProcessing
   join_tse[, Combat_damage := ifelse(End_phase == TRUE, 0, Combat_damage)]
 ####
   join_tse[, Target_Player_Turn := (Target_player == Aloittaja) == Starters_turn]
@@ -108,11 +112,19 @@ aggr_dmg[, ':=' (ymax = cum_life_start_of_turn,
                  xmax = half_turn + 0.5,
                  ymin = cum_lifetotl,
                  value = Amount)]
-aggr_dmg<-aggr_dmg[Target_player == "Martti"]
+
 
 last_dmg <- aggr_dmg[Amount > 0, max(half_turn)]
 
 aggr_dmg_cut <- aggr_dmg[half_turn <= last_dmg]
+
+
+aggr_dmg_me <- aggr_dmg_cut[Target_player == session$user]
+aggr_dmg_opponent <- aggr_dmg_cut[Target_player  != session$user]
+plot_ymax <- max(aggr_dmg_me[, max(ymax)], 20)
+plot_xmax <- aggr_dmg_me[, max(half_turn)]
+plot_ymin <- min(aggr_dmg_opponent[, min(-ymax)], -20)
+
 # Define ymin of segment
 # df <- data %>% 
 #   melt(id.vars = c("date", "eop", "ymax")) %>% 
@@ -131,10 +143,8 @@ aggr_dmg_cut <- aggr_dmg[half_turn <= last_dmg]
 #   ))
 
 # Create waterfall chart
-plot_ymax <- aggr_dmg_cut[, max(ymax)]
-plot_xmax <- aggr_dmg_cut[, max(half_turn)]
 
-aggr_dmg_cut %>% 
+aggr_dmg_me %>% 
   arrange(half_turn) %>% 
   ggplot() +
   geom_rect(aes(xmin = xmin,
@@ -142,21 +152,30 @@ aggr_dmg_cut %>%
                 ymin = ymin,
                 ymax = ymax,
                 fill =  factor(lifegain))) + scale_fill_manual(values = c("red", "green4")) +
-  scale_y_continuous(expand = c(0, 0), limits = c(0,plot_ymax), breaks = seq(0, plot_ymax, by = 5)) +   
+  scale_y_continuous(expand = c(0, 0), limits = c(plot_ymin, plot_ymax), breaks = c(seq(0, plot_ymin, by = -5),
+                                                                                    seq(0, plot_ymax, by = 5))) +   
   scale_x_continuous(expand = c(0, 0), limits = c(1, plot_xmax) ,breaks = seq(1:plot_xmax)) + 
 # ylim(min = 0, max = 20) +
    # geom_segment(aes(x = xArrow, y = ymax, xend = xArrow, yend = ymin),
    #               arrow = arrow(length = unit(0.5, "cm")), size = 1) +
-  geom_line(aes(half_turn, (cum_life_start_of_turn)), col = "dodgerblue4", size = 1)   -> p1
+  geom_line(aes(half_turn, (cum_life_start_of_turn)), col = "dodgerblue4", size = 1)  -> p1
 p1 
 #p2 <- p1 +  expand_limits(x=c(1,10), y=c(0,20))
-p3 <- p1 + 
+p3 <- p1 +  geom_hline(yintercept = 0) +
+  geom_rect(data = aggr_dmg_opponent, aes(xmin = xmin,
+                                                   xmax = xmax,
+                                                   ymin = -ymin,
+                                                   ymax = -ymax,
+                                                   fill =  factor(lifegain))) + scale_fill_manual(values = c("red", "green4")) +
+ geom_line(data = aggr_dmg_opponent, aes(half_turn, (-cum_life_start_of_turn)), col = "dodgerblue4", size = 1)
 
 p3
 # p4 <- p3 +  theme(axis.title.x = element_text(family="Times",size=20,
 #                                     face="bold",colour = "Black",vjust=-1,hjust=0.5))+
 #   theme(plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+p4 <- p3 
 p4
+
 # 
 # + scale_fill_gradient2(midpoint = 0,
 #                        low = "green4",

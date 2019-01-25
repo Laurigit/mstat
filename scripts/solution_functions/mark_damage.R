@@ -31,7 +31,12 @@ mark_damage <- function(Amount,
   
   
   Peli_ID <- input_UID_UUSI_PELI[, max(Peli_ID_input)]
-  max_DID <- current_dmg[, max(DID)]
+  if( is.finite(current_dmg[, max(DID)])) {
+    max_DID <- current_dmg[, max(DID)]
+  } else {
+    max_DID <- 0
+  }
+  
   new_row <- data.table(DID = max_DID + 1,
                         Amount,
                         Target_player,

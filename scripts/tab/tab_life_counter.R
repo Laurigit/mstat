@@ -21,10 +21,14 @@ shinyjs::disable("editTurnOrLife")
 
 
 
-
-observeEvent(input$dmg_settings,{
+#trying to be
+#observeEvent(input$dmg_settings,{
+observe({
 listz <- input$dmg_settings
-#print(listz)
+takeReact <-  damage_data$data
+#print(session$user)
+print("Lifegain agaaain")
+#rint(listz)
 if ("Lifegain" %in% listz) {
   lifegain_DMG_reactive$Lifegain <- TRUE
 } else {
@@ -240,12 +244,14 @@ observe({
                        current_dmg = damage_data$data,
                        input_UID_UUSI_PELI = extract_pelidata
   )
-  print(tulos)
+ # print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
  updateCheckboxGroupButtons(session,
                             "dmg_settings",
                             selected = c(""))
+ print("updaten jalkee")
+ print(input$dmg_settings)
   damage_data$data <- tulos
  
 
@@ -610,3 +616,102 @@ observeEvent(input$editTurnOrLife, {
   }
 
 }, ignoreInit = TRUE, ignoreNULL = TRUE)
+
+
+
+
+
+###########################
+#RENDER LIFE CHART
+###########################
+
+output$lifeChart <- renderPlot({
+  required_data(c("ADM_TURN_SEQ", "ADM_CURRENT_DMG")) 
+  graphInput <- isolate(damage_data$data)
+  only_my_input <- graphInput[Input_Omistaja_NM == session$user]
+  #graphInput <- ADM_CURRENT_DMG
+ take_dependency <- life_totals$data
+splitL <- only_my_input[Target_player == "Lauri"]
+splitM <- only_my_input[Target_player == "Martti"]
+dtLCurr_Turn <- splitL[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Lauri", Target_player)]
+dtMCurr_Turn <- splitM[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Martti", Target_player)]
+appendForProcessing <- rbind(dtLCurr_Turn, dtMCurr_Turn)
+appendForProcessing[, Amount := ifelse(is.na(Amount), 0, Amount)]
+Aloittaja <- "Lauri"
+starting_life <-  20
+
+# tse <- ADM_TURN_SEQ
+# join_tse <- graphInput[ADM_TURN_SEQ, on = "TSID"]
+# join_tse[,':=' (Amount = ifelse(is.na(Amount), 0, Amount))]
+#only for simul
+join_tse <- appendForProcessing
+join_tse[, Combat_damage := ifelse(End_phase == TRUE, 0, Combat_damage)]
+####
+join_tse[, Target_Player_Turn := (Target_player == Aloittaja) == Starters_turn]
+aggr_dmg <- join_tse[, .(Amount = sum(Amount, na.rm =TRUE), TSID = min(TSID)
+),
+by = .(
+  
+  Target_player,
+  # Dmg_source,
+  # Combat_damage,
+  
+  Turn,
+  Target_Player_Turn,Starters_turn)]
+aggr_dmg[, lifegain := ifelse(Amount < 0, TRUE, FALSE)]
+aggr_dmg[, half_turn := (Turn  + ifelse(Starters_turn == TRUE, 0, 0.5))]
+aggr_dmg[, cum_dmg := cumsum(Amount), by = Target_player]
+aggr_dmg[, cum_lifetotl := starting_life - cum_dmg]
+aggr_dmg[, cum_life_start_of_turn := cum_lifetotl + Amount]
+#aggr_dmg <- aggr_dmg[order(TSID)]
+
+
+
+aggr_dmg[, ':=' (ymax = cum_life_start_of_turn,
+                 xmin = half_turn,
+                 xmax = half_turn + 0.5,
+                 ymin = cum_lifetotl,
+                 value = Amount)]
+
+#
+#turnData <- NULL
+#turnData$turn <- 50
+
+
+aggr_dmg_cut <- aggr_dmg[TSID <= turnData$turn]
+
+
+aggr_dmg_me <- aggr_dmg_cut[Target_player == isolate(session$user)]
+aggr_dmg_opponent <- aggr_dmg_cut[Target_player  != isolate(session$user)]
+plot_ymax <- max(aggr_dmg_me[, max(ymax)], 20)
+plot_xmax <- aggr_dmg_me[, max(half_turn)]
+plot_ymin <- min(aggr_dmg_opponent[, min(-ymax)], -20)
+
+aggr_dmg_me %>% 
+  arrange(half_turn) %>% 
+  ggplot() +
+  geom_rect(aes(xmin = xmin,
+                xmax = xmax,
+                ymin = ymin,
+                ymax = ymax,
+                fill =  factor(lifegain))) + scale_fill_manual(values = c("red", "green4")) +
+  scale_y_continuous(expand = c(0, 0), limits = c(plot_ymin, plot_ymax), breaks = c(seq(0, plot_ymin, by = -5),
+                                                                                    seq(0, plot_ymax, by = 5))) +   
+  scale_x_continuous(expand = c(0, 0), limits = c(1, plot_xmax) ,breaks = seq(1:plot_xmax)) + 
+  # ylim(min = 0, max = 20) +
+  # geom_segment(aes(x = xArrow, y = ymax, xend = xArrow, yend = ymin),
+  #               arrow = arrow(length = unit(0.5, "cm")), size = 1) +
+  geom_line(aes(half_turn, (cum_life_start_of_turn)), col = "dodgerblue4", size = 1)  -> p1
+
+#p2 <- p1 +  expand_limits(x=c(1,10), y=c(0,20))
+p3 <- p1 +  geom_hline(yintercept = 0) +
+  geom_rect(data = aggr_dmg_opponent, aes(xmin = xmin,
+                                          xmax = xmax,
+                                          ymin = -ymin,
+                                          ymax = -ymax,
+                                          fill =  factor(lifegain))) + scale_fill_manual(values = c("red", "green4")) +
+  geom_line(data = aggr_dmg_opponent, aes(half_turn, (-cum_life_start_of_turn)), col = "dodgerblue4", size = 1)
+
+p3
+
+})
