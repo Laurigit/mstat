@@ -1,6 +1,7 @@
 
 ################
 #Life counter data
+#turn = TSID, Atual trn = turn in magic game.
 turnData <- reactiveValues(turn = 1)
 
 required_data("ADM_DI_HIERARKIA")
@@ -24,6 +25,7 @@ slider_martin_lifet <-  reactiveValues(value = 0)
 slider_vuoroarvio <-  reactiveValues(value = 0) 
 slider_laurin_kasikortit <-  reactiveValues(value = -1) 
 slider_martin_kasikorit <-  reactiveValues(value = -1) 
+tallenna_tulos_ui_update <-  reactiveValues(value = 0) 
 
 
 select_laurin_pakka <- reactiveValues(value = NULL) 

@@ -3,7 +3,7 @@ eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
                               updatedTempData$a,
                               
                               input$luo_peleja),{
-                                
+                               
                                 if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
                                   
                                   # select_laurin_pakka$value <- 1

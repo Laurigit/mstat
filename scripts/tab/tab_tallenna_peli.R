@@ -86,12 +86,9 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   pelit_jaljella[,':='(MaxVP = NULL)]
   
   kircsv(pelit_jaljella,"pelit.csv", TRUE)
-  required_data("ADM_DI_HIERARKIA")
-  updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
-  updatedTempData$a <- isolate(updatedTempData$a + 1)
+  
 
-  updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
-  js$collapse("uusipeli_box")
+
  
   
   updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
@@ -105,9 +102,46 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
   updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
   updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
-  updateNumericInput(session,"sarjataulukkokierros",value=0)
 
+
+  #lifecoutnteri-nollaukset ja tallennukset
+  #ota talteen vuorotiedosto ja 
+  new_name <- paste0("./external_files/dmg_", eR_Peli_ID(), ".csv")
+  file.copy(from = "./dmg_turn_files/current_dmg.csv",
+            to = new_name)
+  new_name2 <- paste0("./external_files/turn_", eR_Peli_ID(), ".csv")
+  file.copy(from = "./dmg_turn_files/current_turn.csv",
+            to = new_name2)
+  write.table(x = damage_data$data[1 == 0],
+              file = paste0("./dmg_turn_files/", "current_dmg.csv"),
+              sep = ";",
+              row.names = FALSE,
+              dec = ",")
+  write.table(x = ADM_CURRENT_TURN[1 == 0],
+              file = paste0("./dmg_turn_files/", "current_turn.csv"),
+              sep = ";",
+              row.names = FALSE,
+              dec = ",")
+
+
+
+  tallenna_tulos_ui_update$value <- isolate(tallenna_tulos_ui_update$value + 1)
+  
 })
+
+observe({
+
+  dependency <- tallenna_tulos_ui_update$value
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
+  updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
+  updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
+  updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
+  js$collapse("uusipeli_box")
+  updatedTempData$a <- isolate(updatedTempData$a + 1)
+  updateNumericInput(session,"sarjataulukkokierros",value=0)
+})
+
 
 #slider_laurin_lifet
 observeEvent(input$slider_laurin_lifet,{
@@ -275,23 +309,30 @@ observeEvent(input$martin_virhe_uusipeli,{
 
 #lauri voitto globaali
 observeEvent(input$lauri_voitti,{
+
   react_lauri_voitti$value <- input$lauri_voitti
-  })
+  }, ignoreNULL = TRUE, ignoreInit = TRUE)
 observe({
-  react_lauri_voitti$value 
+  if (react_lauri_voitti$value > 0 ) {
+  print("lauri voitti value updated")
   updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
   updateRadioButtons(session,"radio_voittaja",selected = 0)
+  }
 })
 
 #martti voitti globaali
 observeEvent(input$martti_voitti,{
+  
+ 
   react_martti_voitti$value <- input$martti_voitti
-})
+}, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
-  react_martti_voitti$value
-  updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
+  
+  if (react_martti_voitti$value > 0 ) {
+ updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
   updateRadioButtons(session,"radio_voittaja",selected = 1)
+  }
 })
 
 

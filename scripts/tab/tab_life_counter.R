@@ -412,7 +412,9 @@ output$debug_text <- renderText({
  resp <-  paste0("input_error_response: ", input_error$response, "\n",
          "waiting_opponent_input: ", waiting_opponent_input$waiting, "\n",
          "input_error: ", input_error$error, "\n",
-         "turnData: ", turnData$turn
+         "turnData: ", turnData$turn, "\n",
+         "complexInput: ", complex_input$amount, "\n",
+         "inputLife: ", inputLife$amount
        #  "damage_data: ", damage_data$data, "\n"
          )
  print(resp)
@@ -514,9 +516,11 @@ observeEvent(input$ab_Vaihda_vuoro_virhe, {
 })
 
 observeEvent(input$save_9_damage, {
+  
   amount_DMG_reactive$dmg <- as.numeric(inputLife$amount)
+  complex_input$value <- ""
   inputLife$amount <- ""
-  complex_input$amount <- ""
+  
               
 })
 output$value_type_life <- renderUI({
@@ -628,6 +632,8 @@ observeEvent(input$editTurnOrLife, {
 output$lifeChart <- renderPlot({
   required_data(c("ADM_TURN_SEQ", "ADM_CURRENT_DMG")) 
   graphInput <- isolate(damage_data$data)
+  # session <- NULL
+  # session$user <- "Lauri"
   only_my_input <- graphInput[Input_Omistaja_NM == session$user]
   #graphInput <- ADM_CURRENT_DMG
  take_dependency <- life_totals$data
@@ -637,7 +643,17 @@ dtLCurr_Turn <- splitL[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.n
 dtMCurr_Turn <- splitM[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Martti", Target_player)]
 appendForProcessing <- rbind(dtLCurr_Turn, dtMCurr_Turn)
 appendForProcessing[, Amount := ifelse(is.na(Amount), 0, Amount)]
-Aloittaja <- "Lauri"
+
+aloittajaNo <- isolate(eR_Peli_Aloittaja$a)
+if(aloittajaNo == 0) {
+  Aloittaja <- "Lauri"
+} else if (aloittajaNo == 1){
+  Aloittaja <- "Martti"
+} else {
+  Aloittaja <- "RIKKI"
+}
+
+
 starting_life <-  20
 
 # tse <- ADM_TURN_SEQ
@@ -645,7 +661,7 @@ starting_life <-  20
 # join_tse[,':=' (Amount = ifelse(is.na(Amount), 0, Amount))]
 #only for simul
 join_tse <- appendForProcessing
-join_tse[, Combat_damage := ifelse(End_phase == TRUE, 0, Combat_damage)]
+join_tse[, Combat_dmg := ifelse(End_phase == TRUE, 0, Combat_dmg)]
 ####
 join_tse[, Target_Player_Turn := (Target_player == Aloittaja) == Starters_turn]
 aggr_dmg <- join_tse[, .(Amount = sum(Amount, na.rm =TRUE), TSID = min(TSID)
@@ -674,11 +690,11 @@ aggr_dmg[, ':=' (ymax = cum_life_start_of_turn,
                  value = Amount)]
 
 #
-#turnData <- NULL
-#turnData$turn <- 50
+# turnData <- NULL
+# turnData$turn <- 50
 
 
-aggr_dmg_cut <- aggr_dmg[TSID <= turnData$turn]
+aggr_dmg_cut <- aggr_dmg[TSID <= (isolate(turnData$turn) + 2)]
 
 
 aggr_dmg_me <- aggr_dmg_cut[Target_player == isolate(session$user)]
@@ -694,10 +710,13 @@ aggr_dmg_me %>%
                 xmax = xmax,
                 ymin = ymin,
                 ymax = ymax,
-                fill =  factor(lifegain))) + scale_fill_manual(values = c("red", "green4")) +
-  scale_y_continuous(expand = c(0, 0), limits = c(plot_ymin, plot_ymax), breaks = c(seq(0, plot_ymin, by = -5),
-                                                                                    seq(0, plot_ymax, by = 5))) +   
-  scale_x_continuous(expand = c(0, 0), limits = c(1, plot_xmax) ,breaks = seq(1:plot_xmax)) + 
+                fill =  factor(lifegain)), show.legend = FALSE) + scale_fill_manual(values = c("red", "green4")) +
+  scale_y_continuous(expand = c(0, 0),
+                     limits = c(plot_ymin, plot_ymax),
+                     breaks = c(seq(0, plot_ymin, by = -5), seq(0, plot_ymax, by = 5)),
+                     minor_breaks = NULL) +#c(seq(0, plot_ymin, by = -1), seq(0, plot_ymax, by = 1))) +   
+  scale_x_continuous(expand = c(0, 0), limits = c(1, plot_xmax) , breaks = seq(1:plot_xmax)) + 
+  # theme(panel.grid.major = element_line(color = "red")) +
   # ylim(min = 0, max = 20) +
   # geom_segment(aes(x = xArrow, y = ymax, xend = xArrow, yend = ymin),
   #               arrow = arrow(length = unit(0.5, "cm")), size = 1) +
@@ -709,9 +728,45 @@ p3 <- p1 +  geom_hline(yintercept = 0) +
                                           xmax = xmax,
                                           ymin = -ymin,
                                           ymax = -ymax,
-                                          fill =  factor(lifegain))) + scale_fill_manual(values = c("red", "green4")) +
-  geom_line(data = aggr_dmg_opponent, aes(half_turn, (-cum_life_start_of_turn)), col = "dodgerblue4", size = 1)
-
+                                          fill =  factor(lifegain)), show.legend = FALSE) + scale_fill_manual(values = c("red", "green4")) +
+  geom_line(data = aggr_dmg_opponent, aes(half_turn, (-cum_life_start_of_turn)), col = "dodgerblue4", size = 1) +
+   theme(legend.position = "none") +
+ guides(fill=FALSE) + 
+  theme(axis.title.x=element_blank()) + 
+theme(axis.title.y=element_blank())
 p3
 
+})
+
+
+#observaa, jos joku voittaa
+observe({
+ # life_totals <- NULL
+ # life_totals$data <- calc_life_totals(ADM_CURRENT_DMG)
+  required_data("ADM_TURN_SEQ")
+  minLife <- life_totals$data$Lifetotal[, min(Life_total)]
+  
+  if (minLife <= 0) {
+    aloittajaNo <- eR_Peli_Aloittaja$a
+  
+    if (aloittajaNo == 0) {
+      mulligan_lkm  <- input$slider_laurin_mulligan 
+      # print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
+      
+    } else {
+      mulligan_lkm  <- input$slider_martin_mulligan 
+      # print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
+    }
+    
+    
+      slider_vuoroarvio$value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
+    slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
+    slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
+    if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {
+   
+      click("martti_voitti")
+    } else {
+      click("lauri_voitti")
+    }
+  }
 })
