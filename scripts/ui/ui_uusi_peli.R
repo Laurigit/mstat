@@ -1,9 +1,10 @@
 
-  tabItem(tabName="tab_uusi_peli",
+  tabItem(tabName = "tab_uusi_peli",
           fluidPage(
             useShinyalert(),
             #theme = shinytheme("yeti"),
             shinyjs::useShinyjs(),
+           
             box(id = "uusipeli_box", fluidRow(column(4, uiOutput("selectInputLauri")),
                                               column(4, actionButton("arvo_peli","Random match")),
                                               column(4, uiOutput("selectInputMartti"))),
@@ -37,6 +38,10 @@
                      
                      
                      column(1, actionButton("martti_voitti","Martti voitti"))),
+            #fluidRow(box(HTML(       '<font size="7" color="red">  This is some t1ext!</font></body>')),
+           # fluidRow(box(HTML('<div align="center"><font size="40" color="white"> <b>20</b></font></div'),
+           #          background = "black")),
+           
             
             fluidRow(column(3,(textOutput("peli_id")))),
             

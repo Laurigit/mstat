@@ -68,9 +68,9 @@ tabItem(tabName = "tab_LifeCounter",
                                                            style = "color: #fff; background-color: #b73338; border-color: #2e6da4; height: 126px;")),
                                        column(width = 4,
                                               actionButton(inputId = "Lose_9",
-                                                           label = "9+ & Other",
+                                                           label = HTML("9+ &  <br> Other"),
                                                            width = '100%',
-                                                           style = "height: 126px;"))
+                                                           style = "color: #fff; background-color: #b73338; border-color: #2e6da4; height: 126px"))
                                        
                               )
                             ),
@@ -82,51 +82,51 @@ tabItem(tabName = "tab_LifeCounter",
                                        actionButton(inputId = "Deal_1",
                                                     label = "1",
                                                     width = '100%',
-                                                    style = "height: 126px;")),
+                                                    style = "height: 126px; font-size:250%;")),
                                 column(width = 4,
                                        actionButton(inputId = "Deal_2",
                                                     label = "2",
                                                     width = '100%',
-                                                    style = "height: 126px;")),
+                                                    style = "height: 126px; font-size:250%;")),
                                 column(width = 4,
                                        actionButton(inputId = "Deal_3",
                                                     label = "3",
                                                     width = '100%',
-                                                    style = "height: 126px;"))
+                                                    style = "height: 126px; font-size:250%; "))
                               ),
                               fluidRow(
                                 column(width = 4,
                                        actionButton(inputId = "Deal_4",
                                                     label = "4",
                                                     width = '100%',
-                                                    style = "height: 126px;")),
+                                                    style = "height: 126px; font-size:250%;")),
                                 column(width = 4,
                                        actionButton(inputId = "Deal_5",
                                                     label = "5",
                                                     width = '100%',
-                                                    style = "height: 126px;")),
+                                                    style = "height: 126px; font-size:250%;")),
                                 column(width = 4,
                                        actionButton(inputId = "Deal_6",
                                                     label = "6",
                                                     width = '100%',
-                                                    style = "height: 126px;"))
+                                                    style = "height: 126px; font-size:250%;"))
                               ),
                               fluidRow(
                                 column(width = 4,
                                        actionButton(inputId = "Deal_7",
                                                     label = "7",
                                                     width = '100%',
-                                                    style = "height: 126px;")),
+                                                    style = "height: 126px; font-size:250%;")),
                                 column(width = 4,
                                        actionButton(inputId = "Deal_8",
                                                     label = "8",
                                                     width = '100%',
-                                                    style = "height: 126px;")),
+                                                    style = "height: 126px; font-size:250%;")),
                                 column(width = 4,
                                        actionButton(inputId = "Deal_9",
-                                                    label = "9",
+                                                    label = HTML("9+ &  <br> Other"),
                                                     width = '100%',
-                                                    style = "height: 126px;"))
+                                                    style = "height: 126px; font-size:250%;"))
                               )))),
                  tabPanel(value = "NinePlusPanel",
                           title = "9+ Life",
@@ -192,7 +192,7 @@ tabItem(tabName = "tab_LifeCounter",
                                                 actionButton(inputId = "Edit_0",
                                                              label = "0",
                                                              width = '100%',
-                                                             style = "height: 126px;"))
+                                                             style = "color: #fff; background-color: #b73338; border-color: #2e6da4; height: 126px;"))
                                          
                                 )
                             ),
@@ -289,32 +289,9 @@ tabItem(tabName = "tab_LifeCounter",
           fluidRow(h3(textOutput("debug_text"))),
           fluidRow(plotOutput(outputId = "lifeChart")),
           uiOutput(outputId = "life_total_row"),
+          uiOutput(outputId = "pass_turn_row")
           
-          fluidRow(
-            column(3,
-                   box(
-                     
-                     actionButton(inputId = "ab_Vaihda_vuoro",
-                                  label = "End turn")
-                   )),
-            column(3,
-                   box(
-                     actionBttn(inputId = "ab_pakita_endille",
-                                label = "Reject turn, go to end step")
-                   )),
-            column(3,
-                   box(
-                     actionButton(inputId = "ab_Vaihda_vuoro_virhe",
-                                  label = "End turn, add mistake")
-                   )),
-            column(3,
-                   box(
-                     fluidRow(
-                       actionButton(inputId = "ab_Undo",
-                                    label = "Undo input (not delete)")
-                     )
-                   )
-            )
-          )
+          
+         
         )
 )
