@@ -12,7 +12,6 @@ damage_data <- reactiveValues(data = ADM_CURRENT_DMG)
 input_error <- reactiveValues(error = FALSE)
 input_error_response <- reactiveValues(response = NULL)
 
-
 ################GLOBAL UI control
 slider_laurin_mulligan <-  reactiveValues(value = 0) 
 slider_martin_mulligan <-  reactiveValues(value = 0) 

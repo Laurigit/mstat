@@ -290,7 +290,40 @@ tabItem(tabName = "tab_LifeCounter",
         #  fluidRow(h3(textOutput("debug_text"))),
           
           uiOutput(outputId = "life_total_row"),
-          uiOutput(outputId = "pass_turn_row")
+        fluidRow(
+          
+          column(4,
+                 
+                 actionButton(inputId = "ab_Vaihda_vuoro",
+                              label =   "End turn",
+                              style = "font-size:250%; color: #fff; background-color: #990000; border-color: #2e6da4; height: 87px;",
+                              width = '100%')),
+          column(2,
+                 
+                 actionButton(inputId = "ab_Vaihda_vuoro_virhe",
+                              label = HTML("End turn <br> add mistake"),
+                              style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
+                              width = '100%')
+          ),
+          column(4,
+        #tähä ui output
+        uiOutput("dynamic_turn_box")
+
+          ),
+          
+          
+          
+          column(2,
+                 
+                 fluidRow(
+                   actionButton(inputId = "ab_Undo",
+                                label = HTML("Undo input <br> (not delete)"),
+                                style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
+                                width = '100%')
+                   
+                 )
+          )
+        )
           
           
          

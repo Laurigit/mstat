@@ -441,14 +441,19 @@ observe({
   }
 })
 
+#observe lifetotals$data
+
 
 output$life_total_row <- renderUI({
   req(life_totals$data)
+  
+  
  # print(session$user)
 # print(life_totals$data)
   lifedata <- life_totals$data$Lifetotal
   lifetext <- life_totals$data$dmg_text
   #tags$style(HTML('#hello2 {font-family:"Courier",Georgia,Serif; background-color:pink}'))
+
   fluidRow(column(width = 4,
                   box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
                             lifedata[Omistaja_NM == session$user, Life_total],
@@ -459,18 +464,17 @@ output$life_total_row <- renderUI({
                  ),
            column(4,
                   
-                  actionButton(inputId = "ab_Vaihda_vuoro",
-                               label = vuoroTeksti,
-                               style = "font-size:250%; color: #fff; background-color: #990000; border-color: #2e6da4; height: 87px;",
-                               width = '100%')),
+                 
             #  height: 100%;  background-color: #000080;  
            # column(4,
-           #        actionButton("ab_pakita_endille", "Reject turn, go to end step",
-           #                     width = '100%', style='font-size:150%;
-           #                     color: #fff; padding:4px;
-           #                     font-size: 6;
-           #                     height: 87px;
-           #                     background-color: #000080;')),
+                  actionButton("ab_pakita_endille", "Reject turn, go to end step",
+                               width = '100%', style='font-size:150%;
+                               color: #fff; padding:4px;
+                               font-size: 6;
+                               height: 87px;
+                               background-color: #000080;'
+           #)
+           )),
            column(4,
                   (box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
                                    lifedata[Omistaja_NM != session$user, Life_total],
@@ -480,74 +484,66 @@ output$life_total_row <- renderUI({
                  )
             )
            )
-            
-
-           
+  
+    
                  # valueBox( lifedata[Omistaja_NM == session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)),
           # column(5, offset = 2,
            #       valueBox( lifedata[Omistaja_NM != session$user, Life_total], lifetext, icon = NULL, color = "aqua", width = 12)))
 })
 
-output$pass_turn_row <- renderUI({
+output$dynamic_turn_box <- renderUI({
   required_data("ADM_TURN_SEQ")
   if ( turnData$turn > 0) {
-  vuorotekstiAlku <- ADM_TURN_SEQ[TSID == turnData$turn, Turn_text]
-  if (isolate(eR_Peli_Aloittaja$a) == 0) {
-    Aloittaja <- "L"
-    Nostaja <- "M"
-  } else {
-    Aloittaja <- "M"
-    Nostaja <- "L"
-  }
-
-  if (ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn] == TRUE) {
-    pelaaja_vuorossa <- Aloittaja
-  } else {
-    pelaaja_vuorossa <- Nostaja
-  }
-  
-  
-  vuoroTeksti <- paste0(pelaaja_vuorossa, " ", vuorotekstiAlku)
+    vuorotekstiAlku <- ADM_TURN_SEQ[TSID == turnData$turn, Turn_text]
+    if (isolate(eR_Peli_Aloittaja$a) == 0) {
+      Aloittaja <- "L"
+      Nostaja <- "M"
+    } else {
+      Aloittaja <- "M"
+      Nostaja <- "L"
+    }
+    
+    if (ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn] == TRUE) {
+      pelaaja_vuorossa <- Aloittaja
+    } else {
+      pelaaja_vuorossa <- Nostaja
+    }
+    
+    
+    vuoroTeksti <- paste0(pelaaja_vuorossa, " ", vuorotekstiAlku)
   } else {
     vuoroTeksti <- "Not started"
   }
   
-  fluidRow(
-
-    column(4,
-
-             actionButton(inputId = "ab_Vaihda_vuoro_virhe",
-                          label = HTML("End turn <br> add mistake"),
-                          style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
-                          width = '100%')
-           ),
-   
-    column(4,
-          
-             actionButton(inputId = "ab_Vaihda_vuoro",
-                          label = vuoroTeksti,
-                          style = "font-size:250%; color: #fff; background-color: #990000; border-color: #2e6da4; height: 87px;",
-                          width = '100%'),
-           actionButton("ab_pakita_endille", "Reject turn, go to end step",
-                        width = '100%', style='font-size:150%;
-                        color: #fff; padding:4px;
-                        font-size: 6;
-                        height: 87px;
-                        background-color: #000080;')
-           ),
-    column(4,
-          
-             fluidRow(
-               actionButton(inputId = "ab_Undo",
-                            label = "Undo input (not delete)",
-                            style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
-                            width = '100%')
-             
-           )
-    )
-  )
+  box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
+                  vuoroTeksti,
+                  '</b></font></div>')),
+      background = "maroon",
+      width = "100%")
   
 })
+
+
+# output$pass_turn_row <- renderUI({
+# 
+#   
+#   fluidRow(
+# 
+#     column(4,
+# 
+#              actionButton(inputId = "ab_Vaihda_vuoro_virhe",
+#                           label = HTML("End turn <br> add mistake"),
+#                           style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
+#                           width = '100%')
+#            ),
+#    
+# 
+#              
+#            )
+#     )
+#   )
+#   
+# })
 
 observeEvent(input$ab_Vaihda_vuoro, {
   
