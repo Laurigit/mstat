@@ -15,6 +15,8 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   #                                                )]
   #input_current_dmg[, rivi := seq_len(.N)]
 #  message("missing rows")
+
+  if (nrow(input_current_dmg) > 0) {
   dmg_table_for_calc <- input_current_dmg[DID >0]
   dmg_table_for_calc[, dmg_pari := ceiling(seq_len(.N) / 2)]
   row_count <-  dmg_table_for_calc[TSID > 0, .(count_rows = .N,
@@ -57,11 +59,23 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   Last_dmg_text <- paste0(Last_dmg[, Dmg_source], " -> ", Last_dmg[,Target_player],
                           ifelse(Last_dmg[, Combat_dmg] == 1, " @ Cmbt: (", ": ("), Last_dmg[,Amount],
                           ")")
+  
   Lifetotal <- Tot_dmg[, .(Life_total = initial_life - Total_damage), by = .(Omistaja_NM = Target_player)]
+  starting_lifes<- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total_start = c(starting_life, starting_life))
+  join_lives <- Lifetotal[starting_lifes, on = c("Omistaja_NM")]
+  life_result <- join_lives[, Life_total := ifelse(is.na(Life_total), Life_total_start, Life_total)][, Life_total_start := NULL]
+  
   res <- NULL
   res$count_missing_rows <- count_missing_rows
   res$input_error <- row_texts
-  res$Lifetotal <- Lifetotal
+  res$Lifetotal <- life_result
   res$dmg_text <- Last_dmg_text
+  } else {
+    res <- NULL
+    res$Lifetotal <- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total = c(starting_life, starting_life))
+    res$count_missing_rows <- 0
+    res$input_error <- ""
+    res$dmg_text <- ""
+  }
   return(res)
 }

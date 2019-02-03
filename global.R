@@ -1,5 +1,5 @@
 #options are prod, test, dev
-options(shiny.trace = FALSE)
+options(shiny.trace = TRUE)
 GLOBAL_test_mode <- "dev"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)

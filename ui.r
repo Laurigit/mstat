@@ -28,16 +28,16 @@ uusi_peli <- dashboardBody(
   tabItems(
    source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
    source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_blow.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_combined.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_peliasetukset.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_sarjataulukko.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_tilastomurskain.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_saavutukset.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_pakkaupload.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
-  # source("./scripts/ui/ui_decks.R",local = TRUE)$value,
+  source("./scripts/ui/ui_blow.R",local = TRUE)$value,
+  source("./scripts/ui/ui_combined.R",local = TRUE)$value,
+  source("./scripts/ui/ui_peliasetukset.R",local = TRUE)$value,
+  source("./scripts/ui/ui_sarjataulukko.R",local = TRUE)$value,
+  source("./scripts/ui/ui_tilastomurskain.R",local = TRUE)$value,
+  source("./scripts/ui/ui_saavutukset.R",local = TRUE)$value,
+  source("./scripts/ui/ui_pakkaupload.R",local = TRUE)$value,
+  source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
+  source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
+  source("./scripts/ui/ui_decks.R",local = TRUE)$value,
   source("./scripts/ui/ui_life_counter.R",local = TRUE)$value
 
     

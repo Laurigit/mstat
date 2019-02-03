@@ -124,7 +124,6 @@ aloittajaNo <- eR_Peli_Aloittaja$a
               dec = ",")
 
 
-
   tallenna_tulos_ui_update$value <- isolate(tallenna_tulos_ui_update$value + 1)
   
 })
@@ -136,6 +135,8 @@ observe({
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
   updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
+  life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
+  damage_data$data <- ADM_CURRENT_DMG
   updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
   js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)

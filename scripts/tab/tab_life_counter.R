@@ -228,7 +228,7 @@ observe({
                             selected = "Life")
 
   } else {
-    turnValue <- turnData$turn
+    turnValue <- isolate(turnData$turn)
   }
   
   
@@ -247,11 +247,18 @@ observe({
  # print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
+ if (combat_DMG_reactive$combat_dmg == TRUE) {
+   updateCheckboxGroupButtons(session,
+                              "dmg_settings",
+                              selected = c("Non-combat damage"))
+ } else {
+   input$dmg_setting
  updateCheckboxGroupButtons(session,
                             "dmg_settings",
                             selected = c(""))
+ }
  print("updaten jalkee")
- print(input$dmg_settings)
+# print(input$dmg_settings)
   damage_data$data <- tulos
  
 
@@ -408,20 +415,20 @@ observe({
   
   
 })
-
-output$debug_text <- renderText({
- resp <-  paste0("input_error_response: ", input_error$response, "\n",
-         "waiting_opponent_input: ", waiting_opponent_input$waiting, "\n",
-         "input_error: ", input_error$error, "\n",
-         "turnData: ", turnData$turn, "\n",
-         "complexInput: ", complex_input$amount, "\n",
-         "inputLife: ", inputLife$amount
-       #  "damage_data: ", damage_data$data, "\n"
-         )
- print(resp)
- return(resp)
-
-})
+# 
+# output$debug_text <- renderText({
+#  resp <-  paste0("input_error_response: ", input_error$response, "\n",
+#          "waiting_opponent_input: ", waiting_opponent_input$waiting, "\n",
+#          "input_error: ", input_error$error, "\n",
+#          "turnData: ", turnData$turn, "\n",
+#          "complexInput: ", complex_input$amount, "\n",
+#          "inputLife: ", inputLife$amount
+#        #  "damage_data: ", damage_data$data, "\n"
+#          )
+#  print(resp)
+#  return(resp)
+# 
+# })
 
 
 
@@ -450,10 +457,20 @@ output$life_total_row <- renderUI({
                       width = '100%'
                       )
                  ),
-            #  height: 100%;  background-color: #000080;  
            column(4,
-                  actionButton("ab_pakita_endille", "Reject turn, go to end step",
-                               width = '100%', style='font-size:150%; color: #fff; padding:4px; font-size: 6;  height: 87px;  background-color: #000080;')),
+                  
+                  actionButton(inputId = "ab_Vaihda_vuoro",
+                               label = vuoroTeksti,
+                               style = "font-size:250%; color: #fff; background-color: #990000; border-color: #2e6da4; height: 87px;",
+                               width = '100%')),
+            #  height: 100%;  background-color: #000080;  
+           # column(4,
+           #        actionButton("ab_pakita_endille", "Reject turn, go to end step",
+           #                     width = '100%', style='font-size:150%;
+           #                     color: #fff; padding:4px;
+           #                     font-size: 6;
+           #                     height: 87px;
+           #                     background-color: #000080;')),
            column(4,
                   (box(HTML(paste0('<div align="center"><font size="7" color="white"> <b>',
                                    lifedata[Omistaja_NM != session$user, Life_total],
@@ -473,23 +490,32 @@ output$life_total_row <- renderUI({
 
 output$pass_turn_row <- renderUI({
   required_data("ADM_TURN_SEQ")
+  if ( turnData$turn > 0) {
   vuorotekstiAlku <- ADM_TURN_SEQ[TSID == turnData$turn, Turn_text]
   if (isolate(eR_Peli_Aloittaja$a) == 0) {
     Aloittaja <- "L"
+    Nostaja <- "M"
   } else {
     Aloittaja <- "M"
+    Nostaja <- "L"
   }
-  vuoroTeksti <- paste0(Aloittaja, " ", vuorotekstiAlku)
+
+  if (ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn] == TRUE) {
+    pelaaja_vuorossa <- Aloittaja
+  } else {
+    pelaaja_vuorossa <- Nostaja
+  }
   
+  
+  vuoroTeksti <- paste0(pelaaja_vuorossa, " ", vuorotekstiAlku)
+  } else {
+    vuoroTeksti <- "Not started"
+  }
   
   fluidRow(
-   
 
-    
-    
     column(4,
-           
-             
+
              actionButton(inputId = "ab_Vaihda_vuoro_virhe",
                           label = HTML("End turn <br> add mistake"),
                           style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
@@ -501,7 +527,13 @@ output$pass_turn_row <- renderUI({
              actionButton(inputId = "ab_Vaihda_vuoro",
                           label = vuoroTeksti,
                           style = "font-size:250%; color: #fff; background-color: #990000; border-color: #2e6da4; height: 87px;",
-                          width = '100%')
+                          width = '100%'),
+           actionButton("ab_pakita_endille", "Reject turn, go to end step",
+                        width = '100%', style='font-size:150%;
+                        color: #fff; padding:4px;
+                        font-size: 6;
+                        height: 87px;
+                        background-color: #000080;')
            ),
     column(4,
           
@@ -524,6 +556,7 @@ observeEvent(input$ab_Vaihda_vuoro, {
 
 observeEvent(input$ab_pakita_endille, {
   turnData$turn <- turnData$turn - 1
+
 })
 
 observe({
@@ -555,15 +588,26 @@ observe({
   my_turn <- I_start == ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
   end_phase <-  ADM_TURN_SEQ[TSID == turnData$turn, End_phase]
   message("my_turn", my_turn)
-  if (my_turn == 1 & end_phase == FALSE) {
-    shinyjs::enable("ab_Vaihda_vuoro")
-    shinyjs::enable("ab_pakita_endille")
-  } else if  (my_turn == 1 & end_phase == TRUE) {
-    shinyjs::enable("ab_Vaihda_vuoro")
-    shinyjs::disable("ab_pakita_endille")
+  if (my_turn == TRUE & end_phase == FALSE) {
+    print("my_turn == TRUE & end_phase == FALSE")
+  shinyjs::enable("ab_Vaihda_vuoro")
+   shinyjs::enable("ab_Vaihda_vuoro_virhe")
+   shinyjs::enable("ab_pakita_endille")
+  } else if  (my_turn == TRUE & end_phase == TRUE) {
+    print("my_turn == TRUE & end_phase == TRUE")
+   shinyjs::enable("ab_Vaihda_vuoro")
+   shinyjs::enable("ab_Vaihda_vuoro_virhe")
+  shinyjs::disable("ab_pakita_endille")
   } else {
+    print("ELSE")
     shinyjs::disable("ab_Vaihda_vuoro")
-    shinyjs::disable("ab_pakita_endille") 
+   shinyjs::disable("ab_pakita_endille")
+   shinyjs::disable("ab_Vaihda_vuoro_virhe")
+  }
+  if (end_phase == TRUE) {
+    updateCheckboxGroupButtons(session,
+                               "dmg_settings",
+                               selected = c("Non-combat damage"))
   }
   
   
