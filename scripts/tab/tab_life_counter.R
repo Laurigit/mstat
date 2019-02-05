@@ -594,6 +594,7 @@ observe({
    shinyjs::enable("ab_Vaihda_vuoro")
    shinyjs::enable("ab_Vaihda_vuoro_virhe")
   shinyjs::disable("ab_pakita_endille")
+  
   } else {
     print("ELSE")
     shinyjs::disable("ab_Vaihda_vuoro")
@@ -604,6 +605,10 @@ observe({
     updateCheckboxGroupButtons(session,
                                "dmg_settings",
                                selected = c("Non-combat damage"))
+  } else {
+    updateCheckboxGroupButtons(session,
+                               "dmg_settings",
+                               selected = c(""))
   }
   
   
@@ -745,8 +750,9 @@ output$lifeChart <- renderPlot({
   graphInput <- isolate(damage_data$data)
   # session <- NULL
   # session$user <- "Lauri"
-  only_my_input <- graphInput[Input_Omistaja_NM == session$user]
   #graphInput <- ADM_CURRENT_DMG
+  only_my_input <- graphInput[Input_Omistaja_NM == session$user]
+
  take_dependency <- life_totals$data
 splitL <- only_my_input[Target_player == "Lauri"]
 splitM <- only_my_input[Target_player == "Martti"]
@@ -754,7 +760,7 @@ dtLCurr_Turn <- splitL[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.n
 dtMCurr_Turn <- splitM[ADM_TURN_SEQ, on = "TSID"][, Target_player := ifelse(is.na(Target_player), "Martti", Target_player)]
 appendForProcessing <- rbind(dtLCurr_Turn, dtMCurr_Turn)
 appendForProcessing[, Amount := ifelse(is.na(Amount), 0, Amount)]
-
+#aloittajaNo <- "Lauri"
 aloittajaNo <- isolate(eR_Peli_Aloittaja$a)
 if(aloittajaNo == 0) {
   Aloittaja <- "Lauri"
@@ -806,6 +812,7 @@ aggr_dmg[, ':=' (ymax = cum_life_start_of_turn,
 
 
 aggr_dmg_cut <- aggr_dmg[TSID <= (isolate(turnData$turn) + 2)]
+#aggr_dmg_cut[, bg_color_group := ifelse()]
 
 
 aggr_dmg_me <- aggr_dmg_cut[Target_player == isolate(session$user)]
@@ -814,14 +821,18 @@ plot_ymax <- max(aggr_dmg_me[, max(ymax)], 20)
 plot_xmax <- aggr_dmg_me[, max(half_turn)]
 plot_ymin <- min(aggr_dmg_opponent[, min(-ymax)], -20)
 
+
+# fill=paste0(Starters_turn, "-") sen takia, että muuten TRUE ja FALSE mäppääytyy samaks väriks. 
 aggr_dmg_me %>% 
   arrange(half_turn) %>% 
   ggplot() +
+  geom_rect(aes(ymin=plot_ymin, ymax=plot_ymax, xmin=xmin,
+                                    xmax=xmax, fill=paste0(Starters_turn, "-")), alpha =0.3) +# scale_fill_manual(values = c("red", "green4",  "white", "blue"))+
   geom_rect(aes(xmin = xmin,
                 xmax = xmax,
                 ymin = ymin,
                 ymax = ymax,
-                fill =  factor(lifegain)), show.legend = FALSE) + scale_fill_manual(values = c("red", "green4")) +
+                fill =  factor(lifegain, levels = c("TRUE", "FALSE", "FALSE-", "TRUE-"))), show.legend = FALSE) +# scale_fill_manual(values = c("red",  "white", "green4", "blue")) +
   scale_y_continuous(expand = c(0, 0),
                      limits = c(plot_ymin, plot_ymax),
                      breaks = c(seq(0, plot_ymin, by = -5), seq(0, plot_ymax, by = 5)),
@@ -834,18 +845,22 @@ aggr_dmg_me %>%
   geom_line(aes(half_turn, (cum_life_start_of_turn)), col = "dodgerblue4", size = 1)  -> p1
 
 #p2 <- p1 +  expand_limits(x=c(1,10), y=c(0,20))
+colors <- c("red", "green4", "grey" , "white")
+names(colors) = c("FALSE", "TRUE", "FALSE-", "TRUE-")
+
 p3 <- p1 +  geom_hline(yintercept = 0) +
   geom_rect(data = aggr_dmg_opponent, aes(xmin = xmin,
                                           xmax = xmax,
                                           ymin = -ymin,
                                           ymax = -ymax,
-                                          fill =  factor(lifegain)), show.legend = FALSE) + scale_fill_manual(values = c("red", "green4")) +
+                                          fill =  factor(lifegain)), show.legend = FALSE) + scale_fill_manual(values = colors) +
   geom_line(data = aggr_dmg_opponent, aes(half_turn, (-cum_life_start_of_turn)), col = "dodgerblue4", size = 1) +
    theme(legend.position = "none") +
  guides(fill=FALSE) + 
   theme(axis.title.x=element_blank()) + 
-theme(axis.title.y=element_blank())
+theme(axis.title.y=element_blank()) 
 p3
+
 
 })
 

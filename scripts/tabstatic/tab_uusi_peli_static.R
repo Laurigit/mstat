@@ -12,7 +12,7 @@ output$mulliganiSlideriLauri<-renderUI({
   laurin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja == "Laurin_mulligan",arvo]
 
   sliderInput("slider_laurin_mulligan",
-              label = h4("Laurin mulliganit"),
+              label = NULL,
               min = 0,
               max = 6,
               value = laurin_pre_mulligan)
@@ -22,9 +22,9 @@ output$mulliganiSlideriMartti<-renderUI({
 
   required_data(c("ADM_TEMP_DATA_STORAGE"))
   
-  martin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja=="Martin_mulligan",arvo]
+  martin_pre_mulligan <- ADM_TEMP_DATA_STORAGE[muuttuja=="Martin_mulligan",arvo]
   
-  sliderInput("slider_martin_mulligan", label = h4("Martin mulliganit"), min = 0, 
+  sliderInput("slider_martin_mulligan", label =NULL, min = 0, 
               max = 6, value = martin_pre_mulligan)
   
 })

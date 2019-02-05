@@ -25,6 +25,7 @@ slider_vuoroarvio <-  reactiveValues(value = 0)
 slider_laurin_kasikortit <-  reactiveValues(value = -1) 
 slider_martin_kasikorit <-  reactiveValues(value = -1) 
 tallenna_tulos_ui_update <-  reactiveValues(value = 0) 
+start_life_counter_button <- reactiveValues(value = 0)
 
 
 select_laurin_pakka <- reactiveValues(value = NULL) 

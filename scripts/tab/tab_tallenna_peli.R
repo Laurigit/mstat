@@ -29,7 +29,7 @@ observeEvent(input$tallenna_tulos, {
 
   #vuoroarviolasku
 
-required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
+required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG" ))
 tempData <- ADM_TEMP_DATA_STORAGE 
 aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
@@ -112,16 +112,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   new_name2 <- paste0("./external_files/turn_", eR_Peli_ID(), ".csv")
   file.copy(from = "./dmg_turn_files/current_turn.csv",
             to = new_name2)
-  write.table(x = damage_data$data[1 == 0],
-              file = paste0("./dmg_turn_files/", "current_dmg.csv"),
-              sep = ";",
-              row.names = FALSE,
-              dec = ",")
-  write.table(x = ADM_CURRENT_TURN[1 == 0],
-              file = paste0("./dmg_turn_files/", "current_turn.csv"),
-              sep = ";",
-              row.names = FALSE,
-              dec = ",")
+
 
 
   tallenna_tulos_ui_update$value <- isolate(tallenna_tulos_ui_update$value + 1)
@@ -133,10 +124,6 @@ observe({
   dependency <- tallenna_tulos_ui_update$value
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
-  updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
-  updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
-  life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
-  damage_data$data <- ADM_CURRENT_DMG
   updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
   js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
