@@ -2,7 +2,8 @@
 
 #uuspeli <- data.table(Omistaja_NM = c("Lauri", "Martti"), Peli_ID_input = 1033)
 #testitulos <- mark_damage(3, "Lauri", 1, TRUE, "Lauri", 1, ADM_CURRENT_DMG, uuspeli) 
-required_data("ADM_CURRENT_DMG")
+#initial_life <-  20
+#required_data("ADM_CURRENT_DMG")
 calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   #input_current_dmg <- ADM_CURRENT_DMG
   # aggr_to_turn <- input_current_dmg[TSID > 0, .(Amount = sum(Amount)), by = .(

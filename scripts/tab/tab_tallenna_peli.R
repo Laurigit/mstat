@@ -287,20 +287,14 @@ observe({
 })
 
 
-#slider_vuoroarvio
-observeEvent(input$slider_vuoroarvio,{
-  print("observe_event input$slider_vuoroarvio")
-  print(input$slider_vuoroarvio)
-  slider_vuoroarvio$value <- input$slider_vuoroarvio
-  
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+
 
 observe({
   print("slider_vuoroarvio")
   print(slider_vuoroarvio$value)
   updateSliderInput(session,
-                    inputId = "slider_vuoroarvio", value = (slider_vuoroarvio$value))
-})
+                    inputId = "slider_vuoroarvio", value = slider_vuoroarvio$value)
+}, priority = 50)
 
 
 #observe if tallenna is enabled
@@ -372,10 +366,14 @@ observeEvent(input$slider_vuoroarvio,{
 #  print("rab_tallenna slider voroarvio")
   uusi_arvo <- round(input$slider_vuoroarvio * 0.42)
 
+  print("observe_event input$slider_vuoroarvio")
+  print(input$slider_vuoroarvio)
+  slider_vuoroarvio$value <- input$slider_vuoroarvio
+  
   #print(uusi_arvo)
    updateSliderInput(session, inputId = "slider_martin_landit", value = uusi_arvo)
    updateSliderInput(session, "slider_laurin_landit", value = uusi_arvo)
-})
+}, priority = 1)
 
 observeEvent(input$action_add,{
   if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {

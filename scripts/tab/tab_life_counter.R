@@ -247,22 +247,21 @@ observe({
  # print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
- if (combat_DMG_reactive$combat_dmg == TRUE) {
-   updateCheckboxGroupButtons(session,
-                              "dmg_settings",
-                              selected = c("Non-combat damage"))
- } else {
-   input$dmg_setting
- updateCheckboxGroupButtons(session,
-                            "dmg_settings",
-                            selected = c(""))
- }
+ # if (combat_DMG_reactive$combat_dmg == TRUE) {
+ #   updateCheckboxGroupButtons(session,
+ #                              "dmg_settings",
+ #                              selected = c("Non-combat damage"))
+ # } else {
+ #   input$dmg_setting
+ # updateCheckboxGroupButtons(session,
+ #                            "dmg_settings",
+ #                            selected = c(""))
+ # }
  
 # print(input$dmg_settings)
   damage_data$data <- tulos
  
 
- #waiting_opponent_input$waiting <- !waiting_opponent_input$waiting 
  
 })
 
@@ -577,22 +576,16 @@ observe({
 #handle ui status based on turndata and life_input
 observe({
   required_data("ADM_TURN_SEQ")
+
+
   
- 
   if (waiting_opponent_input$waiting == TRUE) {
     updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
     shinyjs::disable("ab_Vaihda_vuoro")
     shinyjs::disable("ab_pakita_endille")
     shinyjs::disable("ab_Vaihda_vuoro_virhe")
   } else {
-    #damage settings
-      #at least one damage input this turn, rest is non-combat
-        updateCheckboxGroupButtons(session,
-                                 "dmg_settings",
-                                 selected = c("Non-combat damage"))
 
-    
-    
     peli_id_data <- isolate(eR_UID_UUSI_PELI())
     Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
     if (Aloittaja == session$user) {
@@ -623,11 +616,40 @@ observe({
     updateCheckboxGroupButtons(session,
                                "dmg_settings",
                                selected = c("Non-combat damage"))
-  } else {
+    #älä säädä ennen ku inputit hyväksytty.
+  } else if (waiting_opponent_input$waiting == FALSE) {
+    #check if on current turn, combat damage has been done
+    #turnData <- NULL
+    #turnData$turn <- 10
+    current_turn <- ADM_TURN_SEQ[TSID == turnData$turn, Turn]
+    is_starters_turn <- ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
+    #one value in total coming as a result
+    get_current_turn_TSID <- ADM_TURN_SEQ[Turn == current_turn & Starters_turn == is_starters_turn & End_phase == FALSE, TSID]
+    #damage_data <- NULL
+    #damage_data$data <- ADM_CURRENT_DMG
+    #check if in current turn, combat damage is done
+    aggr_dmg <-   damage_data$data[, .(Combat_dmg = max(Combat_dmg), rivit = .N), by = .(TSID)]
+    
+    cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1]
+    if (nrow(cmbt_damage_rows) > 0) {
+      cmbt_dmg_done <- TRUE
+    } else {
+      cmbt_dmg_done <- FALSE
+    }
+    if (cmbt_dmg_done == TRUE) {
     updateCheckboxGroupButtons(session,
                                "dmg_settings",
-                               selected = c(""))
+                               selected = c("Non-combat damage"))
+    } else {
+      updateCheckboxGroupButtons(session,
+                                 "dmg_settings",
+                                 selected = c(""))
+    }
   }
+  
+  
+  
+  
   }
 })
 
@@ -912,8 +934,11 @@ observe({
     }
     
     print("peli tallentuu, mika arvo")
-      slider_vuoroarvio$value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
-      print(slider_vuoroarvio$value)
+    update_value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
+    updateSliderInput(session,
+                      inputId = "slider_vuoroarvio", value = update_value)
+
+      isolate(print(slider_vuoroarvio$value))
     slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
     slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {
@@ -923,4 +948,4 @@ observe({
       click("lauri_voitti")
     }
   }
-})
+}, priority = 60)
