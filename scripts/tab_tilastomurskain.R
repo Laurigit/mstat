@@ -123,11 +123,11 @@ output$tallennetut_tilastoasetukset<- renderDataTable({
 #poista tilastoasetus
 observeEvent(input$poista_tilastoAsetus,{
   #lue data
-  print(input$tallennetut_tilastoasetukset_rows_selected)
-  print( tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected])
+  #print(input$tallennetut_tilastoasetukset_rows_selected)
+ # print( tilastoAsetuksetReact$data[input$tallennetut_tilastoasetukset_rows_selected])
   tilastoAsetukset<- tilastoAsetuksetReact$data[-input$tallennetut_tilastoasetukset_rows_selected]
   tilastoAsetuksetReact$data<-tilastoAsetukset
-  print( tilastoAsetuksetReact$data)
+ # print( tilastoAsetuksetReact$data)
   saveR_and_send(tilastoAsetukset,"tilastoAsetukset","tilastoAsetukset.RData")
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_TILASTOASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
@@ -159,17 +159,17 @@ observeEvent(input$tallennaSaavutusAsetus,{
     kuvaus=input$text_tilastoKuvaus,
     asetukset=(storeList)
   )
-  print(uusrivi)
+  #print(uusrivi)
   #tarkista onko asetusnimi jo olemassa
   if(nrow(saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus])>0){
-    print("TÄTKTEÄ")
-    print(saavutusAsetuksetReact$data)
+  #  print("TÄTKTEÄ")
+   # print(saavutusAsetuksetReact$data)
     vanhat_asetukset<-saavutusAsetuksetReact$data[kuvaus==input$text_tilastoKuvaus,.(Palkintonimi,Esitysmuoto,minVaiMax,minVaiMax_rivi)]
     #liita uudet ja vanhat
     uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
-    print(uus_ja_vanha_rivi)
+   # print(uus_ja_vanha_rivi)
     saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[kuvaus!=input$text_tilastoKuvaus]
-    print(saavutusAsetuksetReact$data)
+   # print(saavutusAsetuksetReact$data)
     saavutusAsetukset<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
   }else{
     #lisätään tyhjat sarakkeet puuttuviin tietoihin
@@ -178,8 +178,8 @@ observeEvent(input$tallennaSaavutusAsetus,{
   }
   
   #tallenna rdata
-  print("TALLENNA SAAVUTUS")
-  print(saavutusAsetukset)
+  #print("TALLENNA SAAVUTUS")
+ # print(saavutusAsetukset)
   saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.RData")
   saavutusAsetuksetReact$data <- saavutusAsetukset
   #tyhjennä tekstikenttä
@@ -227,7 +227,7 @@ observeEvent(input$validateSaavutusAsetus,{
 
 output$validateSaavutusText <- renderUI({
   looppiData <- testSaavutus$default
-   print(nrow(looppiData))
+   #print(nrow(looppiData))
   if (!is.null(nrow(looppiData))) {
   box(HTML(looppiData[,teksti]),background = looppiData[,color])
   } else {

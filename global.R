@@ -1,6 +1,6 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
-GLOBAL_test_mode <- "prod"
+GLOBAL_test_mode <- "test"
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)
@@ -135,18 +135,11 @@ zip_all_and_send <- function() {
 }
 
 
-
-
-
-
-
-
-
 saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   
   assign(RdataTallenna,rdatasetti)
-  print(get(RdataTallenna))
-  print("ladattu")
+  #print(get(RdataTallenna))
+ # print("ladattu")
   save(list = RdataTallenna,file = paste0("./external_files/", RdataTiedostonimi))
   test_mode <- FALSE
   if (exists("GLOBAL_test_mode")) {
@@ -156,12 +149,12 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   }
   if (test_mode == FALSE) {
     zip_all_and_send()
-    print("tallennettu uus R-tiedosto jo lähetetty")
+    #print("tallennettu uus R-tiedosto jo lähetetty")
   }
 
   #load("tilastoAsetukset.R")
-  print("ladattu taas ja nyt tulostetaan")
-  print(get(RdataTallenna))
+  #print("ladattu taas ja nyt tulostetaan")
+ # print(get(RdataTallenna))
 }
 jscode <- "
 shinyjs.collapse = function(boxid) {

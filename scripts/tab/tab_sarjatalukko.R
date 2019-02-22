@@ -13,9 +13,9 @@ local({
    # Data <- UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT)
    # print("LOOP AT TAB_SARJATAULUKKO")
     Data <-  eR_UID_SARJATAULUKKO()
-    print(eR_UID_SARJATAULUKKO())
+   # print(eR_UID_SARJATAULUKKO())
  
-    print(Data[[my_i]])
+  
     DivariData <- Data[[my_i]]
     #print(DivariData)
     if(!is.null(DivariData)) {
@@ -60,7 +60,7 @@ output$sarjataulukkovalitsin <- renderUI({
 })
 
 eR_UID_SARJATAULUKKO <- reactive({
-print("eR_UID_SARJATAULUKKO")
+#print("eR_UID_SARJATAULUKKO")
   message(input$sarjataulukkokierros," input$sarjataulukkokierros")
   result <-  UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT,
                                input$radio_total_mode)
@@ -69,7 +69,7 @@ print("eR_UID_SARJATAULUKKO")
 
 output$sarjataulukot <-renderUI({
   required_data(c("ADM_PELIT", "STG_PAKAT", "STAT_TURNAUS"))
-  print("output$sarjataulukot")
+  #print("output$sarjataulukot")
   #input <- NULL
   #input$sarjataulukkokierros <- 27
   #input$radio_bo_mode <- FALSE

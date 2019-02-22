@@ -34,7 +34,7 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   #there are 0, 1 or 2 missing rows.
   row_texts <- NULL
 
-  print(missing_rows)
+ 
   if(nrow(missing_rows) > 0) {
   for (loop_rows in 1:nrow(missing_rows)) {
     missing_rows_own_input <- missing_rows[loop_rows]
@@ -61,7 +61,7 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
                           ")")
   
   Lifetotal <- Tot_dmg[, .(Life_total = initial_life - Total_damage), by = .(Omistaja_NM = Target_player)]
-  starting_lifes<- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total_start = c(starting_life, starting_life))
+  starting_lifes<- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total_start = c(initial_life, initial_life))
   join_lives <- Lifetotal[starting_lifes, on = c("Omistaja_NM")]
   life_result <- join_lives[, Life_total := ifelse(is.na(Life_total), Life_total_start, Life_total)][, Life_total_start := NULL]
   
@@ -72,7 +72,7 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   res$dmg_text <- Last_dmg_text
   } else {
     res <- NULL
-    res$Lifetotal <- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total = c(starting_life, starting_life))
+    res$Lifetotal <- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total = c(initial_life, initial_life))
     res$count_missing_rows <- 0
     res$input_error <- ""
     res$dmg_text <- ""

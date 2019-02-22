@@ -39,20 +39,31 @@ user_logged <- reactiveValues(count = 0)
 
 shinyServer(function(input, output, session) {
   #load_scripts.R
-   
+ # print(session$clientData)
+ 
+  
+func_login <- function(input_user_count, clientDataInput) {
+  cdata <- clientDataInput
+    login <- cdata[["url_search"]]
 
-func_login <- function(input_user_count) {
-
-    if (input_user_count == 1) {
-    result <- "Lauri"    
-  } else {
-    result <- "Martti"    
+    nimi <- word(login, 2, sep = "=")
+    print("nimi")
+    print(login)
+    print(nimi)
+    if (login == "") {
+        if (input_user_count == 1) {
+        result <- "Lauri"    
+      } else {
+        result <- "Martti"    
+      }
+    } else {
+    result <- nimi
   }
   return(result)
 }
 #user_logged$count <- user_logged$count + 1
 isolate(user_logged$count <- user_logged$count + 1)
-session$user <- isolate(func_login(user_logged$count))
+session$user <- isolate(func_login(user_logged$count, session$clientData))
 
 
 

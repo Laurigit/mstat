@@ -27,7 +27,7 @@ observe({
 listz <- input$dmg_settings
 takeReact <-  damage_data$data
 #print(session$user)
-print("Lifegain agaaain")
+#print("Lifegain agaaain")
 #rint(listz)
 if ("Lifegain" %in% listz) {
   lifegain_DMG_reactive$Lifegain <- TRUE
@@ -257,7 +257,7 @@ observe({
                             "dmg_settings",
                             selected = c(""))
  }
- print("updaten jalkee")
+ 
 # print(input$dmg_settings)
   damage_data$data <- tulos
  
@@ -304,9 +304,7 @@ observe({
     waiting_opponent_input$waiting <- TRUE
   }
   
-  if ( waiting_opponent_input$waiting == TRUE) {
-    updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
-  }
+
 })
 
 #obseveEVent input_error$error
@@ -467,7 +465,7 @@ output$life_total_row <- renderUI({
                  
             #  height: 100%;  background-color: #000080;  
            # column(4,
-                  actionButton("ab_pakita_endille", "Reject turn, go to end step",
+                  actionButton("ab_pakita_endille", HTML("Reject turn, <br> go to end step"),
                                width = '100%', style='font-size:150%;
                                color: #fff; padding:4px;
                                font-size: 6;
@@ -555,20 +553,16 @@ observeEvent(input$ab_pakita_endille, {
 
 })
 
-observe({
-  
-  peli_id_data <- isolate(eR_UID_UUSI_PELI())
-  Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
- if (Aloittaja == session$user) {
-   I_start <- TRUE
- } else {
-   I_start <- FALSE
- }
 
+#observe turnData
+observe({
+  required_data("ADM_CURRENT_TURN")
+
+  peli_id_data <- isolate(eR_UID_UUSI_PELI())
   new_row <- data.table(TSID = turnData$turn,
                         Peli_ID = peli_id_data[, max(Peli_ID_input)],
                         time_stamp =  as.character(now(tz = "EET")))
-  required_data("ADM_CURRENT_TURN")
+
   new_data <- rbind(ADM_CURRENT_TURN, new_row)
   write.table(x = new_data,
               file = paste0("./dmg_turn_files/", "current_turn.csv"),
@@ -577,29 +571,53 @@ observe({
               dec = ",")
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
-  
-  print(session$user)
-  message("I_START", I_start)
+
+}, priority = -1)
+
+#handle ui status based on turndata and life_input
+observe({
   required_data("ADM_TURN_SEQ")
+  
+ 
+  if (waiting_opponent_input$waiting == TRUE) {
+    updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
+    shinyjs::disable("ab_Vaihda_vuoro")
+    shinyjs::disable("ab_pakita_endille")
+    shinyjs::disable("ab_Vaihda_vuoro_virhe")
+  } else {
+    #damage settings
+      #at least one damage input this turn, rest is non-combat
+        updateCheckboxGroupButtons(session,
+                                 "dmg_settings",
+                                 selected = c("Non-combat damage"))
+
+    
+    
+    peli_id_data <- isolate(eR_UID_UUSI_PELI())
+    Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
+    if (Aloittaja == session$user) {
+      I_start <- TRUE
+    } else {
+      I_start <- FALSE
+    }
   my_turn <- I_start == ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
   end_phase <-  ADM_TURN_SEQ[TSID == turnData$turn, End_phase]
-  message("my_turn", my_turn)
   if (my_turn == TRUE & end_phase == FALSE) {
     print("my_turn == TRUE & end_phase == FALSE")
-  shinyjs::enable("ab_Vaihda_vuoro")
-   shinyjs::enable("ab_Vaihda_vuoro_virhe")
-   shinyjs::enable("ab_pakita_endille")
+    shinyjs::enable("ab_Vaihda_vuoro")
+    shinyjs::enable("ab_Vaihda_vuoro_virhe")
+    shinyjs::enable("ab_pakita_endille")
   } else if  (my_turn == TRUE & end_phase == TRUE) {
     print("my_turn == TRUE & end_phase == TRUE")
-   shinyjs::enable("ab_Vaihda_vuoro")
-   shinyjs::enable("ab_Vaihda_vuoro_virhe")
-  shinyjs::disable("ab_pakita_endille")
-  
+    shinyjs::enable("ab_Vaihda_vuoro")
+    shinyjs::enable("ab_Vaihda_vuoro_virhe")
+    shinyjs::disable("ab_pakita_endille")
+    
   } else {
     print("ELSE")
     shinyjs::disable("ab_Vaihda_vuoro")
-   shinyjs::disable("ab_pakita_endille")
-   shinyjs::disable("ab_Vaihda_vuoro_virhe")
+    shinyjs::disable("ab_pakita_endille")
+    shinyjs::disable("ab_Vaihda_vuoro_virhe")
   }
   if (end_phase == TRUE) {
     updateCheckboxGroupButtons(session,
@@ -610,11 +628,9 @@ observe({
                                "dmg_settings",
                                selected = c(""))
   }
-  
-  
-  #my_turn <- ifelse((turnData$turn) - I_start)
- # if( )
+  }
 })
+
 
 observeEvent(input$ab_Undo,{
   damage_data$data <- undo_damage(damage_data$data, session$user)
@@ -648,12 +664,19 @@ output$value_type_life <- renderUI({
     turnValue <- ADM_TURN_SEQ[TSID == turnData$turn, Turn]
   }
 
-TurnText <- paste0("Turn: ", turnValue)
+Tot_text <- HTML(paste0('<font size="3"', inputValue, ' T:', turnValue, '</font>'))  
+Tot_text <- HTML(paste0('<div align="center"><font size="6" color="white"> <b>',
+                        inputValue, ' T:', turnValue,
+                  '</b></font></div>'))
+#Tot_text <- "test"
+#TurnText <- paste0("Turn: ", turnValue)
   
-  valueBox(value = inputValue,
-           subtitle = TurnText,
-           color = "aqua",
-           width = 6)
+  box(Tot_text,
+          # subtitle = NULL,
+           background = "aqua",
+           width = 12,
+      height = "60px",
+      collapsible = FALSE)
 })
  
 output$damage_rows_dt <- renderDataTable({
@@ -705,13 +728,17 @@ observeEvent(input$ab_fix_lifes, {
 
 #observeEvent complex_input
 observe({
-  
+  if (complex_input$value == "") {
+    use_value <- 0
+  } else {
+    use_value <- complex_input$value 
+  }
   if (isolate(input$editTurnOrLife == "Turn")) {
  #   print("write turns")
-    turn_overwrite$value <- complex_input$value
+    turn_overwrite$value <- use_value
   } else {
 #    print("write life")
-   inputLife$amount <-   complex_input$value
+   inputLife$amount <-   use_value
   }
   
 })
@@ -884,8 +911,9 @@ observe({
       # print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
     }
     
-    
+    print("peli tallentuu, mika arvo")
       slider_vuoroarvio$value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
+      print(slider_vuoroarvio$value)
     slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
     slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {

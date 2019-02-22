@@ -4,12 +4,12 @@ updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
 
 #seuraa valintalistoja seka tallennusta ja paivita UI + tiedot sen mukaan.
 output$mulliganiSlideriLauri<-renderUI({
-  print("output$mulliganiSlideriLauri")
+  #print("output$mulliganiSlideriLauri")
   
   required_data(c("ADM_TEMP_DATA_STORAGE"))
-  print(ADM_TEMP_DATA_STORAGE)
+  #print(ADM_TEMP_DATA_STORAGE)
   laurin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja == "Laurin_mulligan",arvo]
-  print(laurin_pre_mulligan)
+  #print(laurin_pre_mulligan)
   sliderInput("slider_laurin_mulligan",
               label = h4("Laurin mulliganit"),
               min = 0,
@@ -18,7 +18,7 @@ output$mulliganiSlideriLauri<-renderUI({
 })
 
 output$mulliganiSlideriMartti<-renderUI({
-  print("output$mulliganiSlideriMartti")
+  #print("output$mulliganiSlideriMartti")
    required_data(c("ADM_TEMP_DATA_STORAGE"))
   
   martin_pre_mulligan<-ADM_TEMP_DATA_STORAGE[muuttuja=="Martin_mulligan",arvo]
@@ -29,8 +29,8 @@ output$mulliganiSlideriMartti<-renderUI({
 })
 eR_UID_temp_data_storage <- reactive({
 
-  print("eR_UID_temp_data_storage")
-  print(eR_Peli_ID())
+  #print("eR_UID_temp_data_storage")
+ # print(eR_Peli_ID())
   eR_Peli_ID()
   
   required_data("ADM_TEMP_DATA_STORAGE")
@@ -75,13 +75,13 @@ observeEvent(c(input$select_laurin_pakka,
      
       updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
 
-      print("observeEvent(c(input$select_laurin_pakka,
-               input$select_martin_pakka,
-               input$slider_laurin_mulligan,
-               input$slider_martin_mulligan), {")
+      # print("observeEvent(c(input$select_laurin_pakka,
+      #          input$select_martin_pakka,
+      #          input$slider_laurin_mulligan,
+      #          input$slider_martin_mulligan), {")
       #nollaa tempdatalaskuri
       tempDataLehtysLaskuri$a <- 0
-      print(ADM_TEMP_DATA_STORAGE)
+      #print(ADM_TEMP_DATA_STORAGE)
 })
 
 
@@ -97,10 +97,10 @@ observeEvent(input$arvo_peli,{
 eR_Peli_ID <- eventReactive(c(input$select_laurin_pakka,
                               input$select_martin_pakka,
                               input$tallenna_tulos),{
-print("input$select_laurin_pakka")
+#print("input$select_laurin_pakka")
                                 
 if(!is.null(input$select_martin_pakka) & !is.null(input$select_laurin_pakka)) {
-print("eR_Peli_ID")
+#print("eR_Peli_ID")
 
   # input$select_laurin_pakka <- 1
   # input$select_martin_pakka <-9                              
@@ -110,7 +110,7 @@ print("eR_Peli_ID")
                   input$select_laurin_pakka,
                    input$select_martin_pakka)
   
-  print(uusi_pelii)
+  #print(uusi_pelii)
 } else {
  
   required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "STG_PAKAT"))
@@ -232,7 +232,7 @@ output$win_distribution <- renderPlot({
 output$PakkaVSBox <- renderUI({
   #required_data("UID_UUSI_PELI", TRUE)
   #rm(eR_UID_UUSI_PELI)
-  print(eR_UID_UUSI_PELI())
+  #print(eR_UID_UUSI_PELI())
   eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
   result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
   box(HTML(result), background = "aqua", width = NULL, align = "middle")
@@ -292,7 +292,7 @@ output$divariRadio_out <- renderUI({
 
 #tee laurin pakka selectinput
 output$selectInputLauri <- renderUI({
-  print("output$selectInputLauri ")
+  #print("output$selectInputLauri ")
   required_data(c("STG_PAKAT", "ADM_TEMP_DATA_STORAGE"))
   pakat<-STG_PAKAT[Omistaja_ID == "L"]
   keskenPeliData <- ADM_TEMP_DATA_STORAGE

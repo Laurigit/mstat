@@ -9,10 +9,10 @@ new_cards <- NULL
 counter <- 0
 for(loop in missing_cards) {
   counter <- counter + 1
-  print(paste0(counter, "/", length(missing_cards)))
+  
   loop_card <- getCard(loop)
   new_cards <- rbind(new_cards, loop_card)
-  print(loop_card)
+ 
 }
 MANASTACK_CARDS <- rbind(MANASTACK_CARDS, new_cards)
 saveR_and_send(MANASTACK_CARDS, "MANASTACK_CARDS", "MANASTACK_CARDS.RData")

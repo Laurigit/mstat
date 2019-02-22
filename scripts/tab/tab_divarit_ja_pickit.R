@@ -76,7 +76,7 @@ output$combUI<-renderUI({
 observeEvent(input$tallenna_bannit,{
   shinyjs::disable("tallenna_bannit")
   
-  print("tallenna bannit alku")
+ # print("tallenna bannit alku")
   required_data("STG_DIVARI")
   divarit<-STG_DIVARI
   divarit[,syntax_cb:=(text=paste0("checkbox",Pakka_ID))]
@@ -102,7 +102,7 @@ observeEvent(input$tallenna_bannit,{
 
     shinyjs::enable("luo_peleja")
 
-  print(divarit)
+  #print(divarit)
   raakadivari <- luecsv("divari.csv")
   #poista vanhat arvot
   raakadivari[, ':=' (Divari = NULL,
@@ -114,6 +114,6 @@ observeEvent(input$tallenna_bannit,{
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_DIVARI", ADM_DI_HIERARKIA, input_env = globalenv())
   refresh_counter$a <-   refresh_counter$a +1
-  print("tallenna bannit loppu")
+  #print("tallenna bannit loppu")
   shinyjs::enable("tallenna_bannit")
 })

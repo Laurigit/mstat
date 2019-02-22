@@ -2,7 +2,7 @@ saavutusTaulu<-reactive({
   saavutusTaulu<-NULL
   for(kierros in 1:nrow(saavutusAsetuksetReact$data)) {
     #kierrosData<-saavutusAsetukset[kierros]
-    print(kierrosData)
+    #print(kierrosData)
     kierrosTulos<-laskeSaavtusAsetuksista(kierros, saavutusAsetuksetReact$data)
     
     
@@ -12,9 +12,9 @@ saavutusTaulu<-reactive({
   
   
   
-  print("saavutustaulu ajettu")
-  print(saavutusTaulu)
-  print("saavutustaulun tulos ylla")
+  #print("saavutustaulu ajettu")
+#  print(saavutusTaulu)
+ # print("saavutustaulun tulos ylla")
   return(saavutusTaulu)
 }
 )

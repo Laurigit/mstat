@@ -55,7 +55,7 @@ observeEvent(input$input_lataa_valitut_pakat,{
   zip_all_and_send()
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PFI", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = FALSE)
-  print(STAT_PFI)
+  
   refresh_counter$a <- isolate(refresh_counter$a +1 )
   validointiteksti$teksti <- validointi_teksti
   shinyjs::enable("input_lataa_valitut_pakat")

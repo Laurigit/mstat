@@ -25,7 +25,9 @@
 # eR_Peli_Aloittaja$a <- 1
 #vuoroarviolasku <- 9
 observeEvent(input$tallenna_tulos, {
- input_Peli_ID <- eR_Peli_ID()
+ shinyjs::disable("tallenna_tulos")
+  
+  input_Peli_ID <- eR_Peli_ID()
 
   #vuoroarviolasku
 
@@ -87,22 +89,40 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   
   kircsv(pelit_jaljella,"pelit.csv", TRUE)
   
-
-
- 
   
-  updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
-  updateSliderInput(session, "slider_martin_mulligan",  value = 0) 
-  updateSliderInput(session, "slider_laurin_virhe",  value = 1) 
-  updateSliderInput(session, "slider_martin_virhe",  value = 1) 
-  updateSliderInput(session, "slider_laurin_landit",  value = 0) 
-  updateSliderInput(session, "slider_martin_landit",  value = 0) 
-  updateSliderInput(session, "slider_laurin_lifet",  value = 0) 
-  updateSliderInput(session, "slider_martin_lifet",  value = 0)
-  updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
-  updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
-  updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
+  
+  # updateSliderInput(session, "slider_laurin_mulligan",  value = 0) 
+  slider_laurin_mulligan$value <- 0
+  # updateSliderInput(session, "slider_martin_mulligan",  value = 0) 
+  slider_martin_mulligan$value <- 0
+  # updateSliderInput(session, "slider_laurin_virhe",  value = 1) 
+  slider_laurin_virhe$value <- 1
+  #  updateSliderInput(session, "slider_martin_virhe",  value = 1) 
+  slider_martin_virhe$value <- 1
+  # updateSliderInput(session, "slider_laurin_landit",  value = 0) 
+  slider_laurin_landit$value <- 0
+  #  updateSliderInput(session, "slider_martin_landit",  value = 0) 
+  slider_martin_landit$value <- 0
+  #  updateSliderInput(session, "slider_laurin_lifet",  value = 0) 
+  slider_laurin_lifet$value <- 0
+  #  updateSliderInput(session, "slider_martin_lifet",  value = 0)
+  slider_martin_lifet$value <- 0
+  # updateSliderInput(session, "slider_vuoroarvio",  value = 0) 
+  print("tallenna peli slidervuoroarvio")
+  slider_vuoroarvio$value <- 4
+  print(slider_vuoroarvio$value)
+  #  updateSliderInput(session, "slider_laurin_kasikortit",  value = -1) 
+  slider_laurin_kasikortit$value <- -1
+  # updateSliderInput(session, "slider_martin_kasikorit",  value = -1) 
+  slider_martin_kasikorit$value <- -1
+# 
+#   life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
+#   damage_data$data <- ADM_CURRENT_DMG
+#   turnData$turn <- 1
+#   
 
+
+  
 
   #lifecoutnteri-nollaukset ja tallennukset
   #ota talteen vuorotiedosto ja 
@@ -114,20 +134,44 @@ aloittajaNo <- eR_Peli_Aloittaja$a
             to = new_name2)
 
 
+  
 
   tallenna_tulos_ui_update$value <- isolate(tallenna_tulos_ui_update$value + 1)
-  
+
 })
 
 observe({
 
   dependency <- tallenna_tulos_ui_update$value
+  
+  
+  
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
+  
+  required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
+  write.table(x = ADM_CURRENT_DMG[1 == 0],
+              file = paste0("./dmg_turn_files/", "current_dmg.csv"),
+              sep = ";",
+              row.names = FALSE,
+              dec = ",")
+  write.table(x = ADM_CURRENT_TURN[1 == 0],
+              file = paste0("./dmg_turn_files/", "current_turn.csv"),
+              sep = ";",
+              row.names = FALSE,
+              dec = ",")
+  
+  required_data("ADM_DI_HIERARKIA")
+  updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
+  updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
+
+  
+  
   updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
-  js$collapse("uusipeli_box")
+ # js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
-  updateNumericInput(session,"sarjataulukkokierros",value=0)
+  updateNumericInput(session,"sarjataulukkokierros",value = 0)
+  shinyjs::enable("tallenna_tulos")
 })
 
 
@@ -245,11 +289,15 @@ observe({
 
 #slider_vuoroarvio
 observeEvent(input$slider_vuoroarvio,{
+  print("observe_event input$slider_vuoroarvio")
+  print(input$slider_vuoroarvio)
   slider_vuoroarvio$value <- input$slider_vuoroarvio
   
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
+  print("slider_vuoroarvio")
+  print(slider_vuoroarvio$value)
   updateSliderInput(session,
                     inputId = "slider_vuoroarvio", value = (slider_vuoroarvio$value))
 })
@@ -269,10 +317,6 @@ observe({
     shinyjs::disable("tallenna_tulos")
   }
 })
-
-#lauri_voitti
-
-
 
 
 observeEvent(input$laurin_mulligan,{
@@ -302,7 +346,7 @@ observeEvent(input$lauri_voitti,{
   }, ignoreNULL = TRUE, ignoreInit = TRUE)
 observe({
   if (react_lauri_voitti$value > 0 ) {
-  print("lauri voitti value updated")
+  #print("lauri voitti value updated")
   updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
   updateRadioButtons(session,"radio_voittaja",selected = 0)
   }

@@ -16,7 +16,7 @@ output$peliAsetuksetUI<-renderUI({
 
 #luo uusi turnaus
 observeEvent(input$luo_peleja,{
-  print("luo pejelä alku")
+  #print("luo pejelä alku")
   
   #divarit_dt<-luecsv("./drop_download/divari.csv")
   required_data(c("ADM_DIVARI", "ADM_PELIT", "STG_PAKAT"))
@@ -39,7 +39,7 @@ observeEvent(input$luo_peleja,{
   divarit_loop <- peliparit_vihua[, .N, by = Divari][, Divari]
   output_pelit <- NULL
   for(divariKierros in divarit_loop) {
-  print(divariKierros)
+  #print(divariKierros)
     message("input$luo_peleja", divariKierros)
   
   # kierroksia <- as.numeric(input[[paste0("numeric_rounds",divariKierros)]])
@@ -137,6 +137,6 @@ observeEvent(input$luo_peleja,{
   shinyjs::disable("luo_peleja")
   shinyjs::enable("arvo_peli")
   
-  print("luo pejelä loppu")
+  #print("luo pejelä loppu")
   
 })

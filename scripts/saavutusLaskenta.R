@@ -158,7 +158,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
             #   joinOmistaja[,teksti:=paste0("<h4><i>",Palkintonimi,"-Palkinto: </i><br/>", Omistaja, "<br/>",
             #                          saavutusNimi,": <b>",txtResult,"</b><h4/>")]
             # }
-          print(joinOmistaja)
+       
           
           return(joinOmistaja)
             } else {

@@ -6,7 +6,7 @@ maxturnaus_per_pakka <- STAT_LISAKORTIT[, .(Turnaus_NO = max(Turnaus_NO)), by = 
 onlymax <- STAT_LISAKORTIT[maxturnaus_per_pakka, on = c("Turnaus_NO", "Pakka_ID")]
 
 current_pfi_by_pakka <- STG_PFI[Pakka_form_ID == Current_Pakka_form_ID, .(Pakka_form_ID, Pakka_ID)]
-print(current_pfi_by_pakka)
+
 bo_conv_pelit <- BO_conversio(ADM_PELIT)
 sscols_pelit <- bo_conv_pelit[,. (Pakka_ID, Voittaja, Tasapeli, Peli_LKM, Pakka_form_ID)]
 

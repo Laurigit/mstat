@@ -100,7 +100,7 @@ required_data("ADM_PELIT")
  
   pelidata <- ADM_PELIT[1 != 0]
   result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]
-  print(result)
+ 
   eR_Peli_Aloittaja$a <- result
   #0 = Lauri, 1 = martti
 } )
@@ -199,7 +199,7 @@ output$PakkaLeftBox <- renderUI({
   #  print("output$PakkaLeftBox")
   
     #luo riippuvuus
-    print(eR_UID_UUSI_PELI())
+    #print(eR_UID_UUSI_PELI())
     ############
     box(
       solidHeader = FALSE,
@@ -318,7 +318,7 @@ output$peliKesto <- renderText({
 
   }
   if ( tempDataLehtysLaskuri$a == 240) {
-    js$collapse("uusipeli_box")
+   # js$collapse("uusipeli_box")
   }
 
   paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
@@ -429,7 +429,10 @@ observeEvent(input$select_laurin_pakka,{
    start_life_counter_button$value <-  isolate(start_life_counter_button$value + 1)
  })
 
+ 
+ #toiminnot, kun painetaan nappulaa, mikä käynnistää life_counterin
  observe({
+   required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
    take_depency <- start_life_counter_button$value
    write.table(x = ADM_CURRENT_DMG[1 == 0],
                file = paste0("./dmg_turn_files/", "current_dmg.csv"),
@@ -447,6 +450,7 @@ observeEvent(input$select_laurin_pakka,{
    updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
    life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
    damage_data$data <- ADM_CURRENT_DMG
+   turnData$turn <- 1
    updateTabItems(session,"sidebarmenu", "tab_LifeCounter") 
    addClass(selector = "body", class = "sidebar-collapse")
    

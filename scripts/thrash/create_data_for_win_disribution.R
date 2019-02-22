@@ -16,7 +16,7 @@ for (loop_no in (maxTurnaus - 10):(maxTurnaus-1)) {
   kierrosData <- create_forecast_data_for_stats(loop_no)
   kierrosData[, TurnausNo := loop_no]
   all_data <- rbind(all_data, kierrosData)
-  print(paste0("kierros", loop_no))
+  #print(paste0("kierros", loop_no))
 }
 return(all_data)
 # kierrosData[Pakka==1 & Vastustajan_Pakka == 8 ]

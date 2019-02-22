@@ -10,9 +10,9 @@ observeEvent(input$poista_saavutusAsetus,{
   saavutusAsetuksetReact$data<- saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
 
   saavutusAsetukset<-saavutusAsetuksetReact$data
-  print(saavutusAsetukset)
+  #print(saavutusAsetukset)
   saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.RData")
-  print(saavutusAsetukset)
+#  print(saavutusAsetukset)
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_SAAVUTUSASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
 })
@@ -31,21 +31,21 @@ observeEvent(input$paivita_saavutus,{
     kuvaus=input$txt_palkinto_kuvaus
   )
   #liita uudet ja vanhat
-  print(uusrivi)
+  #print(uusrivi)
   uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
-  print(uus_ja_vanha_rivi)
+#  print(uus_ja_vanha_rivi)
   
   #tarkista onko asetusrivi olemassa
   if(nrow(saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected])>0){
     #poista vanha rivi
     saavutusAsetuksetReact$data<-saavutusAsetuksetReact$data[-input$tallennetut_saavutusAsetukset_rows_selected]
-    print(saavutusAsetuksetReact)
+    #print(saavutusAsetuksetReact)
     saavutusAsetuksetReact$data<-rbind(saavutusAsetuksetReact$data,uus_ja_vanha_rivi)
     saavutusAsetukset<-saavutusAsetuksetReact$data
     saveR_and_send(saavutusAsetukset,"saavutusAsetukset","saavutusAsetukset.RData")
-    print(saavutusAsetuksetReact)
+   # print(saavutusAsetuksetReact)
   }else{
-    print("ei riviä valittuna, mitaan ei muutettu")
+   # print("ei riviä valittuna, mitaan ei muutettu")
   }
   
   

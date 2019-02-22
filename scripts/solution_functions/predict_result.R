@@ -15,5 +15,5 @@ predict_result <- function(input_Peli_ID, Laurin_Mulligan = 0, Martin_Mulligan =
 }
 # for ( looppi in 800:810) {
 # tulos <- predict_result(looppi, 0, 1, STAT_VOITTOENNUSTE)
-# print(tulos)
+
 # }

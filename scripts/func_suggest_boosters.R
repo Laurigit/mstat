@@ -18,7 +18,7 @@ suggest_boosters <- function(how_many_boosters) {
   
   #calculate kulmakerroin for booster use. Use original amount from last increase
   current_stock <- booster_data[draft_no < next_draft, .(sum_boosters = sum(muutos)), by = setti]
-  print( booster_data[, .(sum_boosters = sum(muutos)), by = setti])
+ 
   current_stock[, kulmakerroin := sum_boosters/ sum(sum_boosters)]
   
   #count how many boosters have drafted since last increase
@@ -33,7 +33,7 @@ suggest_boosters <- function(how_many_boosters) {
   for(booster_loop in 1:how_many_boosters) {
     kpi_status[, kpi_status := kpi_status + kulmakerroin]
     boosted_set <- kpi_status[which.max(kpi_status), setti]
-    print(boosted_set)
+
     kpi_status[setti == boosted_set, kpi_status := kpi_status - 1]
     set_vector <- c(set_vector, boosted_set)
   }
