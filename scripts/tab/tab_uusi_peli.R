@@ -426,7 +426,8 @@ observeEvent(input$select_laurin_pakka,{
  
  
  observeEvent(input$start_life_counter, {
-   start_life_counter_button$value <-  isolate(start_life_counter_button$value + 1)
+   #run twice. Once for both players.
+   start_life_counter_button$value <- 2
  }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
  
@@ -455,5 +456,7 @@ observeEvent(input$select_laurin_pakka,{
    turnData$turn <- 1
    updateTabItems(session,"sidebarmenu", "tab_LifeCounter") 
    addClass(selector = "body", class = "sidebar-collapse")
+   start_life_counter_button$value <-  isolate(start_life_counter_button$value - 1)
   }
+
  })

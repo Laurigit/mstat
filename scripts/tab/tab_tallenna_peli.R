@@ -129,7 +129,8 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   new_name2 <- paste0("./external_files/turn_", eR_Peli_ID(), ".csv")
   file.copy(from = "./dmg_turn_files/current_turn.csv",
             to = new_name2)
-  tallenna_tulos_ui_update$value <- isolate(tallenna_tulos_ui_update$value + 1)
+  #tun once for each players.
+  tallenna_tulos_ui_update$value <-  2
 
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
@@ -165,8 +166,10 @@ observe({
  # js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
   updateNumericInput(session,"sarjataulukkokierros",value = 0)
+  tallenna_tulos_ui_update$value <- isolate( tallenna_tulos_ui_update$value - 1)
   shinyjs::enable("tallenna_tulos")
  }
+ 
 })
 
 
@@ -289,7 +292,7 @@ observe({
   print(slider_vuoroarvio$value)
   updateSliderInput(session,
                     inputId = "slider_vuoroarvio", value = slider_vuoroarvio$value)
-}, priority = 50)
+})
 
 
 #observe if tallenna is enabled

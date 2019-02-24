@@ -13,6 +13,8 @@ fix_life <- reactiveValues(enabled = FALSE)
 turn_overwrite <- reactiveValues(enabled = FALSE, value = "")
 #one variable to hold keypad input.
 complex_input <- reactiveValues(value = "")
+#local variable to keep track turn and only write it once to file
+local_turn <- reactiveValues(value = 0) 
 
 #one time init settings for UI
 shinyjs::disable("isEndStep")
@@ -545,20 +547,23 @@ output$dynamic_turn_box <- renderUI({
 observeEvent(input$ab_Vaihda_vuoro, {
   
   turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
+  local_turn$value <- local_turn$value + 1 
 })
 
 observeEvent(input$ab_pakita_endille, {
   turnData$turn <- turnData$turn - 1
+  local_turn$value <- local_turn$value + 1 
 
 })
 
 
-#observe turnData
+#observe localTurn
 observe({
   required_data("ADM_CURRENT_TURN")
-
+take_dep <-  local_turn$value
+print("writing to turn csv")
   peli_id_data <- isolate(eR_UID_UUSI_PELI())
-  new_row <- data.table(TSID = turnData$turn,
+  new_row <- data.table(TSID = isolate(turnData$turn),
                         Peli_ID = peli_id_data[, max(Peli_ID_input)],
                         time_stamp =  as.character(now(tz = "EET")))
 
@@ -571,7 +576,7 @@ observe({
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
 
-}, priority = -1)
+}, priority = -100)
 
 #handle ui status based on turndata and life_input
 observe({
@@ -667,6 +672,7 @@ observeEvent(input$ab_Vaihda_vuoro_virhe, {
    #input$martin_virhe <- input$martin_virhe + 1
   }
   turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
+  local_turn$value <- local_turn$value + 1
 })
 
 observeEvent(input$save_9_damage, {
@@ -922,23 +928,27 @@ observe({
   minLife <- life_totals$data$Lifetotal[, min(Life_total)]
   
   if (minLife <= 0) {
-    aloittajaNo <- eR_Peli_Aloittaja$a
+    aloittajaNo <- isolate(eR_Peli_Aloittaja$a)
   
     if (aloittajaNo == 0) {
-      mulligan_lkm  <- input$slider_laurin_mulligan 
+      mulligan_lkm  <- isolate(input$slider_laurin_mulligan)
       # print(paste0(input$slider_vuoroarvio, " + ", input$slider_laurin_mulligan, " - 6 = ", vuoroarviolasku))
       
     } else {
-      mulligan_lkm  <- input$slider_martin_mulligan 
+      mulligan_lkm  <- isolate(input$slider_martin_mulligan)
       # print(paste0(input$slider_vuoroarvio, " + ", input$slider_martin_mulligan, " - 6 = ", vuoroarviolasku))
     }
     
-    print("peli tallentuu, mika arvo")
+
+    print("turn")
+    print(isolate(turnData$turn))
+    print("mulligan")
+    print(mulligan_lkm)
     update_value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
     updateSliderInput(session,
                       inputId = "slider_vuoroarvio", value = update_value)
-
-      isolate(print(slider_vuoroarvio$value))
+    print("peli tallentuu, mika arvo")
+    isolate(print(slider_vuoroarvio$value))
     slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
     slider_martin_lifet$value <-   life_totals$data$Lifetotal[Omistaja_NM == "Martti", Life_total]
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {
@@ -948,4 +958,4 @@ observe({
       click("lauri_voitti")
     }
   }
-}, priority = 60)
+})
