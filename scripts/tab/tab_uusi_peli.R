@@ -86,6 +86,7 @@ observe({
 observeEvent(input$arvo_peli,{
 #input$divariRadio <- 1
   required_data("ADM_PELIT")
+ # browser()
   arvottu_peli_id <- getRandomPeli_ID(ADM_PELIT, input$divariRadio)
 
   paivitaSliderit(arvottu_peli_id,session)

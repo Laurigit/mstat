@@ -2,8 +2,10 @@
 #test <- getTasuriPeli(ADM_PELIT, STAT_VOITTOENNUSTE)
 #STAT_VOITTOENNUSTE[Peli_ID == test]
 getTasuriPeli <- function(ADM_PELIT, STAT_VOITTOENNUSTE) {
-  maxTO <- ADM_PELIT[,max(Turnaus_NO)]
-  nykyTurnaus <- ADM_PELIT[Turnaus_NO == maxTO & Omistaja_ID == "L"] 
+
+  peliData <- ADM_PELIT[1 == 1]
+   maxTO <- peliData[,max(Turnaus_NO)]
+  nykyTurnaus <- peliData[Turnaus_NO == maxTO & Omistaja_ID == "L"] 
   sscolsEnnuste <- STAT_VOITTOENNUSTE[Omistaja_ID == "L", .(Peli_ID, ennuste)]
   joinEnnuste <- sscolsEnnuste[nykyTurnaus, on = "Peli_ID"]
   turnausTilanne <- joinEnnuste[Omistaja_ID == "L", mean(Voittaja,na.rm = TRUE)]
