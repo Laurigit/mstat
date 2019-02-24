@@ -427,13 +427,15 @@ observeEvent(input$select_laurin_pakka,{
  
  observeEvent(input$start_life_counter, {
    start_life_counter_button$value <-  isolate(start_life_counter_button$value + 1)
- })
+ }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
  
  #toiminnot, kun painetaan nappulaa, mikä käynnistää life_counterin
  observe({
+   print("life counter_nappula")
+   print(start_life_counter_button$value)
    required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
-   take_depency <- start_life_counter_button$value
+  if (start_life_counter_button$value > 0) {
    write.table(x = ADM_CURRENT_DMG[1 == 0],
                file = paste0("./dmg_turn_files/", "current_dmg.csv"),
                sep = ";",
@@ -453,5 +455,5 @@ observeEvent(input$select_laurin_pakka,{
    turnData$turn <- 1
    updateTabItems(session,"sidebarmenu", "tab_LifeCounter") 
    addClass(selector = "body", class = "sidebar-collapse")
-   
+  }
  })

@@ -26,11 +26,8 @@
 #vuoroarviolasku <- 9
 observeEvent(input$tallenna_tulos, {
  shinyjs::disable("tallenna_tulos")
-  
   input_Peli_ID <- eR_Peli_ID()
-
   #vuoroarviolasku
-
 required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG" ))
 tempData <- ADM_TEMP_DATA_STORAGE 
 aloittajaNo <- eR_Peli_Aloittaja$a
@@ -132,17 +129,14 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   new_name2 <- paste0("./external_files/turn_", eR_Peli_ID(), ".csv")
   file.copy(from = "./dmg_turn_files/current_turn.csv",
             to = new_name2)
-
-
-  
-
   tallenna_tulos_ui_update$value <- isolate(tallenna_tulos_ui_update$value + 1)
 
-})
+}, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
-
-  dependency <- tallenna_tulos_ui_update$value
+  print("tallenna_tulos_ui_update$value")
+  print(tallenna_tulos_ui_update$value)
+ if( tallenna_tulos_ui_update$value > 0 ) {
   
   
   
@@ -172,6 +166,7 @@ observe({
   updatedTempData$a <- isolate(updatedTempData$a + 1)
   updateNumericInput(session,"sarjataulukkokierros",value = 0)
   shinyjs::enable("tallenna_tulos")
+ }
 })
 
 
