@@ -6,6 +6,7 @@ lifegain_DMG_reactive <- reactiveValues("Lifegain" = FALSE)
 reverse_DMG_reacive <- reactiveValues("Reverse_DMG" = FALSE)
 amount_DMG_reactive <- reactiveValues("dmg" = NULL, "opp" = TRUE)
 waiting_opponent_input <- reactiveValues(waiting = FALSE)
+opponent_waiting_my_input <- reactiveValues(waiting = FALSE)
 inputLife <- reactiveValues(amount = "")
 #if user clicked to add previous life
 fix_life <- reactiveValues(enabled = FALSE)
@@ -29,8 +30,7 @@ observe({
 listz <- input$dmg_settings
 takeReact <-  damage_data$data
 #print(session$user)
-#print("Lifegain agaaain")
-#rint(listz)
+
 if ("Lifegain" %in% listz) {
   lifegain_DMG_reactive$Lifegain <- TRUE
 } else {
@@ -46,6 +46,7 @@ if ("Non-combat damage" %in% listz) {
 
 if ("Reverse Source" %in% listz) {
   reverse_DMG_reacive$Reverse_DMG <- TRUE
+  combat_DMG_reactive$combat_dmg <- FALSE
 } else {
   reverse_DMG_reacive$Reverse_DMG <- FALSE
 }
@@ -208,17 +209,23 @@ observe({
   if (fix_life$enabled == TRUE) {
     #check who started
     Aloittaja <- extract_pelidata[Aloittaja == 1, Omistaja_NM]
+    print(session$user)
     if (Aloittaja == session$user) {
       I_start <- TRUE
     } else {
       I_start <- FALSE
     }
-    
+    print("I_start")
+    print(paste0(I_start))
     Stareters_turn_boo <- I_start == input$isMyTurn
+    print("Stareters_turn_boo")
+    print(Stareters_turn_boo)
     required_data("ADM_TURN_SEQ")
     turnValue <-  ADM_TURN_SEQ[End_phase == input$isEndStep &
                                  Starters_turn == Stareters_turn_boo &
                                  Turn == as.numeric(turn_overwrite$value), TSID]
+    print("turnValue")
+    print(turnValue)
     #cleanup
     fix_life$enabled  <- FALSE
     turn_overwrite$value <- ""
@@ -234,7 +241,7 @@ observe({
   }
   
   
-  
+
   #uuspeli <- data.table(Omistaja_NM = c("Lauri", "Martti"), Peli_ID_input = 1033)
   #testitulos <- mark_damage(3, "Lauri", 1, TRUE, "Lauri", 1, ADM_CURRENT_DMG, uuspeli)
   tulos <- mark_damage(Amount = amount_DMG_reactive$dmg * life_kerroin,
@@ -246,19 +253,10 @@ observe({
                        current_dmg = damage_data$data,
                        input_UID_UUSI_PELI = extract_pelidata
   )
- # print(tulos)
+  print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
- # if (combat_DMG_reactive$combat_dmg == TRUE) {
- #   updateCheckboxGroupButtons(session,
- #                              "dmg_settings",
- #                              selected = c("Non-combat damage"))
- # } else {
- #   input$dmg_setting
- # updateCheckboxGroupButtons(session,
- #                            "dmg_settings",
- #                            selected = c(""))
- # }
+
  
 # print(input$dmg_settings)
   damage_data$data <- tulos
@@ -292,6 +290,7 @@ observe({
     life_totals$data <- templife
     input_error$error <- FALSE
     waiting_opponent_input$waiting <- FALSE
+    opponent_waiting_my_input$waiting <- FALSE
     updateTabsetPanel(session, "lifeBox", selected = "life_input") 
   } else if (templife$count_missing_rows == 2) {
     #error
@@ -299,10 +298,23 @@ observe({
     input_error$error <- TRUE
     message("input error",  input_error$error)
     waiting_opponent_input$waiting <- FALSE
+    opponent_waiting_my_input$waiting <- FALSE
     
   } else if (tail(damage_data$data, 1)[, Input_Omistaja_NM] == session$user ) {
     #if I did the input, then I am waiting opponent
     waiting_opponent_input$waiting <- TRUE
+    opponent_waiting_my_input$waiting <- FALSE
+  } else if (tail(damage_data$data, 1)[, Input_Omistaja_NM] != session$user ) {
+    #if I did not do the input, then opponent is waiting mine
+    waiting_opponent_input$waiting <- FALSE
+    opponent_waiting_my_input$waiting <- TRUE
+  } else if (templife$count_missing_rows > 2) {
+    input_error$error <- FALSE
+    waiting_opponent_input <- FALSE
+    opponent_waiting_my_input$waiting <- FALSE
+    damage_data$data <- templife$accepted_rows
+    print("käytiin debugissa, missä kojrattiin tilanne, että oli 3 tai enemmän hyväksymätöntä damageinputtia")
+
   }
   
 
@@ -567,6 +579,11 @@ print("writing to turn csv")
                         Peli_ID = peli_id_data[, max(Peli_ID_input)],
                         time_stamp =  as.character(now(tz = "EET")))
 
+    print(str(new_row))
+    print(str(ADM_CURRENT_TURN))
+    print("rbinding")
+    print(rbind(ADM_CURRENT_TURN, new_row))
+    print("done")
   new_data <- rbind(ADM_CURRENT_TURN, new_row)
   write.table(x = new_data,
               file = paste0("./dmg_turn_files/", "current_turn.csv"),
@@ -582,7 +599,8 @@ print("writing to turn csv")
 observe({
   required_data("ADM_TURN_SEQ")
 
-
+  print("Käyty sörkkimässä UITA.  Waiting = ")
+  print(waiting_opponent_input$waiting )
   
   if (waiting_opponent_input$waiting == TRUE) {
     updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
@@ -590,7 +608,6 @@ observe({
     shinyjs::disable("ab_pakita_endille")
     shinyjs::disable("ab_Vaihda_vuoro_virhe")
   } else {
-
     peli_id_data <- isolate(eR_UID_UUSI_PELI())
     Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
     if (Aloittaja == session$user) {
@@ -622,7 +639,7 @@ observe({
                                "dmg_settings",
                                selected = c("Non-combat damage"))
     #älä säädä ennen ku inputit hyväksytty.
-  } else if (waiting_opponent_input$waiting == FALSE) {
+  } else if (waiting_opponent_input$waiting == FALSE &  opponent_waiting_my_input$waiting == FALSE) {
     #check if on current turn, combat damage has been done
     #turnData <- NULL
     #turnData$turn <- 10
@@ -633,15 +650,20 @@ observe({
     #damage_data <- NULL
     #damage_data$data <- ADM_CURRENT_DMG
     #check if in current turn, combat damage is done
+
     aggr_dmg <-   damage_data$data[, .(Combat_dmg = max(Combat_dmg), rivit = .N), by = .(TSID)]
-    
+
+    print(aggr_dmg)
     cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1]
+
+    print(cmbt_damage_rows)
     if (nrow(cmbt_damage_rows) > 0) {
       cmbt_dmg_done <- TRUE
     } else {
       cmbt_dmg_done <- FALSE
     }
     if (cmbt_dmg_done == TRUE) {
+    
     updateCheckboxGroupButtons(session,
                                "dmg_settings",
                                selected = c("Non-combat damage"))
@@ -944,9 +966,10 @@ observe({
     print(isolate(turnData$turn))
     print("mulligan")
     print(mulligan_lkm)
+    
     update_value <- ADM_TURN_SEQ[TSID == isolate(turnData$turn), Turn] + 6 - mulligan_lkm
-    updateSliderInput(session,
-                      inputId = "slider_vuoroarvio", value = update_value)
+
+    
     print("peli tallentuu, mika arvo")
     isolate(print(slider_vuoroarvio$value))
     slider_laurin_lifet$value <- life_totals$data$Lifetotal[Omistaja_NM == "Lauri", Life_total]
@@ -954,8 +977,14 @@ observe({
     if (life_totals$data$Lifetotal[which.min(Life_total), Omistaja_NM] == "Lauri") {
    
       click("martti_voitti")
+      slider_vuoroarvio$value <- update_value
+      updateSliderInput(session,
+                        inputId = "slider_vuoroarvio", value = update_value)
     } else {
       click("lauri_voitti")
+      slider_vuoroarvio$value <- update_value
+      updateSliderInput(session,
+                        inputId = "slider_vuoroarvio", value = update_value)
     }
   }
 })

@@ -296,7 +296,7 @@ tabItem(tabName = "tab_LifeCounter",
                  
                  actionButton(inputId = "ab_Vaihda_vuoro",
                               label =   "End turn",
-                              style = "font-size:250%; color: #fff; background-color: #990000; border-color: #2e6da4; height: 87px;",
+                              style = "font-size:250%; color: #fff; background-color: #FF007F; border-color: #2e6da4; height: 87px;",
                               width = '100%')),
           column(2,
                  
@@ -305,23 +305,22 @@ tabItem(tabName = "tab_LifeCounter",
                               style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
                               width = '100%')
           ),
-          column(4,
-        #tähä ui output
-        uiOutput("dynamic_turn_box")
-
-          ),
           
           
           
           column(2,
-                 
-                 fluidRow(
+              
                    actionButton(inputId = "ab_Undo",
                                 label = HTML("Undo input <br> (not delete)"),
                                 style = "font-size:150%; color: #fff; background-color: #000080; border-color: #2e6da4; height: 87px;",
                                 width = '100%')
                    
-                 )
+                 
+          ),
+          column(4,
+                 #tähä ui output
+                 uiOutput("dynamic_turn_box")
+                 
           )
         )
           

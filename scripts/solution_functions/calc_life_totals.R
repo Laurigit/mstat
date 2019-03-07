@@ -32,6 +32,9 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
                                       dmg_pari)]
   accepted_rows <- row_count[count_rows %% 2 == 0]
   missing_rows <- row_count[count_rows %% 2 == 1]
+  
+  #get accepted rows from original data
+  orig_accepted <- dmg_table_for_calc[dmg_pari %in% accepted_rows[, dmg_pari]][, dmg_pari := NULL]
   #there are 0, 1 or 2 missing rows.
   row_texts <- NULL
 
@@ -68,6 +71,7 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   
   res <- NULL
   res$count_missing_rows <- count_missing_rows
+  res$accepted_rows <- orig_accepted
   res$input_error <- row_texts
   res$Lifetotal <- life_result
   res$dmg_text <- Last_dmg_text
@@ -75,8 +79,10 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
     res <- NULL
     res$Lifetotal <- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total = c(initial_life, initial_life))
     res$count_missing_rows <- 0
+    res$missing_rows <- ""
     res$input_error <- ""
     res$dmg_text <- ""
+    res$accepted_rows <- input_current_dmg
   }
   return(res)
 }

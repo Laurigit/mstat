@@ -3,7 +3,7 @@ if(!file.exists("./dmg_turn_files/current_turn.csv")) {
  
   res_table <- data.table(TSID = 0,
                                Peli_ID =0,
-                               time_stamp = now())
+                               time_stamp = as.character(now(tz = "EET")))
   
   write.table(x = res_table,
               file = paste0("./dmg_turn_files/", "current_turn.csv"),

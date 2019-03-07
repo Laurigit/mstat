@@ -177,13 +177,13 @@ observe({
 observeEvent(input$slider_laurin_lifet,{
   slider_laurin_lifet$value <- input$slider_laurin_lifet
 
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, ignoreNULL = TRUE, ignoreInit = TRUE, priority = 2)
 
 
 observe({
   updateSliderInput(session,
-                    inputId = "slider_laurin_lifet", value = (slider_laurin_lifet$value))
-})
+                    inputId = "slider_laurin_lifet", value = slider_laurin_lifet$value)
+}, priority = 1)
 #slider_martin_lifet
 observeEvent(input$slider_martin_lifet,{
   slider_martin_lifet$value <- input$slider_martin_lifet
@@ -193,96 +193,96 @@ observeEvent(input$slider_martin_lifet,{
 observe({
   updateSliderInput(session,
                     inputId = "slider_martin_lifet", value = (slider_martin_lifet$value))
-})
+},priority = 1)
 
 #slider_laurin_kasikortit
 observeEvent(input$slider_laurin_kasikortit,{
   slider_laurin_kasikortit$value <- input$slider_laurin_kasikortit
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, ignoreNULL = TRUE,priority = 2, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_laurin_kasikortit", value = (slider_laurin_kasikortit$value))
-})
+},priority = 1)
 
 #slider_martin_kasikorit
 observeEvent(input$slider_martin_kasikorit,{
   slider_martin_kasikorit$value <- input$slider_martin_kasikorit
 
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+},priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_martin_kasikorit", value = (slider_martin_kasikorit$value))
-})
+},priority = 1)
 
 #slider_laurin_landit
 observeEvent(input$slider_laurin_landit,{
   slider_laurin_landit$value <- input$slider_laurin_landit
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_laurin_landit", value = (slider_laurin_landit$value))
-})
+}, priority = 1)
 
 #slider_martin_landit
 observeEvent(input$slider_martin_landit,{
   slider_martin_landit$value <- input$slider_martin_landit
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_martin_landit", value = (slider_martin_landit$value))
-})
+}, priority = 1)
 
 #slider_laurin_mulligan
 observeEvent(input$slider_laurin_mulligan,{
   slider_laurin_mulligan$value <- input$slider_laurin_mulligan
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_laurin_mulligan", value = (slider_laurin_mulligan$value))
-})
+}, priority = 1)
 
 #slider_martin_mulligan
 observeEvent(input$slider_martin_mulligan,{
   slider_martin_mulligan$value <- input$slider_martin_mulligan
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_martin_mulligan", value = (slider_martin_mulligan$value))
-})
+}, priority = 1)
 
 #slider_laurin_virhe
 observeEvent(input$slider_laurin_virhe,{
   slider_laurin_virhe$value <- input$slider_laurin_virhe
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_laurin_virhe", value = (slider_laurin_virhe$value))
-})
+}, priority = 1)
 
 
 #slider_martin_virhe
 observeEvent(input$slider_martin_virhe,{
   slider_martin_virhe$value <- input$slider_martin_virhe
   
-}, ignoreNULL = TRUE, ignoreInit = TRUE)
+}, priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
   updateSliderInput(session,
                     inputId = "slider_martin_virhe", value = (slider_martin_virhe$value))
-})
+}, priority = 1)
 
 
 
@@ -292,7 +292,7 @@ observe({
   print(slider_vuoroarvio$value)
   updateSliderInput(session,
                     inputId = "slider_vuoroarvio", value = slider_vuoroarvio$value)
-})
+}, priority = 1)
 
 
 #observe if tallenna is enabled

@@ -9,7 +9,8 @@ new_cards <- NULL
 counter <- 0
 for(loop in missing_cards) {
   counter <- counter + 1
-  
+  print(paste0(counter, "/", length(missing_cards)))
+
   loop_card <- getCard(loop)
   new_cards <- rbind(new_cards, loop_card)
  

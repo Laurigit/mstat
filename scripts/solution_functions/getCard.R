@@ -1,5 +1,6 @@
 
 getCard <- function(mana_stack_id) {
+  #mana_stack_id <- 68173
   url  <- paste0("http://api.manastack.com/card?id=",mana_stack_id)
   path <- "card"
   raw.result <- GET(url = url, path = "card")
@@ -9,7 +10,7 @@ getCard <- function(mana_stack_id) {
 
   result_row <- data.table( Card_ID = result_json$id,
                             Name = result_json$name,
-                            Text = result_json$text,
+                            Text = ifelse(is.null(result_json$text), NA,  result_json$text),
                             Cost = ifelse(is.null(result_json$mana_cost), NA, result_json$mana_cost),
                             Converted_Cost = ifelse(is.null(result_json$converted_cost), NA, result_json$converted_cost),
                             Rarity = result_json$rarity,
