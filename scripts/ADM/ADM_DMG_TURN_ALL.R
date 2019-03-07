@@ -1,0 +1,5 @@
+#ADM_DMG_TURN_ALL 
+required_data("STG_DMG_TURN_ALL")
+
+
+ADM_DMG_TURN_ALL <- STG_DMG_TURN_ALL

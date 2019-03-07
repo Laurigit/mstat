@@ -1,6 +1,14 @@
 #STAT_CURRENT_PAKKA
-required_data(c("ADM_PAKKA_COMPONENTS", "STG_PAKAT"))
+required_data(c("ADM_PAKKA_COMPONENTS", "STG_PAKAT", "ADM_PELIT"))
 comp <- ADM_PAKKA_COMPONENTS[is_current_form == TRUE & Maindeck == TRUE]
+
+comp_hist <- ADM_PAKKA_COMPONENTS[Maindeck == TRUE]
+pfi_voitot <- ADM_PELIT[,.(sum_voitot = sum(Voittaja, na.rm = TRUE)), by = .( Pakka_form_ID)]
+#join voitot
+comp_and_wins <- pfi_voitot[comp_hist, on = "Pakka_form_ID"]
+most_wins <- comp_and_wins[Type != "Lands", .(sum_voitot = sum(sum_voitot * Count, na.rm = TRUE)), by = .(Pakka_ID, Card_ID, Name)]
+most_wins_final <- most_wins[most_wins[, .I[which.max(sum_voitot)], by = Pakka_ID]$V1][, .(Pakka_ID, Card_ID_most_wins = Card_ID, Most_wins_sames_card = Name)]
+
 
 mode <- comp[comp[Type != "Lands", .I[which.max(Count)], by=Pakka_ID]$V1][, .(Pakka_ID, Card_ID, Most_same_card = Name)]
 comp[Type == "Creatures" & substr(Stats, 1, 1) != "*" , ':=' (Power = as.numeric(word(Stats, 1,1, "/")),
@@ -83,7 +91,8 @@ aggr_comp_pct <- aggr_comp[,. (
 
 joinVari <- aggr_comp_pct[variNimi, on = "Pakka_ID"]
 joinmode <- mode[joinVari, on = "Pakka_ID"]
-joinmode[, ':=' (Pakka_NM_Dynamic = paste(word(Pakka_NM, 1, sep = "_"),
+joinWins <- most_wins_final[joinmode, on = "Pakka_ID"]
+joinWins[, ':=' (Pakka_NM_Dynamic = paste(word(Pakka_NM, 1, sep = "_"),
                                           (Colors),
                                           word(Pakka_NM, -1, sep = "_"),
                                           sep = "_"),
@@ -91,6 +100,6 @@ joinmode[, ':=' (Pakka_NM_Dynamic = paste(word(Pakka_NM, 1, sep = "_"),
                                            word(Pakka_NM, -1, sep = "_"),
                                            sep = "_"))]
 
-STAT_CURRENT_PAKKA <- joinmode[order(as.numeric(Pakka_ID))]
+STAT_CURRENT_PAKKA <- joinWins[order(as.numeric(Pakka_ID))]
 
 #muistaa joinaa mode

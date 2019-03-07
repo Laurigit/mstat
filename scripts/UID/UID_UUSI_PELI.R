@@ -56,7 +56,8 @@ Tilanne <- getTilanne(pelidata, Peli_ID_input)
 Aloittaja <- pelidata[Peli_ID == Peli_ID_input , .(Pakka_ID, Aloittaja)]
 
 #join dybamic color
-sscols_pakat <- STAT_CURRENT_PAKKA[, .(Pakka_NM, Pakka_ID, Colors, Most_same_card, Pakka_NM_Dynamic, Omistaja_ID)]
+sscols_pakat <- STAT_CURRENT_PAKKA[, .(Pakka_NM, Pakka_ID, Colors, Most_same_card, Most_wins_sames_card,
+                                       Pakka_NM_Dynamic, Omistaja_ID)]
 
 joini <- PakkaVS[Tilanne,
                    on ="Pakka_ID"][Pakka,
