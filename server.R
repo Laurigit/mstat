@@ -104,8 +104,8 @@ load_data_from_DB()
 
 
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
- 
-  # 
+  required_data("STAT_DMG_TURN_ALL")
+  required_data("ADM_TURN_DATA_ALL") 
   # sourcelist <- dir("./scripts/")
   # tab_sources <- sourcelist[grepl("tab", sourcelist)]
   # 
