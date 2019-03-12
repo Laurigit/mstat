@@ -77,6 +77,7 @@ joini_ssrows[, ':=' (Pakka_ID = NULL,
 #print(paste(Peli_ID_input, input_left_mulligan,
 #            input_right_mulligan
 #            ))
+
 ennuste <- predict_result(Peli_ID_input, input_left_mulligan,
                input_right_mulligan,
                STAT_VOITTOENNUSTE)

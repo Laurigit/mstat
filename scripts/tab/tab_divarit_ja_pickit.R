@@ -74,17 +74,19 @@ output$combUI<-renderUI({
 
 #paivitä bannit
 observeEvent(input$tallenna_bannit,{
+  #browser()
   shinyjs::disable("tallenna_bannit")
   
  # print("tallenna bannit alku")
   required_data("STG_DIVARI")
-  divarit<-STG_DIVARI
+  divarit<-STG_DIVARI[Retired == 0 & Side == 0]
   divarit[,syntax_cb:=(text=paste0("checkbox",Pakka_ID))]
   divarit[,syntax:=(text=paste0("nimput", Pakka_ID))]
   
   lapply(divarit[,syntax_cb],function(i) {
-
-    divarit[syntax_cb==i,Picked:=as.numeric((input[[i]]))]
+    inputti <- input[[i]]
+    print(inputti)
+    divarit[syntax_cb==i,Picked:=as.numeric((inputti))]
     
   })
   lapply(divarit[,syntax],function(i) {
@@ -93,7 +95,7 @@ observeEvent(input$tallenna_bannit,{
     
     
   })
-  
+
   divarit[,syntax:=NULL]
   divarit[,syntax_cb:=NULL]
   

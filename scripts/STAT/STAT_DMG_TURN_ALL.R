@@ -23,17 +23,22 @@ matsupit <- join_pakat_ss[joini, on = .(Pakka_ID, Vastustajan_Pakka_ID)]
 #general_setup 
 seq_data <- ADM_TURN_SEQ[, .(TSID, Turn, Starters_turn)]
 join_seq <- seq_data[temp, on = "TSID"]
-aloittajadata <- pakat[Omistaja_ID == "L", .(Peli_ID, Lauri_aloitti = Aloittaja, Laurin_Pakka = Pakka_ID,
-                                             Martin_Pakka = Vastustajan_Pakka_ID)]
+aloittajadata <- pakat[, .(Peli_ID, Aloittaja, Pakka_ID,
+                                             Vastustajan_Pakka_ID, Omistaja_ID,
+                           Vastustajan_Omistaja_ID)]
 join_aloittaja <- aloittajadata[join_seq, on = "Peli_ID"]
 #fix reverse damage ja combat damage- yhteys
 join_aloittaja[, Combat_dmg := ifelse(Target_player == Dmg_source, 0, Combat_dmg)]
 aggregate_overinput <- join_aloittaja[, .(Amount = mean(Amount)), 
-                                      by = .(Lauri_aloitti, TSID, Turn, Starters_turn, Target_player,
+                                      by = .(Aloittaja, TSID, Turn, Starters_turn, Target_player,
                                              Dmg_source,
                                              Combat_dmg,
-                                             Laurin_Pakka,
-                                             Martin_Pakka)]
+                                             Pakka_ID,
+                                             Vastustajan_Pakka_ID,Omistaja_ID,
+                                             Vastustajan_Omistaja_ID, Peli_ID)]
+aggregate_overinput[, ':=' (Amount_dealt = ifelse(substr(Dmg_source, 1, 1) == Omistaja_ID & substr(Target_player, 1, 1) == Vastustajan_Omistaja_ID, Amount, 0),
+                            Amount_received = ifelse(substr(Target_player, 1, 1) == Omistaja_ID, Amount, 0 ))]
+setorder(aggregate_overinput, Peli_ID, TSID, Target_player)
 
 STAT_DMG_TURN_ALL <- aggregate_overinput
 

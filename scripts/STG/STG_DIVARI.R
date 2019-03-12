@@ -5,4 +5,6 @@ STG_DIVARI <- SRC_DIVARI[ ,.(Pakka_ID = rivi_id,
                              Picked,
                              Manastack_Deck_ID,
                              Json_Prefix,
-                             Deck_name = Nimi)]
+                             Deck_name = Nimi,
+                             Side,
+                             Retired)]

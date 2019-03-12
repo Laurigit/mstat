@@ -278,14 +278,16 @@ tabItem(tabName = "tab_LifeCounter",
                  ),
                  tabPanel(value = "dmg_rows_panel",
                           title = "damage rows",
+                          fluidPage(
+                            fluidRow(
+                            actionButton(inputId = "Delete_dmg_row",
+                                         label = "Delete selected row"),
                           fluidRow(
                             dataTableOutput("damage_rows_dt")
-                          ),
-                          fluidRow(
-                            actionButton(inputId = "Delete_dmg_row",
-                                         label = "Delete selected row")
                           )
-                 )),
+                          
+                          )
+                 ))),
           
         #  fluidRow(h3(textOutput("debug_text"))),
           

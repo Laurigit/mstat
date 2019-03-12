@@ -1,14 +1,14 @@
 required_data(c("STG_PELIT", "STG_HUMALA", "INT_PFI", "STG_TURNAUSSAANTO"))
 
 #join Humala
-temp_hum <- STG_HUMALA
+temp_hum <- STG_HUMALA[1 == 1]
 temp_hum[, ':=' (Puhallus_DT_alku = (Puhallus_DT - 60 * 30),
             Puhallus_DT_loppu = (Puhallus_DT + 60 * 30),
             Puhallus_DT_alku_copy = Puhallus_DT - 60 * 30,
             Puhallus_DT_loppu_copy = Puhallus_DT + 60 * 30
             )]
 
-temp_pel <- STG_PELIT
+temp_pel <- STG_PELIT[1 == 1]
 
 temp_pel[ ,':=' (Aloitus_DT_copy = (Aloitus_DT), Lopetus_DT_copy = (Lopetus_DT))]
 join_humala <- temp_hum[temp_pel, on=.( Puhallus_DT_alku <= Lopetus_DT,

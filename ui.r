@@ -74,6 +74,8 @@ sidebar <- dashboardSidebar(
              actionButton("blow_timer", label = h5("Blow timer")),
              actionButton("refresh", label = "Update data"),
              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+             radioButtons("radio_total_mode", label = h5("Total mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+             
              #radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
               numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7),

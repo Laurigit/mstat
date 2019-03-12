@@ -42,9 +42,9 @@ observeEvent(input$luo_peleja,{
   #print(divariKierros)
     message("input$luo_peleja", divariKierros)
   
-  # kierroksia <- as.numeric(input[[paste0("numeric_rounds",divariKierros)]])
-  # peleja_per_ottelu <-as.numeric(input[[paste0("numeric_ottelut",divariKierros)]])
-  # input_BO_mode <- as.numeric(input[[paste0("checkbox_BO_mode",divariKierros)]])
+  kierroksia <- as.numeric(input[[paste0("numeric_rounds",divariKierros)]])
+  peleja_per_ottelu <-as.numeric(input[[paste0("numeric_ottelut",divariKierros)]])
+  input_BO_mode <- as.numeric(input[[paste0("checkbox_BO_mode",divariKierros)]])
   
   
   # kierroksia <-1

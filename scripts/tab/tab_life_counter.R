@@ -250,7 +250,7 @@ observe({
                        Reverse_source = isolate(reverse_DMG_reacive$Reverse_DMG),
                        input_session_user = session$user,
                        input_TSID = turnValue,
-                       current_dmg = damage_data$data,
+                       current_dmg = isolate(damage_data$data),
                        input_UID_UUSI_PELI = extract_pelidata
   )
   print(tulos)
@@ -322,33 +322,52 @@ observe({
 
 #obseveEVent input_error$error
 observe({
-  if (input_error$error == TRUE) {
+   if (input_error$error == TRUE) {
     #calc error
     #debug
     #damage_data <- NULL
     #damage_data$data <- ADM_CURRENT_DMG
    # print("dmg data")
  #  print(damage_data$data)
-    choose_input <- calc_life_totals(isolate(damage_data$data))$input_error
+   # choose_input <- calc_life_totals(isolate(damage_data$data))$input_error
   #  print("choose_input")
   # print(choose_input)
 
+    lifetdata <- calc_life_totals(isolate(damage_data$data)) 
+    accRows <- lifetdata$accepted_rows
+    damage_data$data <- accRows 
+    input_error$error <- FALSE
+    
+    
+       shinyalert(
+                 title = "Difference in damage input",
+                  text = "Input has been deleted",
+                  type = "warning",
+                  closeOnClickOutside = FALSE,
+                  closeOnEsc = FALSE,
+                  showCancelButton = FALSE,
+                 showConfirmButton = TRUE,
+                  confirmButtonText = "Ok, we will both input again!")
+   
+    
+    #updateTabsetPanel(session, "lifeBox", selected = "dmg_rows_panel")
+  
     #print(damage_data_for_observe)
    # print(input_error_response$response)
-    shinyalert(callbackR = function(x) {
-      new_row <- data.table(user = session$user, response = x, done = FALSE)
-      input_error_response$response <- (rbind(input_error_response$response , new_row))
-    },
-              title = "Difference in damage input",
-               text = paste0(choose_input[, text], collapse = "\n"),
-               type = "warning",
-               closeOnClickOutside = FALSE,
-               closeOnEsc = FALSE,
-               showCancelButton = TRUE,
-               showConfirmButton = TRUE,
-               confirmButtonText = "Accept opponent input",
-               cancelButtonText = "My input is correct")
-  }
+  #   shinyalert(callbackR = function(x) {
+  #     new_row <- data.table(user = session$user, response = x, done = FALSE)
+  #     input_error_response$response <- (rbind(input_error_response$response , new_row))
+  #   },
+  #             title = "Difference in damage input",
+  #              text = paste0(choose_input[, text], collapse = "\n"),
+  #              type = "warning",
+  #              closeOnClickOutside = FALSE,
+  #              closeOnEsc = FALSE,
+  #              showCancelButton = TRUE,
+  #              showConfirmButton = TRUE,
+  #              confirmButtonText = "Accept opponent input",
+  #              cancelButtonText = "My input is correct")
+   }
  # print( input_error_response$response)
 })
                
@@ -358,6 +377,9 @@ observe({
   observe({
     req(input_error_response$response)
     damage_data_for_observe <- isolate(damage_data$data)[DID > 0]
+ 
+    
+    
                  if (nrow(input_error_response$response) == 2) {
                    if (input_error_response$response[1, response] != input_error_response$response[2, response]
                        ) {
@@ -739,10 +761,10 @@ output$damage_rows_dt <- renderDataTable({
                        TSID)][, N := NULL]
 }, options = list(
   searching = FALSE,
-  scrollY = "400px",
+  #scrollY = "400px",
   scrollX = FALSE,
   lengthChange = FALSE,
-  paging = FALSE,
+  paging = TRUE,
   bInfo =  FALSE
   ),
 rownames = FALSE
