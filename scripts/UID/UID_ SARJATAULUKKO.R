@@ -27,7 +27,7 @@ UID_SARJATAULUKKO <- function(input_Turnaus_NO, input_BO_mode, ADM_PELIT, STG_PA
     turnausData <- turnausData_temp
   }
   
-  print(turnausData[, Voittaja])
+ # print(turnausData[, Voittaja])
   
   sspakat <- STG_PAKAT[ Side == 0, .(Pakka_NM, Pakka_ID)]
   joinPakat <- sspakat[turnausData, on = .(Pakka_ID)]
