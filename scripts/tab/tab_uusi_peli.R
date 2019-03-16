@@ -165,7 +165,7 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
                                   return(result)
  })
 
-eR_UID_TURNAUS_EV <- eventReactive(input$tallenna_tulos, {
+eR_UID_TURNAUS_EV <- eventReactive(tallenna_tulos_ui_update$value, {
   required_data(c("STAT_VOITTOENNUSTE", "ADM_PELIT"))
   results <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)
   return(results)

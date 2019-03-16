@@ -700,7 +700,7 @@ observe({
   
   
   }
-})
+}, priority = -10)
 
 
 observeEvent(input$ab_Undo,{
