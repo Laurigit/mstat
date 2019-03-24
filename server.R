@@ -65,8 +65,11 @@ func_login <- function(input_user_count, clientDataInput) {
 isolate(user_logged$count <- user_logged$count + 1)
 session$user <- isolate(func_login(user_logged$count, session$clientData))
 
-
-
+if(session$user == "overlay") {
+js$hidehead('none')
+shinyjs::addClass(selector = "body", class = "sidebar-collapse")
+updateTabItems(session,"sidebarmenu", "tab_overlay") 
+}
 load_data_from_DB()
   
   sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
