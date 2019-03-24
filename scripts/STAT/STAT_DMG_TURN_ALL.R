@@ -40,6 +40,13 @@ aggregate_overinput[, ':=' (Amount_dealt = ifelse(substr(Dmg_source, 1, 1) == Om
                             Amount_received = ifelse(substr(Target_player, 1, 1) == Omistaja_ID, Amount, 0 ))]
 setorder(aggregate_overinput, Peli_ID, TSID, Target_player)
 
+
+# turn50 <- ADM_TURN_SEQ[Turn < 20,. (TSID)]
+# 
+# joint20 <- merge(x = aggregate_overinput, y = turn50, by = "TSID", all.y = TRUE)
+# joint20 <- CJ_dt(turn50, aggregate_overinput)
+# joint20[Peli_ID == 994 & TSID == 1]
+
 STAT_DMG_TURN_ALL <- aggregate_overinput
 
 #join_seq[, half_turn := (Turn  + ifelse(Starters_turn == TRUE, 0, 0.5))]

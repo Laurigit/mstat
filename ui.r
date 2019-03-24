@@ -38,8 +38,9 @@ uusi_peli <- dashboardBody(
   source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
   source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
   source("./scripts/ui/ui_decks.R",local = TRUE)$value,
-  source("./scripts/ui/ui_life_counter.R",local = TRUE)$value
-
+  source("./scripts/ui/ui_life_counter.R",local = TRUE)$value,
+  source("./scripts/ui/ui_overlay.R",local = TRUE)$value
+  
     
     
   ))
@@ -65,6 +66,7 @@ sidebar <- dashboardSidebar(
               menuItem("Saavutusasetukset", icon = icon("cog"), tabName = "tab_saavutusasetukset"),
               menuItem("Boosterit", icon = icon("envelope"), tabName = "tab_boosterit"),
               menuItem("Decks", icon = icon("server"), tabName = "tab_decks"),
+              menuItem("Overlay", icon = icon("server"), tabName = "tab_overlay"),
               radioButtons("radio_pfi_mode",
                            label = h5("PFI mode"),
                            choices = list("Pois" = FALSE, "Paalla" = TRUE),
@@ -74,7 +76,7 @@ sidebar <- dashboardSidebar(
              actionButton("blow_timer", label = h5("Blow timer")),
              actionButton("refresh", label = "Update data"),
              radioButtons("radio_bo_mode", label = h5("BO mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
-             radioButtons("radio_total_mode", label = h5("Total mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
+             #radioButtons("radio_total_mode", label = h5("Total mode"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
              
              #radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
