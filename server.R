@@ -284,7 +284,9 @@ blow_response <- reactiveValues(response = "Initial")
 
 observe({
   if (blow_response$response == FALSE) {
+    if (session$user != "overlay") {
     updateTabItems(session, "sidebarmenu", "tab_blow")
+    }
     blow_response$response <- "Initial"
     create_timedata_for_blowtimer(180)
   } else if (blow_response$response == "Initial") {

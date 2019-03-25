@@ -457,8 +457,10 @@ observeEvent(input$select_laurin_pakka,{
    life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
    damage_data$data <- ADM_CURRENT_DMG
    turnData$turn <- 1
+   if (session$user != "overlay") {
    updateTabItems(session,"sidebarmenu", "tab_LifeCounter") 
    addClass(selector = "body", class = "sidebar-collapse")
+   }
    start_life_counter_button$value <-  isolate(start_life_counter_button$value - 1)
   }
 

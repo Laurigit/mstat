@@ -13,6 +13,8 @@ observeEvent(input$tallenna_humala,{
   humalaData <- luecsv("humala.csv")
   uus_data <- rbind(humalaData, new_row)
   kircsv(uus_data, "humala.csv", TRUE)
+  if (session$user != "overlay") {  
   updateTabItems(session, "sidebarmenu", "tab_uusi_peli")
+  }
 })
 

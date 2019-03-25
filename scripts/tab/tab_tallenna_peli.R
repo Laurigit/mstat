@@ -161,8 +161,9 @@ observe({
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
 
   
-  
-  updateTabItems(session,"sidebarmenu","tab_uusi_peli") 
+  if (session$user != "overlay") {
+  updateTabItems(session,"sidebarmenu","tab_uusi_peli")
+  }
  # js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
   updateNumericInput(session,"sarjataulukkokierros",value = 0)
@@ -339,7 +340,9 @@ observeEvent(input$lauri_voitti,{
 observe({
   if (react_lauri_voitti$value > 0 ) {
   #print("lauri voitti value updated")
+    if (session$user != "overlay") {
   updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
+    }
   updateRadioButtons(session,"radio_voittaja",selected = 0)
   }
 })
@@ -354,7 +357,9 @@ observeEvent(input$martti_voitti,{
 observe({
   
   if (react_martti_voitti$value > 0 ) {
+    if (session$user != "overlay") {
  updateTabItems(session,"sidebarmenu","tab_tallenna_peli")
+    }
   updateRadioButtons(session,"radio_voittaja",selected = 1)
   }
 })
