@@ -1,0 +1,3 @@
+#ADM_KEY_MAP
+required_data("STG_KEY_MAP")
+ADM_KEY_MAP <- STG_KEY_MAP

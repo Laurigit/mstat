@@ -103,8 +103,19 @@ load_data_from_DB()
 
 
  #write.table(x = saavutusAsetukset[,.(kuvaus, minVaiMax, Esitysmuoto, Palkintonimi)], file = "saavutusAsetukset.csv", sep = ";")
+  output$results = renderPrint({
+    input$mydata
+  })
 
+  observeEvent(input$mydata, {
+    required_data("ADM_KEY_MAP")
+   
+    nappi <- ADM_KEY_MAP[uft_nappi == input$mydata[[1]]]
+    if(nrow(nappi) == 1) {
+      click(nappi[, button_id])
+    }
 
+  })
 
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
   required_data("STAT_DMG_TURN_ALL")

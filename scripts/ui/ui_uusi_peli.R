@@ -1,6 +1,13 @@
 
   tabItem(tabName = "tab_uusi_peli",
           fluidPage(
+            fluidRow(  verbatimTextOutput("results"),
+                       tags$script('
+                                   $(document).on("keypress", function (e) {
+                                   Shiny.onInputChange("mydata", [e.which,e.timeStamp,Math.random()]);
+                                   });
+                                   ') ),
+            
             useShinyalert(),
             #theme = shinytheme("yeti"),
             shinyjs::useShinyjs(),
