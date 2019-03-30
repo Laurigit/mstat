@@ -193,12 +193,10 @@ tempDataLehtysLaskuri <- reactiveValues(a = 0)
 updatedTempData<- reactiveValues(a = 0)
 
 
-
+#KOLME UI KOMPONENTTIA KOPIPASTETTY. TEE MUUTOKSET MOLEMPIIN
 output$PakkaLeftBox <- renderUI({
-    
     result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
     result_data <- result$data
-    
   #  print("output$PakkaLeftBox")
   
     #luo riippuvuus
@@ -288,6 +286,185 @@ output$PakkaRightBox <- renderUI({
   
 
 })
+
+
+output$PakkaVSBox <- renderUI({
+  #required_data("UID_UUSI_PELI", TRUE)
+  #rm(eR_UID_UUSI_PELI)
+  
+  #luo riippuvuus
+  (eR_UID_UUSI_PELI())
+  ############
+  #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
+  result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
+  result_data <- result$data
+  #box(HTML(result), background = "aqua", width = NULL, align = "middle")
+  box(
+    
+    solidHeader = FALSE,
+    collapsible = FALSE,
+    width = NULL,
+    boxProfile(
+      src = paste0(result_data$get_aloittaja_image, ".jpg"),
+      title = result_data$otsikko,
+      boxProfileItemList(
+        bordered = TRUE,
+        boxProfileItem(
+          title = "Win%",
+          description = result_data$`Win%`
+        ),
+        boxProfileItem(
+          title = "Win%-MA",
+          description = result_data$`Win%-MA`
+        ),
+        boxProfileItem(
+          title = "Streak",
+          description = result_data$Streak
+        ),
+        boxProfileItem(
+          title = "Games",
+          description = result_data$Games
+        ),
+        boxProfileItem(
+          title = "Prediction",
+          description = result_data$Prediction
+        )
+      )
+    )
+  )
+})
+#KOPOT ALKAA ##########################################
+output$PakkaLeftBox_overlay <- renderUI({
+  result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+  result_data <- result$data
+  #  print("output$PakkaLeftBox")
+  
+  #luo riippuvuus
+  #print(eR_UID_UUSI_PELI())
+  ############
+  box(
+    solidHeader = FALSE,
+    collapsible = FALSE,
+    width = NULL,
+    boxProfile(
+      src = paste0(result_data$Most_same_card, ".jpg"),
+      title = result_data$Deck,
+      boxProfileItemList(
+        bordered = TRUE,
+        boxProfileItem(
+          title = "Win%",
+          description = result_data$`Win%`
+        ),
+        boxProfileItem(
+          title = "Win%-MA",
+          description = result_data$`Win%-MA`
+        ),
+        boxProfileItem(
+          title = "Streak",
+          description = result_data$Streak
+        )
+      )
+    )
+  )
+})
+
+
+output$PakkaRightBox_overlay <- renderUI({
+  #luo riippuvuus
+  eR_UID_UUSI_PELI()
+  ############
+  result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
+  result_data <- result$data
+  
+  box(
+    tags$head(tags$style(HTML('
+                              .boxProfileItem {
+                              font-family: "Georgia", Times, "Times New Roman", serif;
+                              font-weight: bold;
+                              font-size: 24px;
+                              }
+                              '))),
+    solidHeader = FALSE,
+    collapsible = FALSE,
+    width = NULL,
+    boxProfile(
+      src = paste0(result_data$Most_same_card, ".jpg"),
+      title = result_data$Deck,
+      boxProfileItemList(
+        bordered = TRUE,
+        boxProfileItem(
+          title = "Win%",
+          description = result_data$`Win%`
+        ),
+        boxProfileItem(
+          title = "Win%-MA",
+          description = result_data$`Win%-MA`
+        ),
+        boxProfileItem(
+          title = "Streak",
+          description = result_data$Streak
+        )
+      )
+    )
+    )
+  
+  
+  })
+
+
+output$PakkaVSBox_overlay <- renderUI({
+  #required_data("UID_UUSI_PELI", TRUE)
+  #rm(eR_UID_UUSI_PELI)
+  
+  #luo riippuvuus
+  (eR_UID_UUSI_PELI())
+  ############
+  #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
+  result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
+  result_data <- result$data
+  #box(HTML(result), background = "aqua", width = NULL, align = "middle")
+  box(
+    
+    solidHeader = FALSE,
+    collapsible = FALSE,
+    width = NULL,
+    boxProfile(
+      src = paste0(result_data$get_aloittaja_image, ".jpg"),
+      title = result_data$otsikko,
+      boxProfileItemList(
+        bordered = TRUE,
+        boxProfileItem(
+          title = "Win%",
+          description = result_data$`Win%`
+        ),
+        boxProfileItem(
+          title = "Win%-MA",
+          description = result_data$`Win%-MA`
+        ),
+        boxProfileItem(
+          title = "Streak",
+          description = result_data$Streak
+        ),
+        boxProfileItem(
+          title = "Games",
+          description = result_data$Games
+        ),
+        boxProfileItem(
+          title = "Prediction",
+          description = result_data$Prediction
+        )
+      )
+    )
+  )
+})
+
+
+
+
+#LOPPUUU############################################################
+
+
+
 # output$PakkaRightBox <- renderUI({
 #   
 #   result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
@@ -330,7 +507,7 @@ output$peliKesto <- renderText({
 })
 
 
-
+#################### KOPIPASTETTU. TEE MUUTOKSET MOLEMPIIN#
 output$EV_plot <- renderPlot({
   
   melttaa_aggr <-  eR_UID_TURNAUS_EV()
@@ -344,6 +521,22 @@ output$EV_plot <- renderPlot({
                                                fill = "transparent", size = 1, linetype = "solid")) 
   
 })
+output$EV_plot_ovelary <- renderPlot({
+  
+  melttaa_aggr <-  eR_UID_TURNAUS_EV()
+  # required_data(c("ADM_PELIT", "STAT_VOITTOENNUSTE"))
+  # melttaa_aggr <- UID_TURNAUS_EV(ADM_PELIT, STAT_VOITTOENNUSTE)
+  plot <-ggplot(melttaa_aggr, aes(x = ottelu_id, y = Martin_johto, colour = variable)) + geom_line(size = 1.5) +
+    theme_calc() + scale_color_calc() 
+  plot+ theme(legend.title=element_blank(),
+              legend.position = c(0.12, 0.1),
+              legend.background = element_rect(color = "black",
+                                               fill = "transparent", size = 1, linetype = "solid")) 
+  
+})
+#################### KOPIPASTETTU. TEE MUUTOKSET MOLEMPIIN#
+
+
 
 output$win_distribution <- renderPlot({
   melttaa <- eV_UID_MALLI_KOMPONENTIT()
@@ -361,51 +554,6 @@ output$win_distribution <- renderPlot({
   
 })
 
-output$PakkaVSBox <- renderUI({
-  #required_data("UID_UUSI_PELI", TRUE)
-  #rm(eR_UID_UUSI_PELI)
-
-  #luo riippuvuus
-  (eR_UID_UUSI_PELI())
-  ############
-    #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
-    result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
-    result_data <- result$data
-    #box(HTML(result), background = "aqua", width = NULL, align = "middle")
-    box(
-      
-      solidHeader = FALSE,
-      collapsible = FALSE,
-      width = NULL,
-      boxProfile(
-        src = paste0(result_data$get_aloittaja_image, ".jpg"),
-        title = result_data$otsikko,
-        boxProfileItemList(
-          bordered = TRUE,
-          boxProfileItem(
-            title = "Win%",
-            description = result_data$`Win%`
-          ),
-          boxProfileItem(
-            title = "Win%-MA",
-            description = result_data$`Win%-MA`
-          ),
-          boxProfileItem(
-            title = "Streak",
-            description = result_data$Streak
-          ),
-          boxProfileItem(
-            title = "Games",
-            description = result_data$Games
-          ),
-          boxProfileItem(
-            title = "Prediction",
-            description = result_data$Prediction
-          )
-        )
-      )
-      )
-})
 
 #select_laurin_pakka
 observeEvent(input$select_laurin_pakka,{
