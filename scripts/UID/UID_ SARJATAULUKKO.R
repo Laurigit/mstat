@@ -1,13 +1,13 @@
 #UID_SARJATAULUKKO <- 
 # input_Turnaus_NO <- 11
 # input_BO_mode <- TRUE
-
+# 
 # testres <- UID_SARJATAULUKKO(27, TRUE, ADM_PELIT, STG_PAKAT)
 # testres
 UID_SARJATAULUKKO <- function(input_Turnaus_NO, input_BO_mode, ADM_PELIT, STG_PAKAT, input_total_mode = FALSE) {
   required_functions("BO_conversio")
   
-#browser()
+
 
 
   if (input_BO_mode == FALSE) {
@@ -18,8 +18,12 @@ UID_SARJATAULUKKO <- function(input_Turnaus_NO, input_BO_mode, ADM_PELIT, STG_PA
     converted <- BO_conversio(ADM_PELIT[1 == 1])
     turnausData_temp <- converted
   }
-  if(input_total_mode == FALSE) {
+  if(is.null(input_total_mode)) {
+    input_total_mode <- FALSE
+  }
+  if (input_total_mode == FALSE) {
     if(is.null(input_Turnaus_NO)) {
+      
       input_Turnaus_NO <- turnausData_temp[, max(Turnaus_NO)]
     }
     turnausData <- turnausData_temp[Turnaus_NO == input_Turnaus_NO]

@@ -42,11 +42,11 @@ observe({
                  # martin_mull<-1
       Aloitus_DT <- now(tz = "EET")
       Peli_ID  <- eR_Peli_ID()
-   
-      req( laurin_mull<-input$slider_laurin_mulligan,
-           martin_mull<-input$slider_martin_mulligan)
-      laurin_mull<-input$slider_laurin_mulligan
-      martin_mull<-input$slider_martin_mulligan
+
+      req(  input$slider_laurin_mulligan,
+            input$slider_martin_mulligan)
+      laurin_mull <- input$slider_laurin_mulligan
+      martin_mull <- input$slider_martin_mulligan
 
       muuttujat<-c(
                    "Aloitus_DT",
@@ -80,6 +80,41 @@ observe({
       }
   
 })
+
+#jos alotetaan life counter game, niin nollaa temp_data_storage
+observeEvent(input$start_life_counter, {
+  Aloitus_DT <- now(tz = "EET")
+  Peli_ID  <- eR_Peli_ID()
+ 
+  req(  input$slider_laurin_mulligan,
+        input$slider_martin_mulligan)
+  laurin_mull <- input$slider_laurin_mulligan
+  martin_mull <- input$slider_martin_mulligan
+  
+  muuttujat<-c(
+    "Aloitus_DT",
+    "Laurin_mulligan",
+    "Martin_mulligan",
+    "Peli_ID")
+  arvot <- c(
+    as.character(Aloitus_DT),
+    laurin_mull,
+    martin_mull,
+    Peli_ID)
+  tempData <- data.table(muuttuja = muuttujat, arvo = arvot)
+
+
+    
+    kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
+    
+    required_data("ADM_DI_HIERARKIA")
+    
+    updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
+    
+    #nollaa tempdatalaskuri
+    tempDataLehtysLaskuri$a <- 0
+  
+}, ignoreInit = TRUE, ignoreNULL = TRUE)
 
 
 #arvopeli
@@ -473,10 +508,15 @@ output$PakkaVSBox_overlay <- renderUI({
 # })
 
 
-output$peliKesto <- renderText({
+output$peliKesto <- renderText({ aika_text_reactive$aika
+ 
+  
+})
+aika_text_reactive = reactiveValues(aika = 0, i = 0)
+observe({
   required_data("ADM_TEMP_DATA_STORAGE")
   tempData <- ADM_TEMP_DATA_STORAGE
-
+  
   invalidateLater(1000, session)
   pelialkuAika <- tempData[muuttuja == "Aloitus_DT", as.POSIXct(arvo, tz = "EET")]
   aikaNyt <- now(tz = "EET")
@@ -495,17 +535,18 @@ output$peliKesto <- renderText({
   if ( tempDataLehtysLaskuri$a == 10) {
     zip_all_and_send()
     shinyjs::addClass(selector = "body", class = "sidebar-collapse")
-
+    
   }
   if ( tempDataLehtysLaskuri$a == 240) {
-   # js$collapse("uusipeli_box")
+    # js$collapse("uusipeli_box")
   }
-
-  paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
+  
+ 
   
   
+  
+  aika_text_reactive$aika <- paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
 })
-
 
 #################### KOPIPASTETTU. TEE MUUTOKSET MOLEMPIIN#
 output$EV_plot <- renderPlot({
@@ -583,6 +624,7 @@ observeEvent(input$select_laurin_pakka,{
 
  
  #toiminnot, kun painetaan nappulaa, mikä käynnistää life_counterin
+
  observe({
    print("life counter_nappula")
    print(start_life_counter_button$value)
@@ -610,6 +652,7 @@ observeEvent(input$select_laurin_pakka,{
    addClass(selector = "body", class = "sidebar-collapse")
    }
    start_life_counter_button$value <-  isolate(start_life_counter_button$value - 1)
+
   }
 
  })

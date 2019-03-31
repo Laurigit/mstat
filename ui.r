@@ -5,12 +5,14 @@
 
 
 uusi_peli <- dashboardBody(
+  fillPage(
   useShinyalert(),
   useShinyjs(),
   extendShinyjs(text = jscode),
   extendShinyjs(text = "shinyjs.hidehead = function(parm){
                                     $('header').css('display', parm);
                                 }"),
+ 
   tags$head(
     tags$style(
       HTML("
@@ -46,7 +48,7 @@ uusi_peli <- dashboardBody(
   
     
     
-  ))
+  )))
 
 
 

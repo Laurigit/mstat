@@ -69,7 +69,7 @@ if(session$user == "overlay") {
 js$hidehead('none')
 shinyjs::addClass(selector = "body", class = "sidebar-collapse")
 updateTabItems(session,"sidebarmenu", "tab_overlay") 
-}
+} 
 load_data_from_DB()
   
   sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
@@ -102,16 +102,15 @@ load_data_from_DB()
   #load("./external_files/saavutusAsetukset.R")
 
 
- #write.table(x = saavutusAsetukset[,.(kuvaus, minVaiMax, Esitysmuoto, Palkintonimi)], file = "saavutusAsetukset.csv", sep = ";")
   output$results = renderPrint({
-    input$mydata
+    intToUtf8(input$mydata)
   })
 
   observeEvent(input$mydata, {
     required_data("ADM_KEY_MAP")
    
     nappi <- ADM_KEY_MAP[uft_nappi == input$mydata[[1]]]
-    if(nrow(nappi) == 1) {
+    if (nrow(nappi) == 1) {
       click(nappi[, button_id])
     }
 

@@ -33,9 +33,11 @@ local({
   },    options = list(
     paging = FALSE,
     searching = FALSE,
-    info=FALSE
+    info = FALSE
+
     
-  )
+  ),
+  rownames= FALSE
   )
 })
 }

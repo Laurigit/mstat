@@ -3,8 +3,12 @@ tabItem(tabName = "tab_overlay",
         fluidPage(
           fluidRow(
           column(2,
-            uiOutput("overlay_left_col")
-        ),
+            fluidRow(uiOutput("overlay_left_col"),
+            fluidRow(dataTableOutput("overlay_sarjataulukko")
+        ))),
         column(2, offset = 8,
-               uiOutput("overlay_right_col"))))
+               fluidRow(   uiOutput("overlay_right_col")),
+               fluidRow(uiOutput("turnaustilanne_overlay"))
+             
+              )))
 )

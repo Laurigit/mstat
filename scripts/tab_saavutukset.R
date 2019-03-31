@@ -22,7 +22,7 @@ saavutusTaulu<-reactive({
 
 output$saavutus_UI<-renderUI({
   
-  tekstiData<-saavutusTaulu()[source=="Paras"]
+  tekstiData<-saavutusTaulu()[source == "Paras"]
   # print("render UI ssavutus_UI")
   # print(infoBoxData)
   # looppi_kerrat<-nrow(infoBoxData)-1
