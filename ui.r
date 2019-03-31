@@ -5,7 +5,7 @@
 
 
 uusi_peli <- dashboardBody(
-  fillPage(
+
   useShinyalert(),
   useShinyjs(),
   extendShinyjs(text = jscode),
@@ -22,7 +22,8 @@ uusi_peli <- dashboardBody(
            height:740px;
            }
            ")
-      ),
+      )
+    ,
     
     tags$style(type = "text/css", "
       .irs-slider {width: 30px; height: 30px; top: 22px;}
@@ -48,7 +49,7 @@ uusi_peli <- dashboardBody(
   
     
     
-  )))
+  ))
 
 
 
