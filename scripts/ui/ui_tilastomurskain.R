@@ -2,6 +2,7 @@ tabItem(tabName="tab_tilastomurskain",
         fluidRow(column(4, uiOutput("radio_data_type")), 
                  column(4, uiOutput("radio_data_selected")),
                  column(4, uiOutput("validateSaavutusText"))),
+      #  fluidRow(actionButton("Forceupdate", "Forceupdate")),
         fluidRow(
           #column(2,radioButtons("radio_minMax","Sorttaa",choices=c("Kategoria", "min", "max"),selected = "Kategoria")),
           

@@ -293,3 +293,10 @@ observeEvent( input$tallennaTilastoAsetus,{
   updateData("SRC_TILASTOASETUKSET", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
   
 })
+
+
+# observeEvent(input$Forceupdate,{
+#   required_data("ADM_DI_HIERARKIA")
+#   updateData(input$radio_data_selected, ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
+#   print("UPDATING")
+# })

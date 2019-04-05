@@ -182,8 +182,10 @@ observeEvent(input$slider_laurin_lifet,{
 
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_laurin_lifet", value = slider_laurin_lifet$value)
+  }
 }, priority = 1)
 #slider_martin_lifet
 observeEvent(input$slider_martin_lifet,{
@@ -192,8 +194,10 @@ observeEvent(input$slider_martin_lifet,{
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_martin_lifet", value = (slider_martin_lifet$value))
+  }
 },priority = 1)
 
 #slider_laurin_kasikortit
@@ -203,8 +207,10 @@ observeEvent(input$slider_laurin_kasikortit,{
 }, ignoreNULL = TRUE,priority = 2, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_laurin_kasikortit", value = (slider_laurin_kasikortit$value))
+  }
 },priority = 1)
 
 #slider_martin_kasikorit
@@ -214,8 +220,10 @@ observeEvent(input$slider_martin_kasikorit,{
 },priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_martin_kasikorit", value = (slider_martin_kasikorit$value))
+  }
 },priority = 1)
 
 #slider_laurin_landit
@@ -225,8 +233,10 @@ observeEvent(input$slider_laurin_landit,{
 }, priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_laurin_landit", value = (slider_laurin_landit$value))
+  }
 }, priority = 1)
 
 #slider_martin_landit
@@ -236,8 +246,10 @@ observeEvent(input$slider_martin_landit,{
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_martin_landit", value = (slider_martin_landit$value))
+  }
 }, priority = 1)
 
 #slider_laurin_mulligan
@@ -247,9 +259,12 @@ observeEvent(input$slider_laurin_mulligan,{
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_laurin_mulligan", value = (slider_laurin_mulligan$value))
-}, priority = 1)
+  }
+
+}, priority = 1, label = "observe_laurin_mulligan_slider")
 
 #slider_martin_mulligan
 observeEvent(input$slider_martin_mulligan,{
@@ -258,8 +273,10 @@ observeEvent(input$slider_martin_mulligan,{
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_martin_mulligan", value = (slider_martin_mulligan$value))
+  }
 }, priority = 1)
 
 #slider_laurin_virhe
@@ -269,8 +286,10 @@ observeEvent(input$slider_laurin_virhe,{
 }, ignoreNULL = TRUE, priority = 2, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_laurin_virhe", value = (slider_laurin_virhe$value))
+  }
 }, priority = 1)
 
 
@@ -281,8 +300,10 @@ observeEvent(input$slider_martin_virhe,{
 }, priority = 2, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_martin_virhe", value = (slider_martin_virhe$value))
+  }
 }, priority = 1)
 
 
@@ -291,8 +312,10 @@ observe({
 observe({
   print("slider_vuoroarvio")
   print(slider_vuoroarvio$value)
+  if(inputLoop$allow_change == TRUE) {
   updateSliderInput(session,
                     inputId = "slider_vuoroarvio", value = slider_vuoroarvio$value)
+  }
 }, priority = 1)
 
 

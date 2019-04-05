@@ -1,6 +1,10 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
 GLOBAL_test_mode <- "prod"
+if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
+  stop()
+}
+
 dir.create("./external_files/", showWarnings = FALSE)
 dir.create("./download_folder/", showWarnings = FALSE)
 dir.create("./upload_folder/", showWarnings = FALSE)
@@ -111,7 +115,7 @@ kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
 }
 
 zip_all_and_send <- function() {
-
+  
     tiedostot <- as.data.table(dir(path = "./external_files/"))
     file.remove("./upload_folder/all_files.zip")
     setwd("./external_files")
