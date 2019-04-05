@@ -17,12 +17,40 @@ complex_input <- reactiveValues(value = "")
 #local variable to keep track turn and only write it once to file
 local_turn <- reactiveValues(value = 0) 
 
+
+
+#reactiveValues to keep up with the status of enabled/disabled actionbuttons
+actButtonStatus <- reactiveValues(isEndStep = FALSE,
+                                  isMyTurn = FALSE,
+                                  editTurnOrLife = FALSE,
+                                 ab_Vaihda_vuoro = TRUE,
+                                 ab_pakita_endille = TRUE)
+
+setActionButtonStatus <- function(Status, button) {
+
+
+  if (Status == "enable") {
+    shinyjs::enable(button)
+    actButtonStatus[[button]] <- TRUE
+     isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
+   } else {
+     shinyjs::disable(button)
+     actButtonStatus[[button]] <- FALSE
+     isolate(print(paste0(button, " = ", actButtonStatus[[button]]," ", session$user)))
+  }
+
+  
+}
+
 #one time init settings for UI
-shinyjs::disable("isEndStep")
-shinyjs::disable("isMyTurn")
-shinyjs::disable("editTurnOrLife")
-
-
+# shinyjs::disable("isEndStep")
+# shinyjs::disable("isMyTurn")
+# shinyjs::disable("editTurnOrLife")
+ setActionButtonStatus("disable", "isEndStep")
+ setActionButtonStatus("disable", "isMyTurn")
+ setActionButtonStatus("disable", "editTurnOrLife")
+# print("STATSTUSTUAST")
+# isolate(print(actButtonStatus[[editTurnOrLife]]))
 
 #trying to be
 #observeEvent(input$dmg_settings,{
@@ -209,7 +237,7 @@ observe({
   if (fix_life$enabled == TRUE) {
     #check who started
     Aloittaja <- extract_pelidata[Aloittaja == 1, Omistaja_NM]
-    print(session$user)
+  #  print(session$user)
     if (Aloittaja == session$user) {
       I_start <- TRUE
     } else {
@@ -224,14 +252,14 @@ observe({
     turnValue <-  ADM_TURN_SEQ[End_phase == input$isEndStep &
                                  Starters_turn == Stareters_turn_boo &
                                  Turn == as.numeric(turn_overwrite$value), TSID]
-    print("turnValue")
-    print(turnValue)
+  #  print("turnValue")
+   # print(turnValue)
     #cleanup
     fix_life$enabled  <- FALSE
     turn_overwrite$value <- ""
-    shinyjs::disable("isEndStep")
-    shinyjs::disable("isMyTurn")
-    shinyjs::disable("editTurnOrLife")
+    setActionButtonStatus("disable", "isEndStep")
+    setActionButtonStatus("disable", "isMyTurn")
+    setActionButtonStatus("disable", "editTurnOrLife")
     updateRadioGroupButtons(session,
                             "editTurnOrLife",
                             selected = "Life")
@@ -253,7 +281,7 @@ observe({
                        current_dmg = isolate(damage_data$data),
                        input_UID_UUSI_PELI = extract_pelidata
   )
-  print(tulos)
+ # print(tulos)
  
  isolate(amount_DMG_reactive$dmg <- NULL)
 
@@ -601,11 +629,11 @@ print("writing to turn csv")
                         Peli_ID = peli_id_data[, max(Peli_ID_input)],
                         time_stamp =  as.character(now(tz = "EET")))
 
-    print(str(new_row))
-    print(str(ADM_CURRENT_TURN))
-    print("rbinding")
-    print(rbind(ADM_CURRENT_TURN, new_row))
-    print("done")
+  #  print(str(new_row))
+   # print(str(ADM_CURRENT_TURN))
+   # print("rbinding")
+    #print(rbind(ADM_CURRENT_TURN, new_row))
+    #print("done")
   new_data <- rbind(ADM_CURRENT_TURN, new_row)
   write.table(x = new_data,
               file = paste0("./dmg_turn_files/", "current_turn.csv"),
@@ -626,9 +654,9 @@ observe({
   
   if (waiting_opponent_input$waiting == TRUE) {
     updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
-    shinyjs::disable("ab_Vaihda_vuoro")
-    shinyjs::disable("ab_pakita_endille")
-    shinyjs::disable("ab_Vaihda_vuoro_virhe")
+    setActionButtonStatus("disable", "ab_Vaihda_vuoro")
+    setActionButtonStatus("disable", "ab_pakita_endille")
+  #  shinyjs::disable("ab_Vaihda_vuoro_virhe")
   } else {
     peli_id_data <- isolate(eR_UID_UUSI_PELI())
     Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
@@ -641,20 +669,20 @@ observe({
   end_phase <-  ADM_TURN_SEQ[TSID == turnData$turn, End_phase]
   if (my_turn == TRUE & end_phase == FALSE) {
     print("my_turn == TRUE & end_phase == FALSE")
-    shinyjs::enable("ab_Vaihda_vuoro")
-    shinyjs::enable("ab_Vaihda_vuoro_virhe")
-    shinyjs::enable("ab_pakita_endille")
+    setActionButtonStatus("enable", "ab_Vaihda_vuoro")
+  #  shinyjs::enable("ab_Vaihda_vuoro_virhe")
+    setActionButtonStatus("enable", "ab_pakita_endille")
   } else if  (my_turn == TRUE & end_phase == TRUE) {
     print("my_turn == TRUE & end_phase == TRUE")
-    shinyjs::enable("ab_Vaihda_vuoro")
-    shinyjs::enable("ab_Vaihda_vuoro_virhe")
-    shinyjs::disable("ab_pakita_endille")
+    setActionButtonStatus("enable", "ab_Vaihda_vuoro")
+ #   shinyjs::enable("ab_Vaihda_vuoro_virhe")
+    setActionButtonStatus("disable", "ab_pakita_endille")
     
   } else {
     print("ELSE")
-    shinyjs::disable("ab_Vaihda_vuoro")
-    shinyjs::disable("ab_pakita_endille")
-    shinyjs::disable("ab_Vaihda_vuoro_virhe")
+    setActionButtonStatus("disable", "ab_Vaihda_vuoro")
+    setActionButtonStatus("disable", "ab_pakita_endille")
+ #   shinyjs::disable("ab_Vaihda_vuoro_virhe")
   }
   if (end_phase == TRUE) {
     updateCheckboxGroupButtons(session,
@@ -675,10 +703,10 @@ observe({
 
     aggr_dmg <-   damage_data$data[, .(Combat_dmg = max(Combat_dmg), rivit = .N), by = .(TSID)]
 
-    print(aggr_dmg)
+   # print(aggr_dmg)
     cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1]
 
-    print(cmbt_damage_rows)
+   # print(cmbt_damage_rows)
     if (nrow(cmbt_damage_rows) > 0) {
       cmbt_dmg_done <- TRUE
     } else {
@@ -715,8 +743,8 @@ observeEvent(input$ab_Vaihda_vuoro_virhe, {
     click("martin_virhe")
    #input$martin_virhe <- input$martin_virhe + 1
   }
-  turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
-  local_turn$value <- local_turn$value + 1
+  # turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
+  # local_turn$value <- local_turn$value + 1
 })
 
 observeEvent(input$save_9_damage, {
@@ -779,9 +807,9 @@ observeEvent(input$Delete_dmg_row,{
 
 observeEvent(input$ab_fix_lifes, {
   fix_life$enabled <- TRUE
-  shinyjs::enable("isEndStep")
-  shinyjs::enable("isMyTurn")
-  shinyjs::enable("editTurnOrLife")
+  setActionButtonStatus("enable", "isEndStep")
+  setActionButtonStatus("enable", "isMyTurn")
+  setActionButtonStatus("enable", "editTurnOrLife")
   updateTabsetPanel(session, "lifeBox", selected = "NinePlusPanel")
 
   updateRadioGroupButtons(session,

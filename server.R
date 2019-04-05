@@ -209,6 +209,14 @@ load_data_from_DB()
 
   
   local_keymap <- reactiveValues(env = "normal")
+  
+  observe({
+    print("ENVI NORMAALIKSI")
+    take_dep <- turnData$turn
+    take_dep <- damage_data$data
+    local_keymap$env <- "normal"
+  })
+  
   observeEvent(input$mydata, {
     required_data("ADM_KEY_MAP")
     aakkoPainallus_input <- intToUtf8(input$mydata[[1]])
@@ -265,6 +273,9 @@ load_data_from_DB()
       } else {
         accept_input <- FALSE
       }
+    } else if (keymap$data[which.max(PainoAika), Painaja] != session$user) {
+      #we dont need validation, but need to check if I pressed the button
+      accept_input <- FALSE
     } else {
       accept_input <- TRUE
     }
@@ -272,7 +283,14 @@ load_data_from_DB()
     if (accept_input == TRUE) {
       #click actionutton or something else
       if (my_action_row[, type] == "") {
-      click(my_action_row[, button_id])
+        #if button is enabled, then click it
+        print("enabled status")
+        print(isolate(my_action_row[, button_id]))
+        print(isolate(actButtonStatus[[my_action_row[, button_id]]]))
+        isolate(if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
+          print("Nappi painettu")
+           click(my_action_row[, button_id])
+        })
       } else if (my_action_row[, type] == "RadioGroupButtons") {
        # browser()
         group_id <- my_action_row[, button_id]
