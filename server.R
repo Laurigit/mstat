@@ -206,9 +206,9 @@ load_data_from_DB()
   output$results = renderPrint({
     intToUtf8(input$mydata)
   })
-
+ 
   
-  local_keymap <- reactiveValues(env = "normal")
+  local_keymap <- reactiveValues(env = "normal", aika = now())
   
   observe({
     print("ENVI NORMAALIKSI")
@@ -231,6 +231,12 @@ load_data_from_DB()
     print(toiminnot)
     if (nrow(toiminnot) > 0 ){
       isolate(enviro <- local_keymap$env)
+      isolate(enviro_aikaEro<- difftime(now(), local_keymap$aika))
+      if (enviro_aikaEro > 3) {
+        local_keymap$env <- "normal"
+        enviro <- "normal"
+        print("envi muuttu aikaeron takia normaaliksi")
+      }
       my_action_row <- toiminnot[env == enviro]
       print("envin jalkeen action row")
       print(my_action_row)

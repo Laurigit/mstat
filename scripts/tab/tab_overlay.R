@@ -131,6 +131,53 @@ output$overlay_left_col <- renderUI({
   })
 
 
+output$valueBoxRows <- renderUI({
+  print("VALUBOKSIT PÄIVITTYYs")
+  required_data("ADM_TURN_SEQ")
+  accpetd_dmg_row <- damage_data$data[nrow(damage_data$data)]
+  colori <- ifelse(accpetd_dmg_row[, Amount] > 0, "maroon", "green")
+  ikoni <- ifelse(accpetd_dmg_row[, Combat_dmg] == 1, "fist-raised", "bolt")
+  targetti <- str_sub(accpetd_dmg_row[, Target_player], 1, 1)
+  soursa <- str_sub(accpetd_dmg_row[, Dmg_source], 1, 1)
+  maara <- abs(accpetd_dmg_row[, Amount])
+  vuoro <- accpetd_dmg_row[, TSID]
+  #suunta riippuen damagen vastaanottajasta
+  if(targetti == "Lauri") {
+    teksti <- paste0(targetti, " <- ", soursa)
+  } else {
+    teksti <-  paste0( targetti, " -> ", soursa)
+  }
+  
+  
+  
+  if ( vuoro > 0) {
+    vuorotekstiAlku <- ADM_TURN_SEQ[TSID == vuoro, Turn_text]
+    if (isolate(eR_Peli_Aloittaja$a) == 0) {
+      Aloittaja <- "L"
+      Nostaja <- "M"
+    } else {
+      Aloittaja <- "M"
+      Nostaja <- "L"
+    }
+    
+    if (ADM_TURN_SEQ[TSID == vuoro, Starters_turn] == TRUE) {
+      pelaaja_vuorossa <- Aloittaja
+    } else {
+      pelaaja_vuorossa <- Nostaja
+    }
+    
+    
+    subTitle <- paste0(pelaaja_vuorossa, " ", vuorotekstiAlku)
+  }
+  
+ box(valueBox(value = tags$p(paste0("   ", maara, "  ", teksti), style = "font-size: 125%;"),
+          subtitle = tags$p(subTitle, style = "font-size: 125%;"),
+          icon = icon(ikoni),
+                      color = colori,
+                      width = NULL), width = NULL)
+  
+})
+
 output$overlay_right_col <- renderUI({
   # if (input$vasen == "Lauri") {
   
@@ -157,7 +204,9 @@ output$overlay_right_col <- renderUI({
                       aika_text_reactive$aika,
                       '</b></font></div>')),
           background = "blue",
-          width = NULL))
+          width = NULL)),
+ 
+    fluidRow(uiOutput("valueBoxRows"))
     )
   
   #  column(2,

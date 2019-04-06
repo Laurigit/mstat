@@ -1,9 +1,10 @@
 #calc_life_totals
 
-#uuspeli <- data.table(Omistaja_NM = c("Lauri", "Martti"), Peli_ID_input = 1033)
-#testitulos <- mark_damage(3, "Lauri", 1, TRUE, "Lauri", 1, ADM_CURRENT_DMG, uuspeli) 
-#initial_life <-  20
-#required_data("ADM_CURRENT_DMG")
+# uuspeli <- data.table(Omistaja_NM = c("Lauri", "Martti"), Peli_ID_input = 1033)
+# testitulos <- mark_damage(3, "Lauri", 1, TRUE, "Lauri", 1, ADM_CURRENT_DMG, uuspeli)
+# initial_life <-  20
+# required_data("ADM_CURRENT_DMG")
+#input_current_dmg <- ADM_CURRENT_DMG
 calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   #input_current_dmg <- ADM_CURRENT_DMG
   # aggr_to_turn <- input_current_dmg[TSID > 0, .(Amount = sum(Amount)), by = .(
@@ -75,6 +76,7 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
   res$input_error <- row_texts
   res$Lifetotal <- life_result
   res$dmg_text <- Last_dmg_text
+  res$aggr_accepted <- accepted_rows
   } else {
     res <- NULL
     res$Lifetotal <- data.table(Omistaja_NM = c("Lauri", "Martti"), Life_total = c(initial_life, initial_life))
@@ -84,5 +86,6 @@ calc_life_totals <- function(input_current_dmg, initial_life = 20) {
     res$dmg_text <- ""
     res$accepted_rows <- input_current_dmg
   }
+  print(res)
   return(res)
 }
