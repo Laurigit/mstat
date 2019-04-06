@@ -261,50 +261,62 @@ load_data_from_DB()
     #do we need validation
     print("toka vaihe")
     print(my_action_row)
-    if (my_action_row[, valid_pair] != "") {
-      #we need validation, check opponent input
-      my_valid_pair <- my_action_row[, valid_pair]
-      opp_button_id <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), button_id]
-      Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
-      my_time <- my_action_row[, PainoAika]
-      aikaErotus <- abs(difftime(my_time, Opp_time))
-      if (opp_button_id == my_valid_pair & aikaErotus < 2) {
-        accept_input <- TRUE
-      } else {
+
+      if (my_action_row[, valid_pair] != "") {
+        #we need validation, check opponent input
+        my_valid_pair <- my_action_row[, valid_pair]
+        opp_button_id <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), button_id]
+        Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
+        my_time <- my_action_row[, PainoAika]
+        aikaErotus <- abs(difftime(my_time, Opp_time))
+        if (opp_button_id == my_valid_pair & aikaErotus < 2) {
+          accept_input <- TRUE
+        } else {
+          accept_input <- FALSE
+        }
+      } else if (keymap$data[which.max(PainoAika), Painaja] != session$user) {
+        #we dont need validation, but need to check if I pressed the button
         accept_input <- FALSE
+      } else {
+        accept_input <- TRUE
       }
-    } else if (keymap$data[which.max(PainoAika), Painaja] != session$user) {
-      #we dont need validation, but need to check if I pressed the button
-      accept_input <- FALSE
-    } else {
-      accept_input <- TRUE
-    }
+    
     
     if (accept_input == TRUE) {
       #click actionutton or something else
-      if (my_action_row[, type] == "") {
-        #if button is enabled, then click it
-        print("enabled status")
-        print(isolate(my_action_row[, button_id]))
-        print(isolate(actButtonStatus[[my_action_row[, button_id]]]))
-        isolate(if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
-          print("Nappi painettu")
-           click(my_action_row[, button_id])
-        })
+      #if no button id, then dont press anything. change environment only if
+  
+      if (nchar(my_action_row[, button_id]) > 0) {
+        if (my_action_row[, type] == "") {
+      
+        #  print("enabled status")
+        #  print(isolate(my_action_row[, button_id]))
+          #if button is enabled or we dont monitor it, then click it
+          isolate(if (is.null(actButtonStatus[[my_action_row[, button_id]]])) {
+            print("Nappi painettu")
+            click(my_action_row[, button_id])
+          } else {
+            if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
+              print("Nappi painettu")
+              #nappi oli enabled
+               click(my_action_row[, button_id])
+            }
+          })
       } else if (my_action_row[, type] == "RadioGroupButtons") {
-       # browser()
-        group_id <- my_action_row[, button_id]
-        button_name <-  my_action_row[, sub_id]
-        curr_value <- isolate(eval(parse(text = paste0("input$", group_id))))
-        #check if button is selected
-        selected <- button_name %in% curr_value
-        if (selected == TRUE) {
-          new_value <- curr_value[!curr_value %in% button_name]
-        } else {
-          new_value <- c(curr_value, button_name)
+         # browser()
+          group_id <- my_action_row[, button_id]
+          button_name <-  my_action_row[, sub_id]
+          curr_value <- isolate(eval(parse(text = paste0("input$", group_id))))
+          #check if button is selected
+          selected <- button_name %in% curr_value
+          if (selected == TRUE) {
+            new_value <- curr_value[!curr_value %in% button_name]
+          } else {
+            new_value <- c(curr_value, button_name)
+          }
+          updateRadioGroupButtons(session, group_id, selected = new_value)
+  
         }
-        updateRadioGroupButtons(session, group_id, selected = new_value)
-
       }
       #set environment
      isolate(if (my_action_row[, set_env] != local_keymap$env & my_action_row[, set_env]  != "") {
