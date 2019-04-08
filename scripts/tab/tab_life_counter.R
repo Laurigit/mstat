@@ -366,7 +366,7 @@ observe({
     damage_data$data <- accRows 
     input_error$error <- FALSE
     
-    
+    if (sesion$user != "overlay") {
        shinyalert(
                  title = "Difference in damage input",
                   text = "Input has been deleted",
@@ -376,7 +376,7 @@ observe({
                   showCancelButton = FALSE,
                  showConfirmButton = TRUE,
                   confirmButtonText = "Ok, we will both input again!")
-   
+    }
     
     #updateTabsetPanel(session, "lifeBox", selected = "dmg_rows_panel")
   
