@@ -232,7 +232,10 @@ load_data_from_DB()
     if (nrow(toiminnot) > 0 ){
       isolate(enviro <- local_keymap$env)
       isolate(enviro_aikaEro<- difftime(now(), local_keymap$aika))
-      if (enviro_aikaEro > 3) {
+      print("AIKAERo")
+      isolate(print(enviro_aikaEro))
+      if (enviro_aikaEro > 2.5) {
+        local_keymap$aika <- now()
         local_keymap$env <- "normal"
         enviro <- "normal"
         print("envi muuttu aikaeron takia normaaliksi")
