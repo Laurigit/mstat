@@ -11,6 +11,7 @@ dir.create("./upload_folder/", showWarnings = FALSE)
 dir.create("./all_data_test_upload/", showWarnings = FALSE)
 dir.create("./temporary_files/", showWarnings = FALSE)
 dir.create("./www/", showWarnings = FALSE)
+file.create("./www/favicon.ico")
 dir.create("./save_deck_here_from_mtg/", showWarnings = FALSE)
 if (!dir.exists("./dmg_turn_files/")) {
   dir.create("./dmg_turn_files/")

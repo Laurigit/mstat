@@ -43,6 +43,7 @@ keymap <- reactiveValues(data  = data.table(Nappain	= c("a", "b"),
                                             uft_nappi = c("a", "b"),
                                             type = "", 
                                             sub_id = ""))
+last_simulated_click <- reactiveValues(time = now())
 ###############
 
 user_logged <- reactiveValues(count = 0)
@@ -234,7 +235,7 @@ load_data_from_DB()
       isolate(enviro_aikaEro<- difftime(now(), local_keymap$aika))
       print("AIKAERo")
       isolate(print(enviro_aikaEro))
-      if (enviro_aikaEro > 2.5) {
+      if (enviro_aikaEro > 60) {
         local_keymap$aika <- now()
         local_keymap$env <- "normal"
         enviro <- "normal"
@@ -264,7 +265,7 @@ load_data_from_DB()
   
   observe({
     req(keymap$data)
-  
+  if (session$user %in% c("Lauri", "Martti")) {
     my_action_row <- keymap$data[Painaja == session$user]
     
     #do we need validation
@@ -278,7 +279,8 @@ load_data_from_DB()
         Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
         my_time <- my_action_row[, PainoAika]
         aikaErotus <- abs(difftime(my_time, Opp_time))
-        if (opp_button_id == my_valid_pair & aikaErotus < 2) {
+        if (opp_button_id == my_valid_pair & aikaErotus < 2.5) {
+          
           accept_input <- TRUE
         } else {
           accept_input <- FALSE
@@ -303,11 +305,20 @@ load_data_from_DB()
           #if button is enabled or we dont monitor it, then click it
           isolate(if (is.null(actButtonStatus[[my_action_row[, button_id]]])) {
             print("Nappi painettu")
+       
+      
+            odotusaika <-  max(as.numeric(last_simulated_click$time + 0.5 - now()), 0)
+            last_simulated_click$time <- now()
+            Sys.sleep(odotusaika)
+
             click(my_action_row[, button_id])
           } else {
             if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
               print("Nappi painettu")
               #nappi oli enabled
+              odotusaika <-  max(as.numeric(last_simulated_click$time + 0.5 - now()), 0)
+              last_simulated_click$time <- now()
+              Sys.sleep(odotusaika)
                click(my_action_row[, button_id])
             }
           })
@@ -334,6 +345,7 @@ load_data_from_DB()
         isolate(print(local_keymap$env))
       })
     }
+  }
   })
   
   click_groupButton <- function(session, group_id, button_name) {

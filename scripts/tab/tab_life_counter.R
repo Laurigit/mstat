@@ -648,10 +648,11 @@ print("writing to turn csv")
 #handle ui status based on turndata and life_input
 observe({
   required_data("ADM_TURN_SEQ")
-
+if(turnData$turn > 0) {
   print("Käyty sörkkimässä UITA.  Waiting = ")
   print(waiting_opponent_input$waiting )
-  
+  print("turndata$turn")
+  print(turnData$turn)
   if (waiting_opponent_input$waiting == TRUE) {
     updateTabsetPanel(session, "lifeBox", selected = "waiting_panel") 
     setActionButtonStatus("disable", "ab_Vaihda_vuoro")
@@ -665,6 +666,9 @@ observe({
     } else {
       I_start <- FALSE
     }
+    print("turndata$turn, jos 0 niin kaatuu")
+    print(turnData$turn)
+
   my_turn <- I_start == ADM_TURN_SEQ[TSID == turnData$turn, Starters_turn]
   end_phase <-  ADM_TURN_SEQ[TSID == turnData$turn, End_phase]
   if (my_turn == TRUE & end_phase == FALSE) {
@@ -727,6 +731,7 @@ observe({
   
   
   
+  }
   }
 }, priority = -10)
 

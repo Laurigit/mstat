@@ -1,7 +1,7 @@
 
   tabItem(tabName = "tab_uusi_peli",
           fluidPage(
-            fluidRow(dataTableOutput("debug_keymap")),
+            #fluidRow(dataTableOutput("debug_keymap")),
             fluidRow(textOutput("debug_local_env")),
 
             
