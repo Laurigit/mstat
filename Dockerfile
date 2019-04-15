@@ -31,7 +31,7 @@ RUN R -e "install.packages(c('ggplot2','ggthemes','shinyalert','anytime','readxl
 
 ## Copy configuration files into the Docker image
 #COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
-COPY /app/mstat/ /srv/shiny-server/
+COPY /mstat/ /srv/shiny-server/mstat/
 
 ## Copy further configuration files into the Docker image
 #COPY shiny-server.sh /usr/bin/shiny-server.sh
