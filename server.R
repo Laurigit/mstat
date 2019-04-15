@@ -176,7 +176,7 @@ load_data_from_DB()
   
   sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
   sourcelist[, rivi := seq_len(.N)]
-  suppressWarnings(sourcelist[, kansio := strsplit(polku, split = "/")[1], by = rivi])
+  suppressWarnings(sourcelist[, kansio := strsplit(polku, split = "/")[[1]][1], by = rivi])
   sourcelist <- sourcelist[!grep("load_scripts.R", polku)]
   sourcelist[, kansio := ifelse(str_sub(kansio, -2, -1) == ".R", "root", kansio)]
 
