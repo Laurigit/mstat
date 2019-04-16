@@ -216,7 +216,9 @@ load_data_from_DB()
     take_dep <- turnData$turn
     take_dep <- damage_data$data
     local_keymap$env <- "normal"
-    keymap$data[Painaja == session$user, Nappain := ""]
+    temp <- isolate(keymap$data)
+    temp[, Nappain := ""]
+    keymap$data <- temp
   })
   
   observeEvent(input$mydata, {
