@@ -209,7 +209,7 @@ load_data_from_DB()
   })
  
   
-  local_keymap <- reactiveValues(env = "normal", aika = now())
+  local_keymap <- reactiveValues(env = "normal", aika = now(), prev_key = "")
   
   observe({
     print("ENVI NORMAALIKSI")
@@ -224,41 +224,50 @@ load_data_from_DB()
   observeEvent(input$mydata, {
     required_data("ADM_KEY_MAP")
     aakkoPainallus_input <- intToUtf8(input$mydata[[1]])
-    painaja_uus <- session$user
-  #  tempData <-  keymap$data
-  #  tempData[Painaja == painaja_uus, ':=' (aakkoPainallus = aakkoPainallus_input,
-                                            #  Aika = now())]
-  #  tempData <-  keymap$data
-   # my_keypress <- tempData[Painaja == session$user, aakkoPainallus]
-    toiminnot <- ADM_KEY_MAP[Nappain == aakkoPainallus_input]
-    print("ekavaihe")
-    print(toiminnot)
-    if (nrow(toiminnot) > 0 ){
-      isolate(enviro <- local_keymap$env)
-      isolate(enviro_aikaEro<- difftime(now(), local_keymap$aika))
-      print("AIKAERo")
-      isolate(print(enviro_aikaEro))
-      if (enviro_aikaEro > 60) {
-        local_keymap$aika <- now()
-        local_keymap$env <- "normal"
-        enviro <- "normal"
-        print("envi muuttu aikaeron takia normaaliksi")
-      }
-      my_action_row <- toiminnot[env == enviro]
-      print("envin jalkeen action row")
-      print(my_action_row)
-      print("envi oli")
-      isolate(print(local_keymap$env))
-      if (nrow(my_action_row) > 0) {
-        my_action_row[, ':=' (Painaja = painaja_uus,
-                 PainoAika = now())]
+    isolate(enviro <- local_keymap$env)
+    isolate(enviro_aikaEro <- as.numeric(now()) - as.numeric(local_keymap$aika))
+    local_keymap$aika <- now()
+    print("AIKAERo")
+    isolate(print(enviro_aikaEro))
+    if (local_keymap$prev_key != aakkoPainallus_input | enviro_aikaEro > 3) {
         
-          vihunData <-  keymap$data[Painaja != painaja_uus]
-          print(my_action_row)
-          print(vihunData)
-          uusData <- rbind(my_action_row, vihunData)
-          keymap$data <- uusData
+      local_keymap$prev_key <- aakkoPainallus_input
+      painaja_uus <- session$user
+    #  tempData <-  keymap$data
+    #  tempData[Painaja == painaja_uus, ':=' (aakkoPainallus = aakkoPainallus_input,
+                                              #  Aika = now())]
+    #  tempData <-  keymap$data
+     # my_keypress <- tempData[Painaja == session$user, aakkoPainallus]
+      toiminnot <- ADM_KEY_MAP[Nappain == aakkoPainallus_input]
+      print("ekavaihe")
+      print(toiminnot)
+      if (nrow(toiminnot) > 0 ){
+        
+        if (enviro_aikaEro > 60) {
+  
+          local_keymap$env <- "normal"
+          enviro <- "normal"
+          print("envi muuttu aikaeron takia normaaliksi")
+        }
+        
+        my_action_row <- toiminnot[env == enviro]
+        print("envin jalkeen action row")
+        print(my_action_row)
+        print("envi oli")
+        isolate(print(local_keymap$env))
+        if (nrow(my_action_row) > 0) {
+          my_action_row[, ':=' (Painaja = painaja_uus,
+                   PainoAika = now())]
+          
+            vihunData <-  keymap$data[Painaja != painaja_uus]
+            print(my_action_row)
+            print(vihunData)
+            uusData <- rbind(my_action_row, vihunData)
+            keymap$data <- uusData
+        }
       }
+    } else {
+      warning("painettu sama nappi")
     }
   })
   
