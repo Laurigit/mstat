@@ -216,6 +216,7 @@ load_data_from_DB()
     take_dep <- turnData$turn
     take_dep <- damage_data$data
     local_keymap$env <- "normal"
+    keymap$data[Painaja == session$user, Nappain := ""]
   })
   
   observeEvent(input$mydata, {
@@ -307,7 +308,7 @@ load_data_from_DB()
             print("Nappi painettu")
        
       
-            odotusaika <-  max(as.numeric(last_simulated_click$time + 0.5 - now()), 0)
+            odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
             last_simulated_click$time <- now()
             Sys.sleep(odotusaika)
 
@@ -316,7 +317,7 @@ load_data_from_DB()
             if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
               print("Nappi painettu")
               #nappi oli enabled
-              odotusaika <-  max(as.numeric(last_simulated_click$time + 0.5 - now()), 0)
+              odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
               last_simulated_click$time <- now()
               Sys.sleep(odotusaika)
                click(my_action_row[, button_id])
