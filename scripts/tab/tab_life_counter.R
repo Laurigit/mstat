@@ -366,7 +366,7 @@ observe({
     damage_data$data <- accRows 
     input_error$error <- FALSE
     
-    if (sesion$user != "overlay") {
+    if (session$user != "overlay") {
        shinyalert(
                  title = "Difference in damage input",
                   text = "Input has been deleted",
