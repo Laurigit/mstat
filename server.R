@@ -205,9 +205,19 @@ load_data_from_DB()
 
 
   output$results = renderPrint({
-    intToUtf8(input$mydata)
+    intToUtf8(input$mydata[[1]])
   })
  
+
+  # observeEvent(input$mydata, {
+  #   ekakirjain <- str_sub(intToUtf8(input$mydata[[1]], 1, 1))
+  #   print(ekakirjain)
+  #   if (ekakirjain == "x") {
+  #     shinyjs::hide(id = "hideBox")
+  #   } else {
+  #     shinyjs::show(id = "hideBox")
+  #   }
+  # })
   
   local_keymap <- reactiveValues(env = "normal", aika = now(), prev_key = "")
   
