@@ -214,7 +214,7 @@ load_data_from_DB()
   #   print(ekakirjain)
   #   if (ekakirjain == "x") {
   #     shinyjs::hide(id = "hideBox")
-  #   } else {
+  #   } else {_a
   #     shinyjs::show(id = "hideBox")
   #   }
   # })
@@ -239,7 +239,7 @@ load_data_from_DB()
     local_keymap$aika <- now()
     print("AIKAERo")
     isolate(print(enviro_aikaEro))
-    if (local_keymap$prev_key != aakkoPainallus_input | enviro_aikaEro > 3) {
+    if (local_keymap$prev_key != aakkoPainallus_input | enviro_aikaEro > 1) {
         
       local_keymap$prev_key <- aakkoPainallus_input
       painaja_uus <- session$user
@@ -253,7 +253,7 @@ load_data_from_DB()
       print(toiminnot)
       if (nrow(toiminnot) > 0 ){
         
-        if (enviro_aikaEro > 60) {
+        if (enviro_aikaEro > 20) {
   
           local_keymap$env <- "normal"
           enviro <- "normal"
@@ -301,8 +301,9 @@ load_data_from_DB()
         Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
         my_time <- my_action_row[, PainoAika]
         aikaErotus <- abs(difftime(my_time, Opp_time))
-        if (opp_button_id == my_valid_pair & aikaErotus < 2.5) {
-          
+        warning(paste0("näppäinten ero oli", aikaErotus))
+        if (opp_button_id == my_valid_pair & aikaErotus < 1.5) {
+         
           accept_input <- TRUE
         } else {
           accept_input <- FALSE
