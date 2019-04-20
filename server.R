@@ -52,10 +52,12 @@ user_logged <- reactiveValues(count = 0)
 shinyServer(function(input, output, session) {
   #load_scripts.R
  # print(session$clientData)
- 
-  
-  
-  #prevent inputloop
+observe({
+  #seuraa damagea ja turndataa
+  depen <- turnData$turn
+  dependd <- life_totals$data
+  beep()
+})
   inputLoop <- reactiveValues(timeStamp = now(),
                               allow_change = TRUE,
                               which_input_changed = "",
