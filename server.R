@@ -199,7 +199,7 @@ load_data_from_DB()
     }
   }
   
-
+print("sourcettu")
 
   
  # load("./external_files/tilastoAsetukset.R")
@@ -286,7 +286,7 @@ load_data_from_DB()
 
   #envs are "normal", shift, deal9+, lose9+
   
-  
+  print("289")
   observe({
     req(keymap$data)
   if (session$user %in% c("Lauri", "Martti")) {
@@ -372,7 +372,7 @@ load_data_from_DB()
     }
   }
   })
-  
+  print("375")
   click_groupButton <- function(session, group_id, button_name) {
     #curr_value <- c("kol", "ys", "kas")
    # button_name <- "ys"
@@ -402,7 +402,7 @@ load_data_from_DB()
   # for(filename in tab_sources) {
   #   source(paste0("./scripts/", filename), local = TRUE)
   # }
-
+print("405")
   #write shiny env name
   shiny_env <- environment()
   save(shiny_env, "shiny_env", file = "./shiny_env.R")
@@ -484,7 +484,7 @@ humalaData <- reactive({
   
     
    #luo tilasto-asetus-objekti
-   
+   print("487")
 
    
    ennusteDataReact <- eventReactive(input$luo_peleja, {
