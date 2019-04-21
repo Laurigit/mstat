@@ -49,7 +49,7 @@ library(tidyverse)
 library(reshape2)
 library(grid)
 library(gridExtra)
-library(beepr)
+
 #library(extendShinyjs)
 #library(glob2rx)
 #library(shinythemes)
