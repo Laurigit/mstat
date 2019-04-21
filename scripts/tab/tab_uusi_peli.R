@@ -18,7 +18,7 @@ eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
                                  # message("palautettu uusi peli id ", normiToiminto)
                                   return(normiToiminto)
                                 } else {
-                                  
+                                  print("JOS OLET TÄÄLLÄ, NIIN TÄMÄ OSA KOODISTA TUSKIN TOIMII. TARKISTA ONKO TEMPDATA STORAGESSSA OLEVA PELI_ID OLEMASSA")
                                   required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
                                   
                                   keskenPeliData <- ADM_TEMP_DATA_STORAGE
