@@ -56,7 +56,7 @@ observe({
   #seuraa damagea ja turndataa
   depen <- turnData$turn
   dependd <- life_totals$data
-  beep()
+  #beep()
 })
   inputLoop <- reactiveValues(timeStamp = now(),
                               allow_change = TRUE,
