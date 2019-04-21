@@ -26,11 +26,9 @@ join_seq <- seq_data[temp, on = "TSID"]
 aloittajadata <- pakat[, .(Peli_ID, Aloittaja, Pakka_ID,
                                              Vastustajan_Pakka_ID, Omistaja_ID,
                            Vastustajan_Omistaja_ID)]
-<<<<<<< HEAD
-join_aloittaja <- aloittajadata[join_seq, on = "Peli_ID", allow.cartesian =TRUE]
-=======
+
 join_aloittaja <- aloittajadata[join_seq, on = "Peli_ID", allow.cartesian = TRUE]
->>>>>>> f003cc94dc3f8901b42796eef161e81102701428
+
 #fix reverse damage ja combat damage- yhteys
 join_aloittaja[, Combat_dmg := ifelse(Target_player == Dmg_source, 0, Combat_dmg)]
 aggregate_overinput <- join_aloittaja[, .(Amount = mean(Amount)),
