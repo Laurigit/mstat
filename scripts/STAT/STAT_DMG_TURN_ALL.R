@@ -20,16 +20,20 @@ matsupit <- join_pakat_ss[joini, on = .(Pakka_ID, Vastustajan_Pakka_ID)]
 
 #join_pakat[, used_Pakka_ID = ifelse(c)]
 
-#general_setup 
+#general_setup
 seq_data <- ADM_TURN_SEQ[, .(TSID, Turn, Starters_turn)]
 join_seq <- seq_data[temp, on = "TSID"]
 aloittajadata <- pakat[, .(Peli_ID, Aloittaja, Pakka_ID,
                                              Vastustajan_Pakka_ID, Omistaja_ID,
                            Vastustajan_Omistaja_ID)]
+<<<<<<< HEAD
 join_aloittaja <- aloittajadata[join_seq, on = "Peli_ID", allow.cartesian =TRUE]
+=======
+join_aloittaja <- aloittajadata[join_seq, on = "Peli_ID", allow.cartesian = TRUE]
+>>>>>>> f003cc94dc3f8901b42796eef161e81102701428
 #fix reverse damage ja combat damage- yhteys
 join_aloittaja[, Combat_dmg := ifelse(Target_player == Dmg_source, 0, Combat_dmg)]
-aggregate_overinput <- join_aloittaja[, .(Amount = mean(Amount)), 
+aggregate_overinput <- join_aloittaja[, .(Amount = mean(Amount)),
                                       by = .(Aloittaja, TSID, Turn, Starters_turn, Target_player,
                                              Dmg_source,
                                              Combat_dmg,
@@ -42,17 +46,17 @@ setorder(aggregate_overinput, Peli_ID, TSID, Target_player)
 
 
 # turn50 <- ADM_TURN_SEQ[Turn < 20,. (TSID)]
-# 
+#
 # joint20 <- merge(x = aggregate_overinput, y = turn50, by = "TSID", all.y = TRUE)
 # joint20 <- CJ_dt(turn50, aggregate_overinput)
 # joint20[Peli_ID == 994 & TSID == 1]
 
 STAT_DMG_TURN_ALL <- aggregate_overinput
-
-#join_seq[, half_turn := (Turn  + ifelse(Starters_turn == TRUE, 0, 0.5))]
-#aver_dmg_dealt <- join_seq[, .(ave_dmg = mean(Amount)), by = .(Target_player, Turn)]
-#case not enough games or matchups
-#case_tot <- temp[,]
+# 
+# #join_seq[, half_turn := (Turn  + ifelse(Starters_turn == TRUE, 0, 0.5))]
+# #aver_dmg_dealt <- join_seq[, .(ave_dmg = mean(Amount)), by = .(Target_player, Turn)]
+# #case not enough games or matchups
+# #case_tot <- temp[,]
 
 
 #line: How much damage my deck deals on average per turn? my + opponent self damage
