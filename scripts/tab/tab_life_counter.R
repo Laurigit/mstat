@@ -706,11 +706,12 @@ if(turnData$turn > 0) {
     #damage_data$data <- ADM_CURRENT_DMG
     #check if in current turn, combat damage is done
 
-    aggr_dmg <-   damage_data$data[, .(Combat_dmg = max(Combat_dmg), rivit = .N), by = .(TSID)]
+    aggr_dmg <-   damage_data$data[Amount >= 0 , .(Combat_dmg = max(Combat_dmg), rivit = .N), by = .(TSID)]
 
    # print(aggr_dmg)
     #combat damage non lifegain rows
-    cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1 & Amount >= 0 ]
+   
+    cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1]
 
    # print(cmbt_damage_rows)
     if (nrow(cmbt_damage_rows) > 0) {

@@ -30,7 +30,8 @@ for(inp in flatList) {
 
   
   #res <- melt.data.table(comp_aggr_to_pakka, id.vars = "dummy")
-  res <- dcast.data.table(comp_aggr_to_pakka, formula = Pakka_ID ~ get(inp), value.var = "N")
+  formula_input <- paste("Pakka_ID ~ ", eval(inp))
+  res <- dcast.data.table(comp_aggr_to_pakka, formula = formula_input, value.var = "N")
   res <- fix_colnames(res)
   getnamesOrig <- names(res)[-1]
   newNames <- paste0(inp, "_", getnamesOrig)

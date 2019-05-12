@@ -41,7 +41,8 @@ for(inp in flatList) {
   comp_aggr_to_pakka <- comp[, .(.N), by = c(inp, "Pakka_ID")]
   comp_aggr_to_pakka[, pct := N / sum(N, na.rm = TRUE), by = c("Pakka_ID")]
 #res <- melt.data.table(comp_aggr_to_pakka, id.vars = "dummy")
-  res <- dcast.data.table(comp_aggr_to_pakka, formula = Pakka_ID ~ get(inp), value.var = "pct")
+  form_input <- paste("Pakka_ID ~", eval(inp))
+  res <- dcast.data.table(comp_aggr_to_pakka, formula = form_input, value.var = "pct")
   res <- fix_colnames(res)
   getnamesOrig <- names(res)[-1]
   newNames <- paste0(inp, "_", getnamesOrig)

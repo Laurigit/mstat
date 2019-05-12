@@ -44,7 +44,7 @@ sscols <- SRC_DIVARI[,. (Pakka_ID = rivi_id, Omistaja_ID = substr(Omistaja_nimi,
                          Pakka_NO = Pakka)]
 #join_pakka_ID
 #join_pid <- sscols[pakkametataulu_sorted, on = .(Omistaja_ID, Pakka_NO)]
- join_pid <- merge(sscols,pakkametataulu_sorted, by = c("Omistaja_ID", "Pakka_NO"), all = TRUE)
+ join_pid <- base::merge(x = sscols, y = pakkametataulu_sorted, by = c("Omistaja_ID", "Pakka_NO"), all = TRUE)
  missing_decks <- join_pid[is.na(Pakka_form_ID)]
 puuttuvat_pakat <- nrow(missing_decks)
 if(puuttuvat_pakat > 0) {

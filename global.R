@@ -1,7 +1,7 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
-GLOBAL_test_mode <- "prod"
-
+GLOBAL_test_mode <- "dev"
+options(shiny.fullstacktrace = TRUE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
 }
@@ -18,6 +18,8 @@ if (!dir.exists("./dmg_turn_files/")) {
   dir.create("./dmg_turn_files/")
 }
 
+
+#library(config)
 library(RMySQL)
 library(shinyWidgets)
 library(shiny)
@@ -105,6 +107,10 @@ load_data_from_DB <- function() {
 
 kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
 
+#  con <- connDB(con)
+  
+  
+  
   write.table(x = datataulu,
               file = paste0("./external_files/", tiedostonimi),
               sep = ";",
