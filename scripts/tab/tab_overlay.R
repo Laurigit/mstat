@@ -146,7 +146,7 @@ output$valueBoxRows <- renderUI({
   if(targetti == "Lauri") {
     teksti <- paste0(targetti, " <- ", soursa)
   } else {
-    teksti <-  paste0( targetti, " -> ", soursa)
+    teksti <-  paste0(soursa, " -> ", targetti)
   }
   
   

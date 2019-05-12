@@ -350,6 +350,7 @@ observe({
 
 #obseveEVent input_error$error
 observe({
+  if (session$user != "overlay") {
    if (input_error$error == TRUE) {
     #calc error
     #debug
@@ -366,7 +367,7 @@ observe({
     damage_data$data <- accRows 
     input_error$error <- FALSE
     
-    if (session$user != "overlay") {
+  
        shinyalert(
                  title = "Difference in damage input",
                   text = "Input has been deleted",
@@ -708,7 +709,8 @@ if(turnData$turn > 0) {
     aggr_dmg <-   damage_data$data[, .(Combat_dmg = max(Combat_dmg), rivit = .N), by = .(TSID)]
 
    # print(aggr_dmg)
-    cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1]
+    #combat damage non lifegain rows
+    cmbt_damage_rows <- aggr_dmg[rivit > 1 & TSID == get_current_turn_TSID & Combat_dmg == 1 & Amount >= 0 ]
 
    # print(cmbt_damage_rows)
     if (nrow(cmbt_damage_rows) > 0) {

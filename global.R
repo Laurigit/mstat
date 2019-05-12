@@ -18,7 +18,7 @@ if (!dir.exists("./dmg_turn_files/")) {
   dir.create("./dmg_turn_files/")
 }
 
-
+library(RMySQL)
 library(shinyWidgets)
 library(shiny)
 library(shinydashboard)
