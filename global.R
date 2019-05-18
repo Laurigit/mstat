@@ -1,6 +1,7 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
-GLOBAL_test_mode <- "dev"
+
+GLOBAL_test_mode <- "prod"
 options(shiny.fullstacktrace = TRUE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
@@ -174,6 +175,7 @@ shinyjs.collapse = function(boxid) {
 $('#' + boxid).closest('.box').find('[data-widget=collapse]').click();
 }
 "
+load_data_from_DB()
 
 
 sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
@@ -199,4 +201,18 @@ for(input_kansio in input_kansio_list) {
 
 
 
+#files for required_data
+sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
+sourcelist[, rivi := seq_len(.N)]
+sourcelist[, tiedosto := strsplit(polku, split = "/")[[1]][2], by = rivi]
+sourcelist[, kansio := strsplit(polku, split = "/")[[1]][1], by = rivi]
+sourcelist[, faili := str_sub(tiedosto, 1, -3)]
+sourcelist <- sourcelist[!grep("load_scripts.R", polku)]
+input_kansio_list <- c("SRC",
+                       "STG",
+                       "ADM",
+                       "INT",
+                       "STAT")
+runlist <- sourcelist[kansio %in% c(input_kansio_list), faili]
+required_data(runlist)
 print("Global.R valmis")

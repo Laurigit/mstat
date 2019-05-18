@@ -1,0 +1,7 @@
+default:
+  bm:
+    driver: 'MySQL()' 
+    server: 'betmtgdb.cq1pjet0dxmr.eu-north-1.rds.amazonaws.com'
+    uid: 'Lauri_db'
+    pwd: 'bruc3tti_Db'  
+    database: 'betmtgdb'

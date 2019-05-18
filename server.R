@@ -174,8 +174,7 @@ js$hidehead('none')
 shinyjs::addClass(selector = "body", class = "sidebar-collapse")
 updateTabItems(session,"sidebarmenu", "tab_overlay") 
 } 
-load_data_from_DB()
-  
+
   sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
   sourcelist[, rivi := seq_len(.N)]
   suppressWarnings(sourcelist[, kansio := strsplit(polku, split = "/")[[1]][1], by = rivi])
@@ -391,7 +390,7 @@ load_data_from_DB()
  output$debug_keymap <- renderDataTable({keymap$data})
  output$debug_local_env <- renderText({local_keymap$env})
   
-  required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
+  required_data("STAT_VOITTOENNUSTE", saveR = FALSE)
   required_data("STAT_DMG_TURN_ALL")
   required_data("ADM_TURN_DATA_ALL") 
   # sourcelist <- dir("./scripts/")
@@ -403,8 +402,8 @@ load_data_from_DB()
   # }
 
   #write shiny env name
-  shiny_env <- environment()
-  save(shiny_env, "shiny_env", file = "./shiny_env.R")
+#  shiny_env <- environment()
+  #save(shiny_env, "shiny_env", file = "./shiny_env.R")
   
    #obserEventit
   refresh_counter <- reactiveValues(a = 0)
