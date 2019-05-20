@@ -199,11 +199,6 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
   }
   
 
-  
- # load("./external_files/tilastoAsetukset.R")
-  #load("./external_files/saavutusAsetukset.R")
-
-
   output$results = renderPrint({
     intToUtf8(input$mydata[[1]])
   })
@@ -390,9 +385,9 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
  output$debug_keymap <- renderDataTable({keymap$data})
  output$debug_local_env <- renderText({local_keymap$env})
   
-  required_data("STAT_VOITTOENNUSTE", saveR = FALSE)
-  required_data("STAT_DMG_TURN_ALL")
-  required_data("ADM_TURN_DATA_ALL") 
+#  required_data("STAT_VOITTOENNUSTE", saveR = FALSE)
+#  required_data("STAT_DMG_TURN_ALL")
+#  required_data("ADM_TURN_DATA_ALL") 
   # sourcelist <- dir("./scripts/")
   # tab_sources <- sourcelist[grepl("tab", sourcelist)]
   # 
@@ -411,19 +406,11 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
     refresh_counter$a <- refresh_counter$a + 1  
   }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
-    #nollaa temp data
-    observeEvent(input$nollaa_temp_data, {
-      tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c("FALSE","FALSE"))
-     # print("tässä lähetetään tyhjataulu pilveen.")
-      tyhjataulu
-      kircsv(tyhjataulu,"./temp_data_storage.csv", upload = TRUE)
-      
-    })
+
 
   #päivitä divarit
   observeEvent(input$tallenna_divarit,{
  
-    
     divarit<-divaridata()
     
     
@@ -519,7 +506,7 @@ observe({
  # omistaja <- substr(1,1,ifile$name)
   if (!is.null(ifile)) {
     validointiteksti$teksti<-process_uploaded_decks(ifile,".//")}
-  zip_all_and_send()
+  #zip_all_and_send()
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PFI", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = FALSE)
   refresh_counter$a <- isolate(refresh_counter$a +1 )

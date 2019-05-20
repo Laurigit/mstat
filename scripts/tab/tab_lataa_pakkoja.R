@@ -52,7 +52,7 @@ observeEvent(input$input_lataa_valitut_pakat,{
   ladattavat_pakat <- STAT_PFI[valitut_rivit, .(Deck)]
 
   validointi_teksti <- getDeckByID(ladattavat_pakat, STG_DIVARI)
-  zip_all_and_send()
+  #zip_all_and_send()
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PFI", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = FALSE)
   

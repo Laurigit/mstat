@@ -10,7 +10,7 @@ draft_boosters <- function(vect_boosters) {
                          draft_no = max_draft + 1)
 
   app_rows <- rbind(booster_data, new_rows)
-  kircsv(app_rows, "boosters.csv", TRUE)
+  kircsv(app_rows, "boosters.csv")
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_BOOSTERS", ADM_DI_HIERARKIA, input_env = globalenv(), FALSE)
 }

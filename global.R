@@ -13,11 +13,10 @@ dir.create("./upload_folder/", showWarnings = FALSE)
 dir.create("./all_data_test_upload/", showWarnings = FALSE)
 dir.create("./temporary_files/", showWarnings = FALSE)
 dir.create("./www/", showWarnings = FALSE)
-file.create("./www/favicon.ico")
+#file.create("./www/favicon.ico")
 dir.create("./save_deck_here_from_mtg/", showWarnings = FALSE)
-if (!dir.exists("./dmg_turn_files/")) {
-  dir.create("./dmg_turn_files/")
-}
+dir.create("./dmg_turn_files/", showWarnings = FALSE)
+
 
 
 #library(config)
@@ -106,7 +105,7 @@ load_data_from_DB <- function() {
 
 
 
-kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
+kircsv <- function(datataulu, tiedostonimi) {
 
 #  con <- connDB(con)
   
@@ -119,9 +118,6 @@ kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
 
               dec = ",")
   
-  if (upload == TRUE) {
-       zip_all_and_send()
-  }
 }
 
 zip_all_and_send <- function() {
@@ -154,17 +150,17 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
   assign(RdataTallenna,rdatasetti)
   #print(get(RdataTallenna))
  # print("ladattu")
-  save(list = RdataTallenna,file = paste0("./external_files/", RdataTiedostonimi))
-  test_mode <- FALSE
-  if (exists("GLOBAL_test_mode")) {
-    if (GLOBAL_test_mode == "dev") {
-      test_mode <- TRUE
-    }
-  }
-  if (test_mode == FALSE) {
-    zip_all_and_send()
-    #print("tallennettu uus R-tiedosto jo lähetetty")
-  }
+   save(list = RdataTallenna,file = paste0("./external_files/", RdataTiedostonimi))
+  # test_mode <- FALSE
+  # if (exists("GLOBAL_test_mode")) {
+  #   if (GLOBAL_test_mode == "dev") {
+  #     test_mode <- TRUE
+  #   }
+  # }
+  # if (test_mode == FALSE) {
+  #   zip_all_and_send()
+  # 
+  # }
 
   #load("tilastoAsetukset.R")
   #print("ladattu taas ja nyt tulostetaan")
@@ -175,7 +171,7 @@ shinyjs.collapse = function(boxid) {
 $('#' + boxid).closest('.box').find('[data-widget=collapse]').click();
 }
 "
-load_data_from_DB()
+#load_data_from_DB()
 
 
 sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))

@@ -130,7 +130,7 @@ observeEvent(input$luo_peleja,{
 
   kaikkipelit <- rbind(vanahCSV, joinM)
 
-  kircsv(kaikkipelit,"pelit.csv", upload = TRUE)
+  kircsv(kaikkipelit,"pelit.csv")
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = TRUE)
   

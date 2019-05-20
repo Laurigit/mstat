@@ -4,5 +4,5 @@ create_timedata_for_blowtimer <- function(odotusaika){
 aika <- as.ITime(aikakorjaus) 
 pvm <- as.IDate(aikakorjaus)
 blow_dt <- data.table(Puhallusaika = aika, Puhalluspvm = pvm)
-kircsv(blow_dt, "blow_timer.csv", upload = TRUE)
+kircsv(blow_dt, "blow_timer.csv")
 }

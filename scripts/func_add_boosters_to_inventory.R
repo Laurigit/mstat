@@ -8,6 +8,6 @@ add_boosters_to_inventory <- function(setti, lkm) {
                          Aikaleima = as.character(today(tzone = "EET")),
                          draft_no = -1)
   app_rows <- rbind(booster_data, new_rows)
-  kircsv(app_rows, "boosters.csv", TRUE)
+  kircsv(app_rows, "boosters.csv")
   
 }

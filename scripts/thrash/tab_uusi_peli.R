@@ -70,7 +70,7 @@ observeEvent(c(input$select_laurin_pakka,
       tempData <- data.table(muuttuja = muuttujat, arvo = arvot)
       #print("lähetetään seuraava file pilveen. Tässä kohtaa otettiin uudet arvot nykytilasta")
       #print(tempData)
-      kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
+      kircsv(tempData,"temp_data_storage.csv")
       required_data("ADM_DI_HIERARKIA")
      
       updateData("SRC_TEMP_DATA_STORAGE", ADM_DI_HIERARKIA, input_env = globalenv())
@@ -270,11 +270,7 @@ output$peliKesto <- renderText({
                         paste0(str_pad(tunnit, 2, pad = "0"),":"),
                         "")
   
-  tempDataLehtysLaskuri$a <- tempDataLehtysLaskuri$a + 1
-  if ( tempDataLehtysLaskuri$a == 10) {
-    zip_all_and_send()
-  }
-  
+
   paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
   
   

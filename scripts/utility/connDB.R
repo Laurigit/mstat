@@ -20,3 +20,9 @@ return(con)
   
 }
 
+# con <- dbConnect(MySQL(),
+#                  user = "Lauri_db",
+#                  password = "bruc3tti_Db",
+#                  dbname = "betmtgdb",
+#                  host= "betmtgdb.cq1pjet0dxmr.eu-north-1.rds.amazonaws.com")
+# }

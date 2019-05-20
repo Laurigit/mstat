@@ -69,7 +69,7 @@ observe({
       comparison <- all.equal(ssColsVanhat, ssColsUudet)
       if(!comparison == TRUE) {
 
-      kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
+      kircsv(tempData,"temp_data_storage.csv")
    
       required_data("ADM_DI_HIERARKIA")
 
@@ -105,7 +105,7 @@ observeEvent(input$start_life_counter, {
 
 
     
-    kircsv(tempData,"temp_data_storage.csv", upload = FALSE)
+    kircsv(tempData,"temp_data_storage.csv")
     
     required_data("ADM_DI_HIERARKIA")
     
@@ -134,7 +134,7 @@ observeEvent(input$arvo_peli,{
 
 eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
 observe({
-required_data("ADM_PELIT")
+#required_data("ADM_PELIT")
  
   pelidata <- ADM_PELIT[1 != 0]
   result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]
@@ -151,8 +151,8 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_pfi_mode <- FALSE
   #create dependency 
   eR_Peli_ID()
-  required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
-required_functions("UID_UUSI_PELI")
+  #required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
+#required_functions("UID_UUSI_PELI")
 
   tulos <- isolate(UID_UUSI_PELI(eR_Peli_ID(),
                          eR_UID_PAKKA(),
@@ -175,8 +175,8 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$numeric_MA_valinta <- 7
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
-required_functions("UID_PAKKA")
-required_data(c("ADM_PELIT", "INT_PFI"))                                  
+#required_functions("UID_PAKKA")
+#required_data(c("ADM_PELIT", "INT_PFI"))                                  
 result <-  UID_PAKKA(ADM_PELIT,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,
@@ -508,21 +508,19 @@ output$PakkaVSBox_overlay <- renderUI({
 # })
 
 
-output$peliKesto <- renderText({ aika_text_reactive$aika
- 
-  
-})
+output$peliKesto <- renderText({ aika_text_reactive$aika})
+
 aika_text_reactive = reactiveValues(aika = 0, i = 0)
 observe({
-  required_data("ADM_TEMP_DATA_STORAGE")
+  #required_data("ADM_TEMP_DATA_STORAGE")
   tempData <- ADM_TEMP_DATA_STORAGE
   
   invalidateLater(1000, session)
   pelialkuAika <- tempData[muuttuja == "Aloitus_DT", as.POSIXct(arvo, tz = "EET")]
   aikaNyt <- now(tz = "EET")
-  sekunnit_yht<- as.integer(difftime(aikaNyt, pelialkuAika, units = c("secs")))
-  minuutit_yht<-floor(sekunnit_yht/60)
-  sekunnit<-sekunnit_yht-60*minuutit_yht
+  sekunnit_yht <- as.integer(difftime(aikaNyt, pelialkuAika, units = c("secs")))
+  minuutit_yht <- floor(sekunnit_yht/60)
+  sekunnit <- sekunnit_yht-60*minuutit_yht
   tunnit <- floor(minuutit_yht / 60)
   minuutit <- minuutit_yht - 60 * tunnit
   sekunnit_fix <- str_pad(sekunnit, 2, pad = "0")
@@ -531,20 +529,15 @@ observe({
                         paste0(str_pad(tunnit, 2, pad = "0"),":"),
                         "")
   
-  isolate(tempDataLehtysLaskuri$a <- tempDataLehtysLaskuri$a + 1)
-  if ( tempDataLehtysLaskuri$a == 10) {
-    zip_all_and_send()
-    shinyjs::addClass(selector = "body", class = "sidebar-collapse")
-    
-  }
-  if ( tempDataLehtysLaskuri$a == 240) {
-    # js$collapse("uusipeli_box")
-  }
-  
- 
-  
-  
-  
+ # isolate(tempDataLehtysLaskuri$a <- tempDataLehtysLaskuri$a + 1)
+  # if ( tempDataLehtysLaskuri$a == 10) {
+  #   zip_all_and_send()
+  #   shinyjs::addClass(selector = "body", class = "sidebar-collapse")
+  #   
+  # }
+  # if ( tempDataLehtysLaskuri$a == 240) {
+  #   # js$collapse("uusipeli_box")
+  # }
   aika_text_reactive$aika <- paste0(tunnit_text, minuutit_fix,":",sekunnit_fix)
 })
 

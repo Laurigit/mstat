@@ -112,7 +112,7 @@ observeEvent(input$tallenna_bannit,{
   #joinaa uudet
   joinuus <- divarit[raakadivari, on = .(Pakka_ID == rivi_id)]
   setnames(joinuus, "Pakka_ID", "rivi_id")
-  kircsv(joinuus, "divari.csv", upload = TRUE)
+  kircsv(joinuus, "divari.csv")
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_DIVARI", ADM_DI_HIERARKIA, input_env = globalenv())
   refresh_counter$a <-   refresh_counter$a +1
