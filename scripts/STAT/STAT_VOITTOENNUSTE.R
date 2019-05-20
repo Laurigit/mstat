@@ -1,4 +1,6 @@
 #STAT_VOITTOENNUSTE
+
+#VIKA ON SIINÄ; ETTÄ TÄÄ TEKEE AINA UUDEN RIVIN DATASETTIIN. Ks https://stackoverflow.com/questions/14693956/how-can-i-prevent-rbind-from-geting-really-slow-as-dataframe-grows-larger
 required_data("ADM_PELIT")
 #p1, vastpak, turnaus, ennuste
 print("TÄMÄ KESTÄÄ")
@@ -53,19 +55,28 @@ crossjoin <- crossjoin_all[Omistaja_ID != V_Omistaja_ID][, ':=' (Omistaja_ID = N
 
 #turnausloop
 mallitulokset <- NULL
+countteri <- 0
+list_all <- list()
+model_list <- list()
 for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_NO]){
-  
-  #paripeli_Loop
 
+#  print(tour_loop)
+#  print(dtim())   
+  #paripeli_Loop
+  print(dtim()) 
   rivi_lkm <-nrow(crossjoin[Turnaus_NO == tour_loop])
   turnausData <- analyse_cols[Turnaus_NO< tour_loop]
   paripeli_Turnaus <- crossjoin[Turnaus_NO == tour_loop]
   for(paripeli in 1:rivi_lkm) {
+    countteri <- countteri + 1
+   # print("loopalko")
+   # print(dtim()) 
+    
   P1 <- paripeli_Turnaus[paripeli, Pakka_ID]
   P2 <- paripeli_Turnaus[paripeli, Vastustajan_Pakka_ID]
   paridata <- turnausData[Pakka_ID == P1 | Vastustajan_Pakka_ID == P2]
   paridata[,  ':=' (VS_peli_bool = ifelse(Pakka_ID == P1 & Vastustajan_Pakka_ID == P2, 1, 0))]
-                    
+                 
   
   modeling_cols <- paridata
   
@@ -78,11 +89,16 @@ for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_
                                   formula = Voittaja ~ Aloittaja + Mull_diff + VS_peli_bool + MA_ranking_ero,
                                   family = binomial(link = "logit")
                                   ,weights = weight))
+  #  print("yli 6")
+  #  print(dtim())   
   } else if (count_pelit > 11) {
+      
     model <- suppressWarnings(glm(data = modeling_cols,
                                   formula = Voittaja ~ Aloittaja + Mull_diff + MA_ranking_ero,
                                   family = binomial(link = "logit")
                                   ,weights = weight))
+   # print("yli 11")
+   # print(dtim())   
 
   } else {
     # dummydata <- data.table(Voittaja = c(1, 0, 1, 0), Aloittaja = c(1, 1, 0, 0))
@@ -90,18 +106,34 @@ for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_
     #                               formula = Voittaja ~ Aloittaja,
     #                               family = binomial(link = "logit")
     model <- NA
+   # print("NA")
+   # print(dtim())   
     
   }
-  model_list <- list()
-  model_list[[1]]<-model
-  
-  
-  mallirivi <- data.table(Pakka_ID = P1, Vastustajan_Pakka_ID = P2, malli = model_list,
-                          Turnaus_NO = tour_loop, vs_peli_lkm = count_vs_peli)
-  mallitulokset <- rbind(mallitulokset, mallirivi)
+
+ 
+  list_all$model <- model
+  list_all$Pakka_ID <- P1
+  list_all$Vastustajan_Pakka_ID <- P2
+  list_all$Turnaus_NO <- tour_loop
+  list_all$vs_peli_lkm <- count_vs_peli
+
+  model_list[[countteri]]<-list_all
+
+  # 
+  # mallirivi <- data.table(Pakka_ID = P1, Vastustajan_Pakka_ID = P2, malli = model_list,
+  #                         Turnaus_NO = tour_loop, vs_peli_lkm = count_vs_peli)
+  # mallitulokset <- rbind(mallitulokset, mallirivi)
   }
 }
 
+mallitulokset <- data.table(matrix(unlist(model_list, recursive =  FALSE), nrow=length(model_list), byrow=T),stringsAsFactors=FALSE)
+str(mallitulokset)
+setnames(mallitulokset, c("V1", "V2", "V3", "V4", "V5"), c("malli", "Pakka_ID", "Vastustajan_Pakka_ID", "Turnaus_NO", "count_vs_peli"))
+mallitulokset[, ':=' (count_vs_peli = unlist(count_vs_peli),
+              Pakka_ID = unlist(Pakka_ID),
+              Vastustajan_Pakka_ID = unlist(Vastustajan_Pakka_ID),
+              Turnaus_NO = unlist(Turnaus_NO))]
 #jatketaan tekemällä pilkommalla mallinnuskomponentit
 # tee data mallinnusta varten niin, että käytetään edellisen. Tarvitaan vaan edellisen kierroksen MA_ranking_ero
 
