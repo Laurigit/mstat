@@ -14,7 +14,7 @@ print("TÄMÄ KESTÄÄ")
 
 #älä ota mukaan keskeneräistä turnausta
 maxTurnaus <- ADM_PELIT[, max(Turnaus_NO)]
-pelatut_turnaukset <-  ADM_PELIT[1==1]
+pelatut_turnaukset <-  ADM_PELIT[1 != 0]
 #pelatut_turnaukset <- ADM_PELIT[Pakka_ID == 1 | Vastustajan_Pakka_ID == 9 | Pakka_ID == 9 | Vastustajan_Pakka_ID == 1]
 #dataan tarvitaan P1, Vpak, hinta, vhinta, mull, vmull, kortit, vkortit, pysyvyys, voittaja, aloittaja
 #omadata
@@ -63,7 +63,7 @@ for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_
 #  print(tour_loop)
 #  print(dtim())   
   #paripeli_Loop
-  print(dtim()) 
+ 
   rivi_lkm <-nrow(crossjoin[Turnaus_NO == tour_loop])
   turnausData <- analyse_cols[Turnaus_NO< tour_loop]
   paripeli_Turnaus <- crossjoin[Turnaus_NO == tour_loop]
