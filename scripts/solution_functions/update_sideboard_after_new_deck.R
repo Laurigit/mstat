@@ -35,4 +35,4 @@ update_sideboard_after_new_deck <- function(omistaja_input, input_new_deck_id) {
               dec = ",")
   }
 }
-update_sideboard_after_new_deck("L", 6)
+#update_sideboard_after_new_deck("L", 6)
