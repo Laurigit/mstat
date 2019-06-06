@@ -2,7 +2,7 @@
 options(shiny.trace = FALSE)
 
 GLOBAL_test_mode <- "prod"
-options(shiny.fullstacktrace = TRUE)
+options(shiny.fullstacktrace = FALSE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
 }
@@ -51,6 +51,7 @@ library(tidyverse)
 library(reshape2)
 library(grid)
 library(gridExtra)
+
 
 #library(extendShinyjs)
 #library(glob2rx)

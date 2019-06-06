@@ -128,7 +128,7 @@ for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_
 }
 
 mallitulokset <- data.table(matrix(unlist(model_list, recursive =  FALSE), nrow=length(model_list), byrow=T),stringsAsFactors=FALSE)
-str(mallitulokset)
+
 setnames(mallitulokset, c("V1", "V2", "V3", "V4", "V5"), c("malli", "Pakka_ID", "Vastustajan_Pakka_ID", "Turnaus_NO", "count_vs_peli"))
 mallitulokset[, ':=' (count_vs_peli = unlist(count_vs_peli),
               Pakka_ID = unlist(Pakka_ID),
