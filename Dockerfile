@@ -12,10 +12,11 @@ RUN apt-get update && apt-get install -y \
     libxt-dev \
     libssl-dev \
     libjpeg-dev \
-    libv8-dev 
+    libv8-dev \
+    vlc
 
 RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
-RUN    sudo sudo apt-get install -y vlc
+
 
 RUN R -e "install.packages(c('pdftools'), repos='http://cran.rstudio.com/')"
 
