@@ -28,7 +28,7 @@ observeEvent(input$tallenna_tulos, {
  shinyjs::disable("tallenna_tulos")
   input_Peli_ID <- eR_Peli_ID()
   #vuoroarviolasku
-required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG", "ADM_DI_HIERARKIA" ))
+required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE", "ADM_CURRENT_TURN", "ADM_CURRENT_DMG" ))
 tempData <- ADM_TEMP_DATA_STORAGE 
 aloittajaNo <- eR_Peli_Aloittaja$a
   if(aloittajaNo == 0) {
@@ -84,7 +84,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   pelit_jaljella <- kaikkipelit[(!is.na(Voittaja) | MaxVP <= 0.5) | BO_mode == 0]
   pelit_jaljella[,':='(MaxVP = NULL)]
   
-  kircsv(pelit_jaljella,"pelit.csv")
+  kircsv(pelit_jaljella,"pelit.csv", TRUE)
   
   
   
@@ -130,7 +130,18 @@ aloittajaNo <- eR_Peli_Aloittaja$a
   file.copy(from = "./dmg_turn_files/current_turn.csv",
             to = new_name2)
   #tun once for each players.
+  tallenna_tulos_ui_update$value <-  2
 
+}, ignoreNULL = TRUE, ignoreInit = TRUE)
+
+observe({
+  print("tallenna_tulos_ui_update$value")
+  print(tallenna_tulos_ui_update$value)
+ if( tallenna_tulos_ui_update$value > 0 ) {
+  
+  
+  
+  required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
   
   required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
@@ -145,22 +156,22 @@ aloittajaNo <- eR_Peli_Aloittaja$a
               row.names = FALSE,
               dec = ",")
   
-
+  required_data("ADM_DI_HIERARKIA")
   updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
-  
+
   
   if (session$user != "overlay") {
-    updateTabItems(session,"sidebarmenu","tab_uusi_peli")
+  updateTabItems(session,"sidebarmenu","tab_uusi_peli")
   }
-  # js$collapse("uusipeli_box")
+ # js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
   updateNumericInput(session,"sarjataulukkokierros",value = 0)
+  tallenna_tulos_ui_update$value <- isolate( tallenna_tulos_ui_update$value - 1)
   shinyjs::enable("tallenna_tulos")
-  
-  
-  }, ignoreNULL = TRUE, ignoreInit = TRUE)
-
+ }
+ 
+})
 
 
 #slider_laurin_lifet
@@ -391,12 +402,12 @@ observeEvent(input$slider_vuoroarvio,{
 }, priority = 1)
 
 observeEvent(input$action_add,{
-  if(values$lastUpdated == "slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
+  if(values$lastUpdated=="slider_laurin_humala" | values$lastUpdated == "slider_martin_humala") {
     steppi <- 0.1
   } else {
     steppi <- 1
   }
-  updateSliderInput(session,values$lastUpdated,value = input[[values$lastUpdated]]+steppi)
+  updateSliderInput(session,values$lastUpdated,value=input[[values$lastUpdated]]+steppi)
 })
 
 observeEvent(input$action_reduce,{
