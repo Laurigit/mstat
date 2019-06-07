@@ -12,7 +12,8 @@ RUN apt-get update && apt-get install -y \
     libxt-dev \
     libssl-dev \
     libjpeg-dev \
-    libv8-dev 
+    libv8-dev \
+    vlc
 
 RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
@@ -26,7 +27,7 @@ RUN install2.r --error \
 # Install R packages that are required
 # TODO: add further package if you need!
 RUN R -e "install.packages(c('shinyWidgets','shinydashboard','shinyjs','data.table','lubridate','DT','reshape2','jsonlite','rdrop2','zoo','rpivotTable','rvest','curl','stringr'), repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages(c('ggplot2','ggthemes','shinyalert','anytime','readxl','qdapRegex','httr','V8','shinydashboardPlus','rhandsontable','tidyverse','beepr','reshape2','grid','gridExtra'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('ggplot2','ggthemes','shinyalert','anytime','readxl','qdapRegex','httr','V8','shinydashboardPlus','rhandsontable','tidyverse','beepr','reshape2','grid','gridExtra', 'beepr'), repos='http://cran.rstudio.com/')"
 
 
 ## Copy configuration files into the Docker image

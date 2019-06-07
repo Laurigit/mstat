@@ -303,6 +303,7 @@ observe({
   # print(templife)
   #validate input
   if(templife$count_missing_rows == 0){
+    beep(1)
     print("kirjotetaan csv")
     print(damage_data$data)
     #write to csv
@@ -608,7 +609,7 @@ output$dynamic_turn_box <- renderUI({
 # })
 
 observeEvent(input$ab_Vaihda_vuoro, {
-  
+  beep(7)
   turnData$turn <- ADM_TURN_SEQ[TSID == turnData$turn, Next_turn_TSID]
   local_turn$value <- local_turn$value + 1 
 })
