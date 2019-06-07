@@ -303,6 +303,8 @@ observe({
   # print(templife)
   #validate input
   if(templife$count_missing_rows == 0){
+    beep(1)
+    
     print("kirjotetaan csv")
     print(damage_data$data)
     #write to csv
