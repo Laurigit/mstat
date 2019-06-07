@@ -50,6 +50,8 @@ user_logged <- reactiveValues(count = 0)
 
 
 shinyServer(function(input, output, session) {
+  required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
+  
   #load_scripts.R
  # print(session$clientData)
 observe({
@@ -391,7 +393,6 @@ load_data_from_DB()
  output$debug_keymap <- renderDataTable({keymap$data})
  output$debug_local_env <- renderText({local_keymap$env})
   
-  required_data("STAT_VOITTOENNUSTE")
   required_data("STAT_DMG_TURN_ALL")
   required_data("ADM_TURN_DATA_ALL") 
   # sourcelist <- dir("./scripts/")
