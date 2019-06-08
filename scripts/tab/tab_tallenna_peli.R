@@ -135,6 +135,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
+  i (session$user != "overlay") {
   print("tallenna_tulos_ui_update$value")
   print(tallenna_tulos_ui_update$value)
  if( tallenna_tulos_ui_update$value > 0 ) {
@@ -170,7 +171,7 @@ observe({
   tallenna_tulos_ui_update$value <- isolate( tallenna_tulos_ui_update$value - 1)
   shinyjs::enable("tallenna_tulos")
  }
- 
+  }
 })
 
 
