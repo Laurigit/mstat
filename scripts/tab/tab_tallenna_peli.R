@@ -135,7 +135,7 @@ aloittajaNo <- eR_Peli_Aloittaja$a
 }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
 observe({
-  i (session$user != "overlay") {
+   (session$user != "overlay") {
   print("tallenna_tulos_ui_update$value")
   print(tallenna_tulos_ui_update$value)
  if( tallenna_tulos_ui_update$value > 0 ) {
