@@ -1,7 +1,7 @@
 tabItem(tabName = "tab_LifeCounter",
         fluidPage(
          #fluidRow(    box(id = "hideBox", title = "SWITH", background = "maroon")),
-          fluidRow(  verbatimTextOutput("results")),
+        #  fluidRow(  verbatimTextOutput("results")),
           fluidRow(plotOutput(outputId = "lifeChart")),
           checkboxGroupButtons(inputId = "dmg_settings",
                                label  = NULL,

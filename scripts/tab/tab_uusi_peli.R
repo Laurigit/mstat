@@ -83,7 +83,8 @@ observe({
 
 #jos alotetaan life counter game, niin nollaa temp_data_storage
 observeEvent(input$start_life_counter, {
-  Aloitus_DT <- now(tz = "EET")
+ 
+   Aloitus_DT <- now(tz = "EET")
   Peli_ID  <- eR_Peli_ID()
  
   req(  input$slider_laurin_mulligan,
@@ -113,8 +114,11 @@ observeEvent(input$start_life_counter, {
     
     #nollaa tempdatalaskuri
     tempDataLehtysLaskuri$a <- 0
-  
+    start_life_counter_button$value <- 2
 }, ignoreInit = TRUE, ignoreNULL = TRUE)
+
+
+
 
 
 #arvopeli
@@ -616,11 +620,6 @@ observeEvent(input$select_laurin_pakka,{
                      inputId = "select_martin_pakka", selected = (select_martin_pakka$value))
  })
  
- 
- observeEvent(input$start_life_counter, {
-   #run twice. Once for both players.
-   start_life_counter_button$value <- 2
- }, ignoreNULL = TRUE, ignoreInit = TRUE)
 
  
  #toiminnot, kun painetaan nappulaa, mikä käynnistää life_counterin
@@ -629,7 +628,12 @@ observeEvent(input$select_laurin_pakka,{
    print("life counter_nappula")
    print(start_life_counter_button$value)
    required_data(c("ADM_CURRENT_TURN", "ADM_CURRENT_TURN"))
-  if (start_life_counter_button$value > 0) {
+   if (session$user != "overlay" & start_life_counter_button$value > 0) {
+     updateTabItems(session,"sidebarmenu", "tab_LifeCounter") 
+     addClass(selector = "body", class = "sidebar-collapse")
+     start_life_counter_button$value <-  isolate(start_life_counter_button$value - 1)
+  
+  if (start_life_counter_button$value == 1) {
    write.table(x = ADM_CURRENT_DMG[1 == 0],
                file = paste0("./dmg_turn_files/", "current_dmg.csv"),
                sep = ";",
@@ -640,18 +644,14 @@ observeEvent(input$select_laurin_pakka,{
                sep = ";",
                row.names = FALSE,
                dec = ",")
-   
+  }
    required_data("ADM_DI_HIERARKIA")
    updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
    updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
    life_totals$data <-  calc_life_totals(ADM_CURRENT_DMG)
    damage_data$data <- ADM_CURRENT_DMG
    turnData$turn <- 1
-   if (session$user != "overlay") {
-   updateTabItems(session,"sidebarmenu", "tab_LifeCounter") 
-   addClass(selector = "body", class = "sidebar-collapse")
-   }
-   start_life_counter_button$value <-  isolate(start_life_counter_button$value - 1)
+
 
   }
 

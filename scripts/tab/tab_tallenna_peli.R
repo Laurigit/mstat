@@ -140,8 +140,8 @@ observe({
   print(tallenna_tulos_ui_update$value)
  if( tallenna_tulos_ui_update$value > 0 ) {
   
-  
-  
+  #do once
+  if(tallenna_tulos_ui_update$value == 1) {
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
   
@@ -161,14 +161,15 @@ observe({
   updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
   updateData("SRC_CURRENT_TURN", ADM_DI_HIERARKIA, globalenv())
 
-  
+  }
   if (session$user != "overlay") {
   updateTabItems(session,"sidebarmenu","tab_uusi_peli")
-  }
+ 
  # js$collapse("uusipeli_box")
   updatedTempData$a <- isolate(updatedTempData$a + 1)
   updateNumericInput(session,"sarjataulukkokierros",value = 0)
   tallenna_tulos_ui_update$value <- isolate( tallenna_tulos_ui_update$value - 1)
+  }
   shinyjs::enable("tallenna_tulos")
  }
   }

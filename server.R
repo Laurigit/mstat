@@ -50,6 +50,7 @@ user_logged <- reactiveValues(count = 0)
 
 
 shinyServer(function(input, output, session) {
+
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
   
   #load_scripts.R
