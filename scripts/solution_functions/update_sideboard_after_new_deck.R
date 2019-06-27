@@ -21,14 +21,15 @@ update_sideboard_after_new_deck <- function(omistaja_input, input_new_deck_id) {
   
   newLists <-   remove_used_cards(sideloop_id_list, new_deck_list)
   jaljella <- new_deck_list[, sum(Count)]
-  side_updated <- newLists$decklist_reduced[order(Name)]
+  side_updated_temp <- newLists$decklist_reduced[order(Name)]
+  side_updated <- side_updated_temp[, .(Count, Name)]
   print(side_updated)
   poistettu <- sideloop_id_list[, sum(Count)] - side_updated[, sum(Count)]
   
   new_deck_list <- newLists$removed_list_left
   lisatty <- jaljella - new_deck_list[, sum(Count)] 
- # print(poistettu)
- # print(lisatty)
+  print(poistettu)
+  print(lisatty)
   write.table(x = side_updated,
               file = paste0("./", paste0(sideName,".txt")),
               sep = " ",
