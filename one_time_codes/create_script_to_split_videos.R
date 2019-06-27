@@ -45,3 +45,12 @@ for(rivi in 1:nrow(videolliset)) {
   system(videolliset[rivi, syntaksi_copy], intern = FALSE)
 }
 
+videotiedostot <- videot[type == "mp4"]
+# 
+# for(rivi in 1:nrow(videotiedostot)) {
+# 
+#  res <- system(paste0("move ",  videotiedostot[rivi, polku], " ", "D:\\Videos\\raaka_leikattu\\", videotiedostot[rivi, tiedostot]))
+# print(res)
+#  }
+
+

@@ -137,7 +137,7 @@ output$valueBoxRows <- renderUI({
   accpetd_dmg_row_all <- calc_life_totals(damage_data$data)$aggr_accepted
   accpetd_dmg_row <- accpetd_dmg_row_all[nrow(accpetd_dmg_row_all)]
   colori <- ifelse(accpetd_dmg_row[, Amount] > 0, "maroon", "green")
-  ikoni <- ifelse(accpetd_dmg_row[, Combat_dmg] == 1, "fist-raised", "bolt")
+  ikoni <- ifelse(accpetd_dmg_row[, Combat_dmg] == 1, "hand-rock", "bolt")
   targetti <- str_sub(accpetd_dmg_row[, Target_player], 1, 1)
   soursa <- str_sub(accpetd_dmg_row[, Dmg_source], 1, 1)
   maara <- abs(accpetd_dmg_row[, Amount])
