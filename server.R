@@ -50,9 +50,9 @@ user_logged <- reactiveValues(count = 0)
 
 
 shinyServer(function(input, output, session) {
-
+js$toot()
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
-  
+  js$toot()
   #load_scripts.R
  # print(session$clientData)
 observe({
