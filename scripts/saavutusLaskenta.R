@@ -5,7 +5,7 @@
 # divariData<-luecsv("divari.csv")
 # saavutusAsetukset[,minVaiMax:="max"]
 # saavutusTaulu<-NULL
-# saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
+# ´saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
 # for(kierros in 1:nrow(saavutusAsetukset)) {
 #   kierrosData<-saavutusAsetukset[kierros]
 #   print(kierros)
@@ -20,7 +20,7 @@
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
 #required_data("STG_SAAVUTUSASETUKSET", force_update =  TRUE)
 # saavutusDataInput <- STG_SAAVUTUSASETUKSET
-# saavutusKierrosAsetus <-11
+# saavutusKierrosAsetus <-1
 #print("SAAVUTUSINPUT")
   #print(saavutusDataInput)
     saavutusKierrosAsetus <- saavutusDataInput[saavutusKierrosAsetus]
@@ -107,7 +107,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
             }
             pivotDataOut<-as.data.table(dcast(data=valittuData,
                                               formula= as.formula(paste(paste(rows, collapse="+"), "~" ,paste(cols,collapse="+"))),
-                                                                  value.var=vals,fun.aggregate=get(aggt_to_dcast)))
+                                                                  value.var=vals,fun.aggregate=get(aggt_to_dcast), na.rm = TRUE))
             #remove Nmi and Omistaja
             getColsNames<-names(pivotDataOut)
             remove<- c(vals,cols,rows,"dummy")
