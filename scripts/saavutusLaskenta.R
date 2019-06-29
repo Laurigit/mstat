@@ -6,15 +6,15 @@
 # saavutusAsetukset[,minVaiMax:="max"]
 # saavutusTaulu<-NULL
 # ´saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
-# for(kierros in 1:nrow(saavutusAsetukset)) {
-#   kierrosData<-saavutusAsetukset[kierros]
-#   print(kierros)
-#   kierrosTulos<-laskeSaavtusAsetuksista(kierrosData,peliData,divariData,pfi_data)
-#   # print(kierrosTulos)
-#   saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
-# 
-# }
-# saavutusTaulu
+for(kierros in 1:nrow(STG_SAAVUTUSASETUKSET)) {
+  kierrosData<-saavutusAsetukset[kierros]
+  print(kierros)
+  kierrosTulos<-laskeSaavtusAsetuksista(kierros, STG_SAAVUTUSASETUKSET)
+  # print(kierrosTulos)
+  saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
+
+}
+saavutusTaulu
 
 # tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
@@ -84,15 +84,18 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
     syntax_NA <- parse(text=paste0('!is.na(',names(filters)[[kierros]],')'))
     valittuData <- valittuData[eval(syntax_NA)]
   }
-  
-  
+  if (!is.null(vals)) {
+  syntax_REM_NA <- parse(text = paste0('!is.na(', vals, ')' ))
+  valittuData <- valittuData[eval(syntax_REM_NA)]
+  }
+
   }
   }
   if (nrow(valittuData) > 0) {
             
             
             omaCountUnique <- function(inData){
-            tulos<-length(unique(inData))
+            tulos <- length(unique(inData))
             return(tulos)
             }
             
@@ -105,9 +108,12 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
               valittuData[,dummy:="Dummy"]
               vals<-"dummy"
             }
+            
+           
+            
             pivotDataOut<-as.data.table(dcast(data=valittuData,
                                               formula= as.formula(paste(paste(rows, collapse="+"), "~" ,paste(cols,collapse="+"))),
-                                                                  value.var=vals,fun.aggregate=get(aggt_to_dcast), na.rm = TRUE))
+                                                                  value.var=vals,fun.aggregate=get(aggt_to_dcast)))
             #remove Nmi and Omistaja
             getColsNames<-names(pivotDataOut)
             remove<- c(vals,cols,rows,"dummy")
