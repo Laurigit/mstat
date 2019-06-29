@@ -288,7 +288,7 @@ observe({
  
 # print(input$dmg_settings)
   damage_data$data <- tulos
- 
+  js$beep()
 
  
 })
@@ -303,7 +303,7 @@ observe({
   # print(templife)
   #validate input
   if(templife$count_missing_rows == 0){
-    js$beep()
+  
     print("kirjotetaan csv")
     print(damage_data$data)
     #write to csv
@@ -368,7 +368,7 @@ observe({
     damage_data$data <- accRows 
     input_error$error <- FALSE
     
-  
+    js$toot()
        shinyalert(
                  title = "Difference in damage input",
                   text = "Input has been deleted",
