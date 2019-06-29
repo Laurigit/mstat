@@ -6,15 +6,15 @@
 # saavutusAsetukset[,minVaiMax:="max"]
 # saavutusTaulu<-NULL
 # ´saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
-for(kierros in 1:nrow(STG_SAAVUTUSASETUKSET)) {
-  kierrosData<-saavutusAsetukset[kierros]
-  print(kierros)
-  kierrosTulos<-laskeSaavtusAsetuksista(kierros, STG_SAAVUTUSASETUKSET)
-  # print(kierrosTulos)
-  saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
-
-}
-saavutusTaulu
+# for(kierros in 1:nrow(STG_SAAVUTUSASETUKSET)) {
+#   kierrosData<-saavutusAsetukset[kierros]
+#   print(kierros)
+#   kierrosTulos<-laskeSaavtusAsetuksista(kierros, STG_SAAVUTUSASETUKSET)
+#   # print(kierrosTulos)
+#   saavutusTaulu<-rbind(saavutusTaulu,kierrosTulos,fill=TRUE)
+# 
+# }
+# saavutusTaulu
 
 # tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
 laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
