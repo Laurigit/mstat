@@ -2,146 +2,146 @@
 ################
 #Life counter data
 #turn = TSID, Atual trn = turn in magic game.
-turnData <- reactiveValues(turn = 1)
-
-required_data("ADM_DI_HIERARKIA")
-updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
-required_data("ADM_CURRENT_DMG")
-life_totals <- reactiveValues(data = calc_life_totals(ADM_CURRENT_DMG))
-damage_data <- reactiveValues(data = ADM_CURRENT_DMG)
-input_error <- reactiveValues(error = FALSE)
-input_error_response <- reactiveValues(response = NULL)
-
-################GLOBAL UI control
-slider_laurin_mulligan <-  reactiveValues(value = 0) 
-slider_martin_mulligan <-  reactiveValues(value = 0, muuttaja = 0) 
-slider_laurin_virhe <-  reactiveValues(value = 1) 
-slider_martin_virhe <-  reactiveValues(value = 1) 
-slider_laurin_landit <-  reactiveValues(value = 0) 
-slider_martin_landit <-  reactiveValues(value = 0) 
-slider_laurin_lifet <-  reactiveValues(value = 0) 
-slider_martin_lifet <-  reactiveValues(value = 0)
-slider_vuoroarvio <-  reactiveValues(value = 0) 
-slider_laurin_kasikortit <-  reactiveValues(value = -1) 
-slider_martin_kasikorit <-  reactiveValues(value = -1) 
-tallenna_tulos_ui_update <-  reactiveValues(value = 0) 
-start_life_counter_button <- reactiveValues(value = 0)
-
-
-select_laurin_pakka <- reactiveValues(value = NULL) 
-select_martin_pakka <- reactiveValues(value = NULL) 
-react_lauri_voitti<- reactiveValues(value = 0)
-react_martti_voitti <- reactiveValues(value = 0)
-
-keymap <- reactiveValues(data  = data.table(Nappain	= c("a", "b"),
-                                            set_env = c("normal", "normal"),
-                                            env = c("normal", "normal"),
-                                            button_id = c("nope", "ei"),
-                                            valid_pair = c("e", "b"),
-                                            PainoAika = now(),
-                                            Painaja = c("Lauri", "Martti"),
-                                            uft_nappi = c("a", "b"),
-                                            type = "", 
-                                            sub_id = ""))
-last_simulated_click <- reactiveValues(time = now())
-###############
-
-user_logged <- reactiveValues(count = 0)
+# turnData <- reactiveValues(turn = 1)
+# 
+# required_data("ADM_DI_HIERARKIA")
+# updateData("SRC_CURRENT_DMG", ADM_DI_HIERARKIA, globalenv())
+# required_data("ADM_CURRENT_DMG")
+# life_totals <- reactiveValues(data = calc_life_totals(ADM_CURRENT_DMG))
+# damage_data <- reactiveValues(data = ADM_CURRENT_DMG)
+# input_error <- reactiveValues(error = FALSE)
+# input_error_response <- reactiveValues(response = NULL)
+# 
+# ################GLOBAL UI control
+# slider_laurin_mulligan <-  reactiveValues(value = 0) 
+# slider_martin_mulligan <-  reactiveValues(value = 0, muuttaja = 0) 
+# slider_laurin_virhe <-  reactiveValues(value = 1) 
+# slider_martin_virhe <-  reactiveValues(value = 1) 
+# slider_laurin_landit <-  reactiveValues(value = 0) 
+# slider_martin_landit <-  reactiveValues(value = 0) 
+# slider_laurin_lifet <-  reactiveValues(value = 0) 
+# slider_martin_lifet <-  reactiveValues(value = 0)
+# slider_vuoroarvio <-  reactiveValues(value = 0) 
+# slider_laurin_kasikortit <-  reactiveValues(value = -1) 
+# slider_martin_kasikorit <-  reactiveValues(value = -1) 
+# tallenna_tulos_ui_update <-  reactiveValues(value = 0) 
+# start_life_counter_button <- reactiveValues(value = 0)
+# 
+# 
+# select_laurin_pakka <- reactiveValues(value = NULL) 
+# select_martin_pakka <- reactiveValues(value = NULL) 
+# react_lauri_voitti<- reactiveValues(value = 0)
+# react_martti_voitti <- reactiveValues(value = 0)
+# 
+# keymap <- reactiveValues(data  = data.table(Nappain	= c("a", "b"),
+#                                             set_env = c("normal", "normal"),
+#                                             env = c("normal", "normal"),
+#                                             button_id = c("nope", "ei"),
+#                                             valid_pair = c("e", "b"),
+#                                             PainoAika = now(),
+#                                             Painaja = c("Lauri", "Martti"),
+#                                             uft_nappi = c("a", "b"),
+#                                             type = "", 
+#                                             sub_id = ""))
+# last_simulated_click <- reactiveValues(time = now())
+# ###############
+# 
+ user_logged <- reactiveValues(count = 0)
 
 
 shinyServer(function(input, output, session) {
-js$toot()
+
   required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
-  js$toot()
+
   #load_scripts.R
  # print(session$clientData)
-observe({
-  #seuraa damagea ja turndataa
-  depen <- turnData$turn
-  dependd <- life_totals$data
-  #beep()
-})
+# observe({
+#   #seuraa damagea ja turndataa
+#   depen <- turnData$turn
+#   dependd <- life_totals$data
+#   #beep()
+# })
   inputLoop <- reactiveValues(timeStamp = now(),
                               allow_change = TRUE,
                               which_input_changed = "",
                               input_data = NULL)
-  observe({
-    req(               slider_martin_mulligan$value, 
-                         slider_laurin_virhe$value,
-                        slider_martin_virhe$value,
-                       slider_laurin_landit$value, 
-                   slider_martin_landit$value, 
-                      slider_laurin_lifet$value, 
-                       slider_martin_lifet$value, 
-                        slider_vuoroarvio$value, 
-                       slider_laurin_kasikortit$value, 
-                         slider_martin_kasikorit$value)
-    # vanhat_arvot <- data.table(versio = "vanha",
-    #                            slider_laurin_mulligan = 1, 
-    #                            slider_martin_mulligan = 2, 
-    #                            slider_laurin_virhe =3,
-    #                            slider_martin_virhe =4,
-    #                            slider_laurin_landit = 5, 
-    #                            slider_martin_landit = 6, 
-    #                            slider_laurin_lifet = 7, 
-    #                            slider_martin_lifet = 8, 
-    #                            slider_vuoroarvio =9, 
-    #                            slider_laurin_kasikortit = 10, 
-    #                            slider_martin_kasikorit =  11)
-    
-    uudet <- data.table(versio = "uusi", 
-                        slider_laurin_mulligan = slider_laurin_mulligan$value, 
-                                                     slider_martin_mulligan = slider_martin_mulligan$value, 
-                                                     slider_laurin_virhe = slider_laurin_virhe$value,
-                                                     slider_martin_virhe = slider_martin_virhe$value,
-                                                     slider_laurin_landit = slider_laurin_landit$value, 
-                                                     slider_martin_landit = slider_martin_landit$value, 
-                                                     slider_laurin_lifet = slider_laurin_lifet$value, 
-                                                     slider_martin_lifet = slider_martin_lifet$value, 
-                                                     slider_vuoroarvio = slider_vuoroarvio$value, 
-                                                     slider_laurin_kasikortit =  slider_laurin_kasikortit$value, 
-                                                     slider_martin_kasikorit =  slider_martin_kasikorit$value)
-    
-    if(is.null(isolate(inputLoop$input_data))) {
-      inputLoop$input_data <- uudet[1 != 0]
-      inputLoop$input_data [, versio := "vanha"]
-    }
-    
-    yhdiste <- rbind(uudet, isolate(inputLoop$input_data))
-    melttaus1 <- suppressWarnings(melt.data.table(yhdiste, id.vars =  c("versio")))
-    melttaus1[, diff := var(value), by = variable]
-    muuttunut_input <- melttaus1[diff != 0][1, as.character(variable)]
-    #jos ei mikaan ei muuttunu, niin ei muuteta UI:ta
-  #  print("uus input")
-  #  print(muuttunut_input)
-  #  print("vanha input")
-  #  print(isolate(inputLoop$which_input_changed))
-  #  print("session")
-  #  print(isolate(session$user))
-    erotus <- difftime(now(), isolate(inputLoop$timeStamp))
-   
-  #  print(erotus)
-    isolate(if(is.na(muuttunut_input)){
-    #  print("denied, ei muutoksia")
-      inputLoop$allow_change <- FALSE
-    } else {
-      isolate (if ( erotus > 1  | muuttunut_input != inputLoop$which_input_changed) {
-   #     print("allow")
-        inputLoop$allow_change <- TRUE
-        inputLoop$timeStamp <- now()
-        uudet[, versio := "vanha"]
-        inputLoop$input_data <- uudet
-        inputLoop$which_input_changed <- muuttunut_input
-        
-        
-      } else {
-  #     print("denied")
-        inputLoop$allow_change <- FALSE
-      })
-    
-    })
-    
-  }, priority = 1000001)
+  # observe({
+  #   req(               slider_martin_mulligan$value, 
+  #                        slider_laurin_virhe$value,
+  #                       slider_martin_virhe$value,
+  #                      slider_laurin_landit$value, 
+  #                  slider_martin_landit$value, 
+  #                     slider_laurin_lifet$value, 
+  #                      slider_martin_lifet$value, 
+  #                       slider_vuoroarvio$value, 
+  #                      slider_laurin_kasikortit$value, 
+  #                        slider_martin_kasikorit$value)
+  #   # vanhat_arvot <- data.table(versio = "vanha",
+  #   #                            slider_laurin_mulligan = 1, 
+  #   #                            slider_martin_mulligan = 2, 
+  #   #                            slider_laurin_virhe =3,
+  #   #                            slider_martin_virhe =4,
+  #   #                            slider_laurin_landit = 5, 
+  #   #                            slider_martin_landit = 6, 
+  #   #                            slider_laurin_lifet = 7, 
+  #   #                            slider_martin_lifet = 8, 
+  #   #                            slider_vuoroarvio =9, 
+  #   #                            slider_laurin_kasikortit = 10, 
+  #   #                            slider_martin_kasikorit =  11)
+  #   
+  #   uudet <- data.table(versio = "uusi", 
+  #                       slider_laurin_mulligan = slider_laurin_mulligan$value, 
+  #                                                    slider_martin_mulligan = slider_martin_mulligan$value, 
+  #                                                    slider_laurin_virhe = slider_laurin_virhe$value,
+  #                                                    slider_martin_virhe = slider_martin_virhe$value,
+  #                                                    slider_laurin_landit = slider_laurin_landit$value, 
+  #                                                    slider_martin_landit = slider_martin_landit$value, 
+  #                                                    slider_laurin_lifet = slider_laurin_lifet$value, 
+  #                                                    slider_martin_lifet = slider_martin_lifet$value, 
+  #                                                    slider_vuoroarvio = slider_vuoroarvio$value, 
+  #                                                    slider_laurin_kasikortit =  slider_laurin_kasikortit$value, 
+  #                                                    slider_martin_kasikorit =  slider_martin_kasikorit$value)
+  #   
+  #   if(is.null(isolate(inputLoop$input_data))) {
+  #     inputLoop$input_data <- uudet[1 != 0]
+  #     inputLoop$input_data [, versio := "vanha"]
+  #   }
+  #   
+  #   yhdiste <- rbind(uudet, isolate(inputLoop$input_data))
+  #   melttaus1 <- suppressWarnings(melt.data.table(yhdiste, id.vars =  c("versio")))
+  #   melttaus1[, diff := var(value), by = variable]
+  #   muuttunut_input <- melttaus1[diff != 0][1, as.character(variable)]
+  #   #jos ei mikaan ei muuttunu, niin ei muuteta UI:ta
+  # #  print("uus input")
+  # #  print(muuttunut_input)
+  # #  print("vanha input")
+  # #  print(isolate(inputLoop$which_input_changed))
+  # #  print("session")
+  # #  print(isolate(session$user))
+  #   erotus <- difftime(now(), isolate(inputLoop$timeStamp))
+  #  
+  # #  print(erotus)
+  #   isolate(if(is.na(muuttunut_input)){
+  #   #  print("denied, ei muutoksia")
+  #     inputLoop$allow_change <- FALSE
+  #   } else {
+  #     isolate (if ( erotus > 1  | muuttunut_input != inputLoop$which_input_changed) {
+  #  #     print("allow")
+  #       inputLoop$allow_change <- TRUE
+  #       inputLoop$timeStamp <- now()
+  #       uudet[, versio := "vanha"]
+  #       inputLoop$input_data <- uudet
+  #       inputLoop$which_input_changed <- muuttunut_input
+  #       
+  #       
+  #     } else {
+  # #     print("denied")
+  #       inputLoop$allow_change <- FALSE
+  #     })
+  #   
+  #   })
+  #   
+  # }, priority = 1000001)
   
   
   
@@ -177,7 +177,7 @@ js$hidehead('none')
 shinyjs::addClass(selector = "body", class = "sidebar-collapse")
 updateTabItems(session,"sidebarmenu", "tab_overlay") 
 } 
-load_data_from_DB()
+#load_data_from_DB()
   
   sourcelist <- data.table(polku = c(dir("./scripts/", recursive = TRUE)))
   sourcelist[, rivi := seq_len(.N)]
@@ -225,155 +225,155 @@ load_data_from_DB()
   
   local_keymap <- reactiveValues(env = "normal", aika = now(), prev_key = "")
   
-  observe({
-    print("ENVI NORMAALIKSI")
-    take_dep <- turnData$turn
-    take_dep <- damage_data$data
-    local_keymap$env <- "normal"
-    temp <- isolate(keymap$data)
-    temp[, Nappain := ""]
-    keymap$data <- temp
-  })
+  # observe({
+  #   print("ENVI NORMAALIKSI")
+  #   take_dep <- turnData$turn
+  #   take_dep <- damage_data$data
+  #   local_keymap$env <- "normal"
+  #   temp <- isolate(keymap$data)
+  #   temp[, Nappain := ""]
+  #   keymap$data <- temp
+  # })
   
-  observeEvent(input$mydata, {
-    required_data("ADM_KEY_MAP")
-    aakkoPainallus_input <- intToUtf8(input$mydata[[1]])
-    isolate(enviro <- local_keymap$env)
-    isolate(enviro_aikaEro <- as.numeric(now()) - as.numeric(local_keymap$aika))
-    local_keymap$aika <- now()
-    print("AIKAERo")
-    isolate(print(enviro_aikaEro))
-    if (local_keymap$prev_key != aakkoPainallus_input | enviro_aikaEro > 1) {
-        
-      local_keymap$prev_key <- aakkoPainallus_input
-      painaja_uus <- session$user
-    #  tempData <-  keymap$data
-    #  tempData[Painaja == painaja_uus, ':=' (aakkoPainallus = aakkoPainallus_input,
-                                              #  Aika = now())]
-    #  tempData <-  keymap$data
-     # my_keypress <- tempData[Painaja == session$user, aakkoPainallus]
-      toiminnot <- ADM_KEY_MAP[Nappain == aakkoPainallus_input]
-      print("ekavaihe")
-      print(toiminnot)
-      if (nrow(toiminnot) > 0 ){
-        
-        if (enviro_aikaEro > 20) {
-  
-          local_keymap$env <- "normal"
-          enviro <- "normal"
-          print("envi muuttu aikaeron takia normaaliksi")
-        }
-        
-        my_action_row <- toiminnot[env == enviro]
-        print("envin jalkeen action row")
-        print(my_action_row)
-        print("envi oli")
-        isolate(print(local_keymap$env))
-        if (nrow(my_action_row) > 0) {
-          my_action_row[, ':=' (Painaja = painaja_uus,
-                   PainoAika = now())]
-          
-            vihunData <-  keymap$data[Painaja != painaja_uus]
-            print(my_action_row)
-            print(vihunData)
-            uusData <- rbind(my_action_row, vihunData)
-            keymap$data <- uusData
-        }
-      }
-    } else {
-      warning("painettu sama nappi")
-    }
-  })
-  
+  # observeEvent(input$mydata, {
+  #   required_data("ADM_KEY_MAP")
+  #   aakkoPainallus_input <- intToUtf8(input$mydata[[1]])
+  #   isolate(enviro <- local_keymap$env)
+  #   isolate(enviro_aikaEro <- as.numeric(now()) - as.numeric(local_keymap$aika))
+  #   local_keymap$aika <- now()
+  #   print("AIKAERo")
+  #   isolate(print(enviro_aikaEro))
+  #   if (local_keymap$prev_key != aakkoPainallus_input | enviro_aikaEro > 1) {
+  #       
+  #     local_keymap$prev_key <- aakkoPainallus_input
+  #     painaja_uus <- session$user
+  #   #  tempData <-  keymap$data
+  #   #  tempData[Painaja == painaja_uus, ':=' (aakkoPainallus = aakkoPainallus_input,
+  #                                             #  Aika = now())]
+  #   #  tempData <-  keymap$data
+  #    # my_keypress <- tempData[Painaja == session$user, aakkoPainallus]
+  #     toiminnot <- ADM_KEY_MAP[Nappain == aakkoPainallus_input]
+  #     print("ekavaihe")
+  #     print(toiminnot)
+  #     if (nrow(toiminnot) > 0 ){
+  #       
+  #       if (enviro_aikaEro > 20) {
+  # 
+  #         local_keymap$env <- "normal"
+  #         enviro <- "normal"
+  #         print("envi muuttu aikaeron takia normaaliksi")
+  #       }
+  #       
+  #       my_action_row <- toiminnot[env == enviro]
+  #       print("envin jalkeen action row")
+  #       print(my_action_row)
+  #       print("envi oli")
+  #       isolate(print(local_keymap$env))
+  #       if (nrow(my_action_row) > 0) {
+  #         my_action_row[, ':=' (Painaja = painaja_uus,
+  #                  PainoAika = now())]
+  #         
+  #           vihunData <-  keymap$data[Painaja != painaja_uus]
+  #           print(my_action_row)
+  #           print(vihunData)
+  #           uusData <- rbind(my_action_row, vihunData)
+  #           keymap$data <- uusData
+  #       }
+  #     }
+  #   } else {
+  #     warning("painettu sama nappi")
+  #   }
+  # })
+  # 
 
   #envs are "normal", shift, deal9+, lose9+
   
 
-  observe({
-    req(keymap$data)
-  if (session$user %in% c("Lauri", "Martti")) {
-    my_action_row <- keymap$data[Painaja == session$user]
-    
-    #do we need validation
-    print("toka vaihe")
-    print(my_action_row)
-
-      if (my_action_row[, valid_pair] != "") {
-        #we need validation, check opponent input
-        my_valid_pair <- my_action_row[, valid_pair]
-        opp_button_id <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), button_id]
-        Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
-        my_time <- my_action_row[, PainoAika]
-        aikaErotus <- abs(difftime(my_time, Opp_time))
-        warning(paste0("näppäinten ero oli", aikaErotus))
-        if (opp_button_id == my_valid_pair & aikaErotus < 1.5) {
-         
-          accept_input <- TRUE
-        } else {
-          accept_input <- FALSE
-        }
-      } else if (keymap$data[which.max(PainoAika), Painaja] != session$user) {
-        #we dont need validation, but need to check if I pressed the button
-        accept_input <- FALSE
-      } else {
-        accept_input <- TRUE
-      }
-    
-    
-    if (accept_input == TRUE) {
-      #click actionutton or something else
-      #if no button id, then dont press anything. change environment only if
-  
-      if (nchar(my_action_row[, button_id]) > 0) {
-        if (my_action_row[, type] == "") {
-      
-        #  print("enabled status")
-        #  print(isolate(my_action_row[, button_id]))
-          #if button is enabled or we dont monitor it, then click it
-          isolate(if (is.null(actButtonStatus[[my_action_row[, button_id]]])) {
-            print("Nappi painettu")
-       
-      
-            odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
-            last_simulated_click$time <- now()
-            Sys.sleep(odotusaika)
-
-            click(my_action_row[, button_id])
-          } else {
-            if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
-              print("Nappi painettu")
-              #nappi oli enabled
-              odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
-              last_simulated_click$time <- now()
-              Sys.sleep(odotusaika)
-               click(my_action_row[, button_id])
-            }
-          })
-      } else if (my_action_row[, type] == "RadioGroupButtons") {
-         # browser()
-          group_id <- my_action_row[, button_id]
-          button_name <-  my_action_row[, sub_id]
-          curr_value <- isolate(eval(parse(text = paste0("input$", group_id))))
-          #check if button is selected
-          selected <- button_name %in% curr_value
-          if (selected == TRUE) {
-            new_value <- curr_value[!curr_value %in% button_name]
-          } else {
-            new_value <- c(curr_value, button_name)
-          }
-          updateRadioGroupButtons(session, group_id, selected = new_value)
-  
-        }
-      }
-      #set environment
-     isolate(if (my_action_row[, set_env] != local_keymap$env & my_action_row[, set_env]  != "") {
-       print("UUS ENVI ON")
-        local_keymap$env <- my_action_row[, set_env]
-        isolate(print(local_keymap$env))
-      })
-    }
-  }
-  })
+  # observe({
+  #   req(keymap$data)
+  # if (session$user %in% c("Lauri", "Martti")) {
+  #   my_action_row <- keymap$data[Painaja == session$user]
+  #   
+  #   #do we need validation
+  #   print("toka vaihe")
+  #   print(my_action_row)
+  # 
+  #     if (my_action_row[, valid_pair] != "") {
+  #       #we need validation, check opponent input
+  #       my_valid_pair <- my_action_row[, valid_pair]
+  #       opp_button_id <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), button_id]
+  #       Opp_time <- keymap$data[Painaja != session$user & session$user %in% c("Lauri", "Martti"), PainoAika]
+  #       my_time <- my_action_row[, PainoAika]
+  #       aikaErotus <- abs(difftime(my_time, Opp_time))
+  #       warning(paste0("näppäinten ero oli", aikaErotus))
+  #       if (opp_button_id == my_valid_pair & aikaErotus < 1.5) {
+  #        
+  #         accept_input <- TRUE
+  #       } else {
+  #         accept_input <- FALSE
+  #       }
+  #     } else if (keymap$data[which.max(PainoAika), Painaja] != session$user) {
+  #       #we dont need validation, but need to check if I pressed the button
+  #       accept_input <- FALSE
+  #     } else {
+  #       accept_input <- TRUE
+  #     }
+  #   
+  #   
+  #   if (accept_input == TRUE) {
+  #     #click actionutton or something else
+  #     #if no button id, then dont press anything. change environment only if
+  # 
+  #     if (nchar(my_action_row[, button_id]) > 0) {
+  #       if (my_action_row[, type] == "") {
+  #     
+  #       #  print("enabled status")
+  #       #  print(isolate(my_action_row[, button_id]))
+  #         #if button is enabled or we dont monitor it, then click it
+  #         isolate(if (is.null(actButtonStatus[[my_action_row[, button_id]]])) {
+  #           print("Nappi painettu")
+  #      
+  #     
+  #           odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
+  #           last_simulated_click$time <- now()
+  #           Sys.sleep(odotusaika)
+  # 
+  #           click(my_action_row[, button_id])
+  #         } else {
+  #           if (actButtonStatus[[my_action_row[, button_id]]] == TRUE) {
+  #             print("Nappi painettu")
+  #             #nappi oli enabled
+  #             odotusaika <-  max(as.numeric(last_simulated_click$time + 0 - now()), 0)
+  #             last_simulated_click$time <- now()
+  #             Sys.sleep(odotusaika)
+  #              click(my_action_row[, button_id])
+  #           }
+  #         })
+  #     } else if (my_action_row[, type] == "RadioGroupButtons") {
+  #        # browser()
+  #         group_id <- my_action_row[, button_id]
+  #         button_name <-  my_action_row[, sub_id]
+  #         curr_value <- isolate(eval(parse(text = paste0("input$", group_id))))
+  #         #check if button is selected
+  #         selected <- button_name %in% curr_value
+  #         if (selected == TRUE) {
+  #           new_value <- curr_value[!curr_value %in% button_name]
+  #         } else {
+  #           new_value <- c(curr_value, button_name)
+  #         }
+  #         updateRadioGroupButtons(session, group_id, selected = new_value)
+  # 
+  #       }
+  #     }
+  #     #set environment
+  #    isolate(if (my_action_row[, set_env] != local_keymap$env & my_action_row[, set_env]  != "") {
+  #      print("UUS ENVI ON")
+  #       local_keymap$env <- my_action_row[, set_env]
+  #       isolate(print(local_keymap$env))
+  #     })
+  #   }
+  # }
+  # })
 
   click_groupButton <- function(session, group_id, button_name) {
     #curr_value <- c("kol", "ys", "kas")
@@ -391,8 +391,8 @@ load_data_from_DB()
     updateRadioGroupButtons(session, group_id, selected = new_value)
   }
 
- output$debug_keymap <- renderDataTable({keymap$data})
- output$debug_local_env <- renderText({local_keymap$env})
+ # output$debug_keymap <- renderDataTable({keymap$data})
+ # output$debug_local_env <- renderText({local_keymap$env})
   
   required_data("STAT_DMG_TURN_ALL")
   required_data("ADM_TURN_DATA_ALL") 

@@ -35,8 +35,8 @@ uusi_peli <- dashboardBody(
     
       ),
   tabItems(
-   source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
-   source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
+ #  source("./scripts/ui/ui_uusi_peli.R",local = TRUE)$value,
+ #  source("./scripts/ui/ui_tallenna_peli.R",local = TRUE)$value,
   source("./scripts/ui/ui_blow.R",local = TRUE)$value,
   source("./scripts/ui/ui_combined.R",local = TRUE)$value,
   source("./scripts/ui/ui_peliasetukset.R",local = TRUE)$value,
@@ -47,7 +47,7 @@ uusi_peli <- dashboardBody(
   source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
   source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
   source("./scripts/ui/ui_decks.R",local = TRUE)$value,
-  source("./scripts/ui/ui_life_counter.R",local = TRUE)$value,
+#  source("./scripts/ui/ui_life_counter.R",local = TRUE)$value,
   source("./scripts/ui/ui_overlay.R",local = TRUE)$value
   
     
@@ -59,9 +59,9 @@ uusi_peli <- dashboardBody(
 #SIDEBAR  
 sidebar <- dashboardSidebar(
   sidebarMenu(id = "sidebarmenu",
-              menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
-              menuItem("Tallenna peli", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
-              menuItem("LifeCounter", tabName = "tab_LifeCounter", icon = icon("gamepad")),
+            #  menuItem("Uusi peli", tabName = "tab_uusi_peli", icon = icon("gamepad")),
+            #  menuItem("Tallenna peli", icon = icon("hdd"), tabName = "tab_tallenna_peli"),
+              #menuItem("LifeCounter", tabName = "tab_LifeCounter", icon = icon("gamepad")),
               menuItem("Blow", icon = icon("beer"), tabName = "tab_blow"),
               menuItem("Sarjataulukko", icon = icon("trophy"), tabName = "tab_sarjataulukko"),
               menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName = "tab_tilastomurskain"),

@@ -1,7 +1,7 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
 GLOBAL_test_mode <- "prod"
-options(shiny.fullstacktrace = TRUE)
+options(shiny.fullstacktrace = FALSE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
 }
@@ -161,7 +161,7 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
     }
   }
   if (test_mode == FALSE) {
-    zip_all_and_send()
+  #  zip_all_and_send()
     #print("tallennettu uus R-tiedosto jo lähetetty")
   }
 

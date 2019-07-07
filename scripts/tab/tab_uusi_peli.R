@@ -1,38 +1,40 @@
-eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
-                              select_martin_pakka$value,
-                              updatedTempData$a,
-                              
-                              input$luo_peleja),{
-                               
-                                if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
-                                  
-                                  # select_laurin_pakka$value <- 1
-                                  # select_martin_pakka$value <-9    
-                                  required_functions("getUusi_Peli_ID")
-                                  required_data(c("ADM_PELIT"))
-                                  
-                                  normiToiminto <- getUusi_Peli_ID(ADM_PELIT,
-                                                                  select_laurin_pakka$value,
-                                                                  select_martin_pakka$value)
-                                  
-                                 # message("palautettu uusi peli id ", normiToiminto)
-                                  return(normiToiminto)
-                                } else {
-                                  #print("JOS OLET TÄÄLLÄ, NIIN TÄMÄ OSA KOODISTA TUSKIN TOIMII. TARKISTA ONKO TEMPDATA STORAGESSSA OLEVA PELI_ID OLEMASSA")
-                                  required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
-                                  
-                                  keskenPeliData <- ADM_TEMP_DATA_STORAGE
-                                  
-                                 # message("eR_PELI_ID ", keskenPeliData)
-                                  
-                                  P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
-                                  P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
-                                  alkuLataus <- getPeli_ID_from_pakat(P1, P2, ADM_PELIT)
-                                  
-                                  return(alkuLataus)
-                                }
-                              }, ignoreInit = FALSE, ignoreNULL = FALSE)
-
+# eR_Peli_ID <- eventReactive(c(select_laurin_pakka$value,
+#                               select_martin_pakka$value,
+#                               updatedTempData$a,
+#                               
+#                               input$luo_peleja),{
+#                                
+#                                 if (!is.null(select_laurin_pakka$value) & !is.null(select_martin_pakka$value)) {
+#                                   
+#                                   # select_laurin_pakka$value <- 1
+#                                   # select_martin_pakka$value <-9    
+#                                   required_functions("getUusi_Peli_ID")
+#                                   required_data(c("ADM_PELIT"))
+#                                   
+#                                   normiToiminto <- getUusi_Peli_ID(ADM_PELIT,
+#                                                                   select_laurin_pakka$value,
+#                                                                   select_martin_pakka$value)
+#                                   
+#                                  # message("palautettu uusi peli id ", normiToiminto)
+#                                   return(normiToiminto)
+#                                 } else {
+#                                   #print("JOS OLET TÄÄLLÄ, NIIN TÄMÄ OSA KOODISTA TUSKIN TOIMII. TARKISTA ONKO TEMPDATA STORAGESSSA OLEVA PELI_ID OLEMASSA")
+#                                   required_data(c("ADM_PELIT", "ADM_TEMP_DATA_STORAGE"))
+#                                   
+#                                   keskenPeliData <- ADM_TEMP_DATA_STORAGE
+#                                   
+#                                  # message("eR_PELI_ID ", keskenPeliData)
+#                                   
+#                                   P1 <- keskenPeliData[muuttuja == "Laurin_pakka", arvo]
+#                                   P2 <- keskenPeliData[muuttuja == "Martin_pakka", arvo]
+#                                   alkuLataus <- getPeli_ID_from_pakat(P1, P2, ADM_PELIT)
+#                                   
+#                                   return(alkuLataus)
+#                                 }
+#                               }, ignoreInit = FALSE, ignoreNULL = FALSE)
+eR_Peli_ID <- reactive({
+  1345
+})
 
 observe({
 #1. päivitä uudet arvot
@@ -169,8 +171,12 @@ required_functions("UID_UUSI_PELI_ALL_ROWS")
                         0, # input$slider_martin_mulligan,
                          STAT_CURRENT_PAKKA
                         ))
-  save(UID_UUSI_PELI, file = "./Rdata/UID_UUSI_PELI.RData")
 
+  save(list = "tulos", file = "./Rdata/UID_UUSI_PELI.RData")
+
+#  load("./Rdata/UID_UUSI_PELI.RData", envir = globalenv())
+
+ 
   return(tulos)
 })
 
