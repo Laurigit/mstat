@@ -1,5 +1,5 @@
 #options are prod, test, dev
-options(shiny.trace = FALSE)
+options(shiny.trace = TRUE)
 GLOBAL_test_mode <- "prod"
 options(shiny.fullstacktrace = FALSE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {

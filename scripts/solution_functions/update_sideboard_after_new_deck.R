@@ -23,7 +23,7 @@ update_sideboard_after_new_deck <- function(omistaja_input, input_new_deck_id) {
   jaljella <- new_deck_list[, sum(Count)]
   side_updated_temp <- newLists$decklist_reduced[order(Name)]
   side_updated <- side_updated_temp[, .(Count, Name)]
-  print(side_updated)
+ # print(side_updated)
   poistettu <- sideloop_id_list[, sum(Count)] - side_updated[, sum(Count)]
   
   new_deck_list <- newLists$removed_list_left
@@ -39,4 +39,4 @@ update_sideboard_after_new_deck <- function(omistaja_input, input_new_deck_id) {
               dec = ",")
   }
 }
-#update_sideboard_after_new_deck("L", 17)
+#update_sideboard_after_new_deck("M", 36)
