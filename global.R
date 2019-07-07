@@ -1,7 +1,7 @@
 #options are prod, test, dev
-options(shiny.trace = TRUE)
+options(shiny.trace = FALSE)
 GLOBAL_test_mode <- "prod"
-options(shiny.fullstacktrace = FALSE)
+options(shiny.fullstacktrace = TRUE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
 }
@@ -75,7 +75,7 @@ token <- readRDS("droptoken.rds")
 #download_folder <- "./drop_download/"
 #drop_box_folder <- "mstat/all_data/"
 load_data_from_DB <- function() {
-  download_from_DropBox <- TRUE
+  download_from_DropBox <- FALSE
   drop_box_folder <- "mstat/all_data/"
   download_folder <- "./download_folder/"
   if (exists("GLOBAL_test_mode")) {
@@ -87,7 +87,7 @@ load_data_from_DB <- function() {
   }
   
   #delete prev decks in case of testing
-  do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
+  #do.call(file.remove, list(list.files("./external_files", full.names = TRUE)))
   if (download_from_DropBox == TRUE) {
    
     
@@ -96,10 +96,10 @@ load_data_from_DB <- function() {
                   overwrite = TRUE,
                   dtoken = token)
   } else {
-    file.copy("./upload_folder/all_files.zip", to = "./download_folder", overwrite = TRUE)
+    #file.copy("./upload_folder/all_files.zip", to = "./download_folder", overwrite = TRUE)
   }
-  unzip(zipfile = paste0(download_folder, "all_files.zip"),
-        exdir = "./external_files")
+ # unzip(zipfile = paste0(download_folder, "all_files.zip"),
+  #      exdir = "./external_files")
 }
 
 

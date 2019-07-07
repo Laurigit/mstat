@@ -661,8 +661,9 @@ if(turnData$turn > 0) {
     setActionButtonStatus("disable", "ab_pakita_endille")
   #  shinyjs::disable("ab_Vaihda_vuoro_virhe")
   } else {
-    peli_id_data <- isolate(eR_UID_UUSI_PELI())
-    Aloittaja <- peli_id_data[Aloittaja == 1, Omistaja_NM]
+    #peli_id_data <- isolate(eR_UID_UUSI_PELI())
+    Aloittaja_all <- getAloittaja(ADM_PELIT, eR_Peli_ID())
+    Aloittaja <- Aloittaja_all$Aloittaja_NM
     if (Aloittaja == session$user) {
       I_start <- TRUE
     } else {

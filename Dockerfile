@@ -13,8 +13,9 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libjpeg-dev \
     libv8-dev \
-    vlc
-
+    vlc \
+    vim
+RUN chmod -R 755 /srv/shiny-server/
 RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
 
@@ -31,7 +32,7 @@ RUN R -e "install.packages(c('ggplot2','ggthemes','shinyalert','anytime','readxl
 
 
 ## Copy configuration files into the Docker image
-#COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
+COPY shiny-server.conf  /etc/shiny-server/shiny-server.conf
 #COPY /mstat /srv/shiny-server/
 
 ## Copy further configuration files into the Docker image

@@ -36,7 +36,7 @@ UID_UUSI_PELI <- function(Peli_ID_input,
                           input_left_mulligan,
                           input_right_mulligan,
                           STAT_CURRENT_PAKKA) {
-  pelidata <- ADM_PELIT[1==1]
+  pelidata <- ADM_PELIT[1 != 0]
 
 #message(Peli_ID_input, 
 #          input_left_mulligan,
