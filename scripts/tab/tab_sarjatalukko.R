@@ -64,6 +64,9 @@ output$sarjataulukkovalitsin <- renderUI({
 eR_UID_SARJATAULUKKO <- reactive({
 #print("eR_UID_SARJATAULUKKO")
   message(input$sarjataulukkokierros," input$sarjataulukkokierros")
+  #take dep
+  refresh_counter$a 
+  ###
   result <-  UID_SARJATAULUKKO(input$sarjataulukkokierros, input$radio_bo_mode, ADM_PELIT, STG_PAKAT,
                                input$radio_total_mode)
   return(result)

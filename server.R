@@ -435,14 +435,7 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
     refresh_counter$a <- refresh_counter$a + 1  
   }, ignoreInit = TRUE, ignoreNULL = TRUE)
 
-    #nollaa temp data
-    observeEvent(input$nollaa_temp_data, {
-      tyhjataulu<-data.table(muuttuja=c("kesken","laheta"),arvo=c("FALSE","FALSE"))
-     # print("tässä lähetetään tyhjataulu pilveen.")
-      tyhjataulu
-      kircsv(tyhjataulu,"./temp_data_storage.csv", upload = TRUE)
-      
-    })
+
 
   #päivitä divarit
   observeEvent(input$tallenna_divarit,{
@@ -717,6 +710,7 @@ observe({
           
       }
           zip_all_and_send()  
+          refresh_counter$a 
     }
       
       
