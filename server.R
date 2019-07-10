@@ -170,8 +170,8 @@ func_login <- function(input_user_count, clientDataInput) {
 }
 #user_logged$count <- user_logged$count + 1
 isolate(user_logged$count <- user_logged$count + 1)
-session$user <- isolate(func_login(user_logged$count, session$clientData))
-
+#session$user <- isolate(func_login(user_logged$count, session$clientData))
+session$user <- "Server"
 if(session$user == "overlay") {
 js$hidehead('none')
 shinyjs::addClass(selector = "body", class = "sidebar-collapse")
@@ -452,7 +452,7 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
     })
     divarit[,syntax:=NULL]
     print(divarit)
-    kircsv(divarit,"./divari.csv")
+    kircsv(divarit,"./divari.csv", upload = TRUE)
     #divaridata<-divarit
   
   })

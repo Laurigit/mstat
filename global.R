@@ -119,7 +119,7 @@ kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
               dec = ",")
   
   if (upload == TRUE) {
-   #    zip_all_and_send()
+      zip_all_and_send()
   }
 }
 
