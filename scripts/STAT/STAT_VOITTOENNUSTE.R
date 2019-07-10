@@ -1,11 +1,25 @@
 #STAT_VOITTOENNUSTE
 
+
+
 #VIKA ON SIINÄ; ETTÄ TÄÄ TEKEE AINA UUDEN RIVIN DATASETTIIN. Ks https://stackoverflow.com/questions/14693956/how-can-i-prevent-rbind-from-geting-really-slow-as-dataframe-grows-larger
 required_data("ADM_PELIT")
 #p1, vastpak, turnaus, ennuste
 print("TÄMÄ KESTÄÄ")
 
+#check if common data has this already updated
+update_or_create <- FALSE
 
+if (file.exists("../common_data/STAT_VOITTOENNUSTE.RData")) {
+  load("../common_data/STAT_VOITTOENNUSTE.RData")
+  update_or_create <- ADM_PELIT[, max(Turnaus_NO)] != STAT_VOITTOENNUSTE[, max(Turnaus_NO)]
+  
+} else {
+  #doesn not exist at all, create it
+  update_or_create <- TRUE 
+}
+
+if (update_or_create) {
 
 #1. luo data
 #2 luo mallit
@@ -234,4 +248,5 @@ join_model[,  ':=' (rivi = seq_len(.N),
   # 
 
 STAT_VOITTOENNUSTE <- ssCols
-
+save(list = "STAT_VOITTOENNUSTE", file = "../common_data/STAT_VOITTOENNUSTE.RData")
+}

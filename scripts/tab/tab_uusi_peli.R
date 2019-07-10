@@ -32,9 +32,6 @@
 #                                   return(alkuLataus)
 #                                 }
 #                               }, ignoreInit = FALSE, ignoreNULL = FALSE)
-eR_Peli_ID <- reactive({
-  1345
-})
 
 
 
@@ -93,16 +90,7 @@ eR_Peli_ID <- reactive({
 
 
 
-eR_Peli_Aloittaja <- reactiveValues(a = -1, b = -4)
-observe({
-required_data("ADM_PELIT")
- 
-  pelidata <- ADM_PELIT[1 != 0]
-  result <- pelidata[Peli_ID == eR_Peli_ID(), .(Aloittaja, Omistaja_ID)][Omistaja_ID == "M", Aloittaja]
- 
-  eR_Peli_Aloittaja$a <- result
-  #0 = Lauri, 1 = martti
-} )
+
 
 
 eR_UID_UUSI_PELI <- reactive({
@@ -111,9 +99,12 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
   #create dependency 
- # eR_Peli_ID()
+  refresh_counter$a
+  ####
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 required_functions("UID_UUSI_PELI_ALL_ROWS")
+
+
 
   tulos <- isolate(UID_UUSI_PELI_ALL_ROWS(
                          eR_UID_PAKKA(),

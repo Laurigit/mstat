@@ -51,7 +51,7 @@
 
 shinyServer(function(input, output, session) {
 
-  required_data("STAT_VOITTOENNUSTE", saveR = TRUE)
+  required_data("STAT_VOITTOENNUSTE")
 
   #load_scripts.R
  # print(session$clientData)
@@ -222,30 +222,13 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
   #     shinyjs::show(id = "hideBox")
   #   }
   # })
-  required_data("STAT_CURRENT_PAKKA")
-  local_keymap <- reactiveValues(env = "normal", aika = now(), prev_key = "")
-  UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
-    eR_UID_PAKKA(),
-    eR_UID_PAKKA_VS(),
-    STG_PAKAT,
-    STG_OMISTAJA,
-    ADM_PELIT,
-    STAT_VOITTOENNUSTE,
-    0, #input$slider_laurin_mulligan,
-    0, # input$slider_martin_mulligan,
-    STAT_CURRENT_PAKKA
-  ))
+
   
 
   
-  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
+
   
-  required_data("STAT_VOITTOENNUSTE")
-  save(list = "STAT_VOITTOENNUSTE", file = "../common_data/STAT_VOITTOENNUSTE.RData")
   
-  required_data("STG_PAKAT")
-  
-  save(list = "STG_PAKAT", file = "../common_data/STG_PAKAT.RData")
   # observe({
   #   print("ENVI NORMAALIKSI")
   #   take_dep <- turnData$turn
@@ -710,7 +693,7 @@ observe({
           
       }
           zip_all_and_send()  
-          refresh_counter$a 
+          refresh_counter$a <- refresh_counter$a + 1
     }
       
       

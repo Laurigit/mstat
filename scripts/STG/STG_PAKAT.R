@@ -7,3 +7,4 @@ STG_PAKAT <- SRC_DIVARI[,. (Pakka_ID = rivi_id,
                             Retired,
                             Side,
                             Picked)]
+save(list = "STG_PAKAT", file = "../common_data/STG_PAKAT.RData")
