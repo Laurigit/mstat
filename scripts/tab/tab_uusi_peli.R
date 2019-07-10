@@ -99,12 +99,11 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
   #create dependency 
-  refresh_counter$a
   ####
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 required_functions("UID_UUSI_PELI_ALL_ROWS")
 
-
+warning("toimii")
 
 UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
                          eR_UID_PAKKA(),
@@ -118,13 +117,17 @@ UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
                          STAT_CURRENT_PAKKA
                         ))
 
-  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
+save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
 
 #  load("./Rdata/UID_UUSI_PELI.RData", envir = globalenv())
  
  
-  return(tulos)
+  return(UID_UUSI_PELI)
 })
+
+
+
+
 
 eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                 input$radio_bo_mode,

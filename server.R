@@ -51,7 +51,7 @@
 
 shinyServer(function(input, output, session) {
 
-  required_data("STAT_VOITTOENNUSTE")
+  
 
   #load_scripts.R
  # print(session$clientData)
@@ -709,5 +709,6 @@ observe({
 # saveR_and_send(input_values, "input", "input_values.R")
 # })
 #load("./external_files/input_values.R")
-
+required_data("STAT_VOITTOENNUSTE")
+isolate(eR_UID_UUSI_PELI())
 })

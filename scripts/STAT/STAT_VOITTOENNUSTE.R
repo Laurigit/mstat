@@ -1,26 +1,26 @@
 #STAT_VOITTOENNUSTE
 
 
-
-#VIKA ON SIINÄ; ETTÄ TÄÄ TEKEE AINA UUDEN RIVIN DATASETTIIN. Ks https://stackoverflow.com/questions/14693956/how-can-i-prevent-rbind-from-geting-really-slow-as-dataframe-grows-larger
+warning("alku stat_voittoennuste")
 required_data("ADM_PELIT")
 #p1, vastpak, turnaus, ennuste
-print("TÄMÄ KESTÄÄ")
+print("TaMa KESTaa")
 
 #check if common data has this already updated
 update_or_create <- FALSE
 
 if (file.exists("../common_data/STAT_VOITTOENNUSTE.RData")) {
+  warning("voittoennuste loyty, seuraavaks update or create tulos. FALSE tarkottaa, ettei paiviteta")
   load("../common_data/STAT_VOITTOENNUSTE.RData")
   update_or_create <- ADM_PELIT[, max(Turnaus_NO)] != STAT_VOITTOENNUSTE[, max(Turnaus_NO)]
-  
+  warning(update_or_create)
 } else {
   #doesn not exist at all, create it
   update_or_create <- TRUE 
 }
 
 if (update_or_create) {
-
+warning("aletaa kirjottaan voittoennuste")
 #1. luo data
 #2 luo mallit
 #3 ennusta
