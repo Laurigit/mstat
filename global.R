@@ -75,7 +75,7 @@ token <- readRDS("droptoken.rds")
 #download_folder <- "./drop_download/"
 #drop_box_folder <- "mstat/all_data/"
 load_data_from_DB <- function() {
-  download_from_DropBox <- FALSE
+  download_from_DropBox <- TRUE
   drop_box_folder <- "mstat/all_data/"
   download_folder <- "./download_folder/"
   if (exists("GLOBAL_test_mode")) {
@@ -98,8 +98,8 @@ load_data_from_DB <- function() {
   } else {
     #file.copy("./upload_folder/all_files.zip", to = "./download_folder", overwrite = TRUE)
   }
- # unzip(zipfile = paste0(download_folder, "all_files.zip"),
-  #      exdir = "./external_files")
+ unzip(zipfile = paste0(download_folder, "all_files.zip"),
+      exdir = "./external_files")
 }
 
 
@@ -119,7 +119,7 @@ kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
               dec = ",")
   
   if (upload == TRUE) {
-       zip_all_and_send()
+   #    zip_all_and_send()
   }
 }
 

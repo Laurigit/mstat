@@ -26,7 +26,7 @@
 # res
 # res
 
-UID_UUSI_PELI_ALL_ROWS <- function(Peli_ID_input,
+UID_UUSI_PELI_ALL_ROWS <- function(
                           UID_PAKKA,
                           UID_PAKKA_VS,
                           STG_PAKAT,
@@ -39,7 +39,7 @@ UID_UUSI_PELI_ALL_ROWS <- function(Peli_ID_input,
                           STAT_CURRENT_PAKKA) {
   
   
-  #required_data(c("STAT_CURRENT_PAKKA", "STG_PAKAT", "STG_OMISTAJA", "ADM_PELIT", "STAT_VOITTOENNUSTE"))
+  required_data(c("STAT_CURRENT_PAKKA", "STG_PAKAT", "STG_OMISTAJA", "ADM_PELIT", "STAT_VOITTOENNUSTE"))
   
   pelidata <- ADM_PELIT[1 != 0]
   
@@ -79,17 +79,24 @@ UID_UUSI_PELI_ALL_ROWS <- function(Peli_ID_input,
   #            input_right_mulligan
   #            ))
   
-  ennuste <- predict_result(Peli_ID_input, input_left_mulligan,
-                            input_right_mulligan,
-                            STAT_VOITTOENNUSTE)
-  ennuste <- STAT_VOITTOENNUSTE[Omistaja_ID == "L", .(Prediction = ennuste, Peli_ID, Prediction_mirror = 1 - ennuste)]
+  # ennuste <- predict_result(Peli_ID_input, input_left_mulligan,
+  #                           input_right_mulligan,
+  #                           STAT_VOITTOENNUSTE)
+  ennuste <- STAT_VOITTOENNUSTE[, .(Prediction = ennuste, Peli_ID, Prediction_mirror = 1 - ennuste, Pakka_ID)]
   
   max_turnaus <- pelidata[, max(Turnaus_NO)]
-  curr_turn_pelit <- pelidata[Turnaus_NO == max_turnaus & Omistaja_ID == "L", .(Peli_ID, Pakka_ID, Vastustajan_Pakka_ID)]
-  join_stats <- joini_ssrows[curr_turn_pelit, on =. (Pakka_ID, Vastustajan_Pakka_ID)]
+  curr_turn_pelit <- pelidata[Turnaus_NO == max_turnaus , .(Peli_ID,
+                                                            Pakka_ID,
+                                                            Vastustajan_Pakka_ID,
+                                                            Aloittaja,
+                                                            Divari,
+                                                            Ottelu_ID,
+                                                            Voittaja,
+                                                            Aloitus_DT)]
+  join_stats <- joini_ssrows[curr_turn_pelit, on = .(Pakka_ID, Vastustajan_Pakka_ID)]
   
-  join_ennuste <- ennuste[join_stats, on = "Peli_ID"]
+  join_ennuste <- ennuste[join_stats, on = c("Peli_ID", "Pakka_ID")]
   
-  UID_UUSI_PELI_ALL_ROWS <- join_ennuste[Omistaja_ID == "L"]
-  return(UID_UUSI_PELI_ALL_ROWS)
+  tulos <- join_ennuste
+  return(tulos)
 }

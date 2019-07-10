@@ -5,4 +5,5 @@ STG_PAKAT <- SRC_DIVARI[,. (Pakka_ID = rivi_id,
                             Pakka_NO = as.numeric(Pakka),
                             Pakka_NM = Nimi,
                             Retired,
-                            Side)]
+                            Side,
+                            Picked)]

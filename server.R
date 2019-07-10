@@ -222,9 +222,30 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
   #     shinyjs::show(id = "hideBox")
   #   }
   # })
-  
+  required_data("STAT_CURRENT_PAKKA")
   local_keymap <- reactiveValues(env = "normal", aika = now(), prev_key = "")
+  UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
+    eR_UID_PAKKA(),
+    eR_UID_PAKKA_VS(),
+    STG_PAKAT,
+    STG_OMISTAJA,
+    ADM_PELIT,
+    STAT_VOITTOENNUSTE,
+    0, #input$slider_laurin_mulligan,
+    0, # input$slider_martin_mulligan,
+    STAT_CURRENT_PAKKA
+  ))
   
+
+  
+  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
+  
+  required_data("STAT_VOITTOENNUSTE")
+  save(list = "STAT_VOITTOENNUSTE", file = "../common_data/STAT_VOITTOENNUSTE.RData")
+  
+  required_data("STG_PAKAT")
+  
+  save(list = "STG_PAKAT", file = "../common_data/STG_PAKAT.RData")
   # observe({
   #   print("ENVI NORMAALIKSI")
   #   take_dep <- turnData$turn
@@ -636,6 +657,73 @@ output$Username <- renderText({
   req(session)
   invalidateLater(10000, session)
   session$user
+})
+
+# peliID_kesken <- reactiveFileReader(intervalMillis = 1000,
+#                                     session = session,
+#                                     filePath = "../common_data/temp_data_storage.csv", rc) 
+# 
+# tulos_luettu <- reactiveFileReader(intervalMillis = 1000,
+#                                     session = session,
+#                                     filePath = paste0("../common_data/Result_", peliID_kesken()[, Peli_ID], ".csv", rc))
+observe({
+ 
+  invalidateLater(1000)
+  if (file.exists("../common_data/temp_data_storage.csv")) {
+   tempdata <- rc("../common_data/temp_data_storage.csv")
+   temp_storage_Peli_ID <- tempdata[muuttuja == "Peli_ID", arvo]
+   
+    if (file.exists(paste0("../common_data/Result_", temp_storage_Peli_ID, ".csv"))) {
+      match_result <- rc(paste0("../common_data/Result_", temp_storage_Peli_ID, ".csv"))
+      #read result
+      kaikkipelit<-data.table(luecsv("pelit.csv"))
+        cols<-names(kaikkipelit)
+
+        kaikkipelit[, (cols):= lapply(.SD, as.character), .SDcols=cols]
+
+        kaikkipelit[peli_ID == temp_storage_Peli_ID, names(match_result) := as.list(match_result)]
+
+         #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
+        #laske otteluiden voittoprosentti
+        colsBackToNum <- c("Lauri_voitti", "Martti_voitti", "BO_mode", "Voittaja")
+        kaikkipelit[, (colsBackToNum):= lapply(.SD, as.numeric), .SDcols = colsBackToNum]
+        kaikkipelit[,':=' (MaxVP = pmax(sum(Lauri_voitti, na.rm = TRUE) / .N, sum(Martti_voitti, na.rm = TRUE) / .N)),
+                    by = Ottelu_ID]
+        kaikkipelit[, MaxVP := ifelse(is.na(MaxVP), 0, MaxVP)]
+
+        #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
+        pelit_jaljella <- kaikkipelit[(!is.na(Voittaja) | MaxVP <= 0.5) | BO_mode == 0]
+        pelit_jaljella[,':='(MaxVP = NULL)]
+
+        kircsv(pelit_jaljella,"pelit.csv", TRUE)
+        required_data("ADM_DI_HIERARKIA")
+        updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
+        
+        file.remove(paste0("../common_data/Result_", temp_storage_Peli_ID, ".csv"))
+      
+          old_dmg_name <- paste0("../common_data/dmg_", temp_storage_Peli_ID, ".csv")
+      if (file.exists(old_dmg_name)) {
+          new_name <- paste0("./external_files/dmg_", temp_storage_Peli_ID, ".csv")
+          file.copy(from = old_dmg_name,
+                    to = new_name)
+          file.remove(old_dmg_name)
+      }
+          old_turn_name <-  paste0("../common_data/turn_", temp_storage_Peli_ID, ".csv")
+      if(file.exists(old_turn_name)) {
+          new_name2 <- paste0("./external_files/turn_", temp_storage_Peli_ID, ".csv")
+          file.copy(from =old_turn_name,
+                    to = new_name2)
+          file.remove(old_turn_name)
+          
+      }
+          zip_all_and_send()  
+    }
+      
+      
+  }
+   
+ 
+  
 })
 
 #tätä voi käyttää, jos haluaa tallentaa inputtien arvot.

@@ -233,8 +233,8 @@ output$PakkaVSBox <- renderUI({
   #required_data("UID_UUSI_PELI", TRUE)
   #rm(eR_UID_UUSI_PELI)
   #print(eR_UID_UUSI_PELI())
-  eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
-  result <- getVSStatsHtml(eR_UID_UUSI_PELI(), "Lauri")
+  #eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
+  result <- getVSStatsHtml(STG_PELISTATSIT, "Lauri")
   box(HTML(result), background = "aqua", width = NULL, align = "middle")
   
 })
@@ -329,14 +329,14 @@ output$selectInputMartti <- renderUI({
 
 output$PakkaLeftBox <- renderUI({
   # eR_UID_UUSI_PELI <- required_reactive("UID_UUSI_PELI", "eR_UID_UUSI_PELI")
-  result <- getDeckStats("Lauri", eR_UID_UUSI_PELI())
+  result <- getDeckStats("Lauri", eR_UID_UUSI_PELI(), eR_Peli_ID())
   # result(eR_UID_UUSI_PELI())
   box(HTML(result), background = "purple", width = NULL)
   
 })
 output$PakkaRightBox <- renderUI({
   
-  result <- getDeckStats("Martti", eR_UID_UUSI_PELI())
+  result <- getDeckStats("Martti", eR_UID_UUSI_PELI(), eR_Peli_ID())
   box(HTML(result), background = "yellow", width = NULL)
   
 })

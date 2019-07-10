@@ -160,7 +160,7 @@ eR_UID_UUSI_PELI <- reactive({
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 required_functions("UID_UUSI_PELI_ALL_ROWS")
 
-  tulos <- isolate(UID_UUSI_PELI_ALL_ROWS(eR_Peli_ID(),
+  tulos <- isolate(UID_UUSI_PELI_ALL_ROWS(
                          eR_UID_PAKKA(),
                          eR_UID_PAKKA_VS(),
                          STG_PAKAT,
@@ -172,10 +172,10 @@ required_functions("UID_UUSI_PELI_ALL_ROWS")
                          STAT_CURRENT_PAKKA
                         ))
 
-  save(list = "tulos", file = "./Rdata/UID_UUSI_PELI.RData")
+  save(list = "tulos", file = "../common_data/UID_UUSI_PELI.RData")
 
 #  load("./Rdata/UID_UUSI_PELI.RData", envir = globalenv())
-
+ 
  
   return(tulos)
 })
