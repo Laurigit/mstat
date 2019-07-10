@@ -106,7 +106,7 @@ required_functions("UID_UUSI_PELI_ALL_ROWS")
 
 
 
-  tulos <- isolate(UID_UUSI_PELI_ALL_ROWS(
+UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
                          eR_UID_PAKKA(),
                          eR_UID_PAKKA_VS(),
                          STG_PAKAT,
@@ -118,7 +118,7 @@ required_functions("UID_UUSI_PELI_ALL_ROWS")
                          STAT_CURRENT_PAKKA
                         ))
 
-  save(list = "tulos", file = "../common_data/UID_UUSI_PELI.RData")
+  save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
 
 #  load("./Rdata/UID_UUSI_PELI.RData", envir = globalenv())
  
