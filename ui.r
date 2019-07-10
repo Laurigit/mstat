@@ -95,11 +95,12 @@ sidebar <- dashboardSidebar(
 )
 
 #RUNKO  
-dashboardPage(
+dashboardPage( title = "Server",
   
   #dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode, " ", textOutput('blow_timer')),
 #  dashboardHeader(title = textOutput('blow_timer'),
 #                 titleWidth = 450),
+  
   dashboardHeader(title = textOutput('Username')),
  
   sidebar,

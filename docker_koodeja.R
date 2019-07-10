@@ -4,3 +4,7 @@ docker run -ti -p 80:3838 -v C:/Users/Lauri/Documents/R/combine/stat_client:/srv
 
 #join existing running image
 docker exec -it reverent_meninsky bash
+
+
+#buildaa
+docker build -t beepr .
