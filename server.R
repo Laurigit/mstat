@@ -642,6 +642,10 @@ output$Username <- renderText({
 # tulos_luettu <- reactiveFileReader(intervalMillis = 1000,
 #                                     session = session,
 #                                     filePath = paste0("../common_data/Result_", peliID_kesken()[, Peli_ID], ".csv", rc))
+
+
+
+#refresh data here and send it
 observe({
  
   invalidateLater(1000)

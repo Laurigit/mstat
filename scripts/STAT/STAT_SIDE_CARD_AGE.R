@@ -1,7 +1,7 @@
 #find too old cards in side
 
 required_data("STG_PFI")
-
+required_data("STG_PAKAT")
 required_data("STG_PAKKA_COMPONENTS")
 
 required_data("STAT_TURNAUSAJAT")
@@ -26,7 +26,7 @@ inequijoini <- sscolst_ajat[sscols, on = "key", allow.cartesian = TRUE]
 #filtterii
 filtter_vaarat <- inequijoini[!(Aloitus_DT < Valid_to_DT & Lopetus_DT < Valid_from_DT) &
                                 !(Aloitus_DT > Valid_to_DT & Lopetus_DT > Valid_from_DT) ]
-aggregoi <- filtter_vaarat[, .(Turnaus_NO_max = max(Turnaus_NO)), by = .(Pakka_form_ID)]
+aggregoi <- filtter_vaarat[, .(Turnaus_NO_max = min(Turnaus_NO)), by = .(Pakka_form_ID)]
 
 sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]
 
@@ -64,8 +64,8 @@ filter_out_poistetut <- filter_out_nochange[kortit, on = c("Pakka_ID", "Name")]
 #filter_out_poistetut <- kortit[filter_out_nochange, on = c("Pakka_ID", "Name")]
 #filter_out_poistetut[is.na(aa) & Maindeck == FALSE]
 #joinaa omistaja
-sscols <- STG_PAKAT[, Pakka_ID, Omistaja_ID]
-join_omi <- sscols[filter_out_poistetut, on = "Pakka_ID"]
+sscols <- STG_PAKAT[Side >= -1, .(Pakka_NM, Pakka_ID, Omistaja_ID)]
+join_omi <- filter_out_poistetut[sscols, on = "Pakka_ID"]
 #join_omi[is.na(aa) & Maindeck == FALSE & Omistaja_ID == "M"]
 
 STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,

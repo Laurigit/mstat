@@ -3,11 +3,22 @@ required_data(c("ADM_PAKKA_COMPONENTS", "STG_PAKAT", "ADM_PELIT"))
 comp <- ADM_PAKKA_COMPONENTS[is_current_form == TRUE & Maindeck == TRUE]
 
 comp_hist <- ADM_PAKKA_COMPONENTS[Maindeck == TRUE]
-pfi_voitot <- ADM_PELIT[,.(sum_voitot = sum(Voittaja, na.rm = TRUE)), by = .( Pakka_form_ID)]
+pfi_voitot <- ADM_PELIT[!is.na(Voittaja),.(sum_voitot = sum(Voittaja, na.rm = TRUE), sum_pelit = .N), by = .( Pakka_form_ID)]
 #join voitot
 comp_and_wins <- pfi_voitot[comp_hist, on = "Pakka_form_ID"]
-most_wins <- comp_and_wins[Type != "Lands", .(sum_voitot = sum(sum_voitot * Count, na.rm = TRUE)), by = .(Pakka_ID, Card_ID, Name)]
-most_wins_final <- most_wins[most_wins[, .I[which.max(sum_voitot)], by = Pakka_ID]$V1][, .(Pakka_ID, Card_ID_most_wins = Card_ID, Most_wins_sames_card = Name)]
+#only include cards that are currently in the deck
+curr_card_list <- comp_and_wins[is_current_form == TRUE, .N, by = Card_ID]
+
+most_wins <- comp_and_wins[Type != "Lands" & Card_ID %in% curr_card_list[, Card_ID],
+                           .(sum_voitot = sum(sum_voitot * Count,
+                                              na.rm = TRUE),
+                             avg_voitot = sum(sum_voitot * Count,
+                                              na.rm = TRUE) / sum(sum_pelit * Count,
+                                                                  na.rm = TRUE),
+                             count_pelit = sum(sum_pelit * Count, na.rm = TRUE)),
+                           by = .(Pakka_ID, Card_ID, Name)]
+most_wins[, ':=' (Likelihood = -sum(dbinom(sum_voitot:count_pelit, count_pelit, 0.5))),  by = .(Pakka_ID, Card_ID, Name)]
+most_wins_final <- most_wins[most_wins[, .I[which.max(Likelihood)], by = Pakka_ID]$V1][, .(Pakka_ID, Card_ID_most_wins = Card_ID, Most_wins_sames_card = Name)]
 
 
 mode <- comp[comp[Type != "Lands", .I[which.max(Count)], by=Pakka_ID]$V1][, .(Pakka_ID, Card_ID, Most_same_card = Name)]

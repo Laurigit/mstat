@@ -42,7 +42,9 @@ videolliset[, syntaksi := paste0("ffmpeg -ss ", kelausAlkuAika, " -i ", tiedosto
 videolliset[, syntaksi_copy := paste0(kansio, "/ffmpeg -ss ", kelausAlkuAika, " -i ", kansio, "/", tiedostot,  " -ss ",  vakiominuutti,  " -t ",  kesto_text, " -acodec copy -vcodec copy ", filename, ".mp4")]
 
 for(rivi in 1:nrow(videolliset)) {
+  print(videolliset[rivi, filename])
   system(videolliset[rivi, syntaksi_copy], intern = FALSE)
+ 
 }
 
 videotiedostot <- videot[type == "mp4"]
