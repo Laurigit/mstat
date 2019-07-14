@@ -15,8 +15,7 @@ RUN apt-get update && apt-get install -y \
     libv8-dev \
     vlc \
     libsodium18 \
-    libsodium-dev \
-    vim
+    libsodium-dev
 RUN chmod -R 755 /srv/shiny-server/
 RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
