@@ -6,5 +6,7 @@ STG_PAKAT <- SRC_DIVARI[,. (Pakka_ID = rivi_id,
                             Pakka_NM = Nimi,
                             Retired,
                             Side,
-                            Picked)]
+                            Picked,
+                            Manastack_Deck_ID,
+                            Manastack_name_url)]
 save(list = "STG_PAKAT", file = "../common_data/STG_PAKAT.RData")

@@ -118,7 +118,7 @@ UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
                         ))
 
 save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
-
+warning("SEIVATTUS")
 #  load("./Rdata/UID_UUSI_PELI.RData", envir = globalenv())
  
  

@@ -1,0 +1,9 @@
+db:
+  image: mysql
+  command: --default-authentication-plugin=mysql_native_password
+  environment:
+    MYSQL_ROOT_PASSWORD: my-spw
+  ports:
+    - "3306:3306"
+  volumes:
+    - c:/Users/Lauri/Documents/R/mysql/db:/var/lib/mysql

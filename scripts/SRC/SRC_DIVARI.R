@@ -12,4 +12,5 @@ SRC_DIVARI <- luettu[, .(rivi_id,
                Manastack_Deck_ID,
                Json_Prefix,
                Retired,
-               Side)]
+               Side,
+               Manastack_name_url)]
