@@ -7,4 +7,5 @@ STG_DIVARI <- SRC_DIVARI[ ,.(Pakka_ID = rivi_id,
                              Json_Prefix,
                              Deck_name = Nimi,
                              Side,
-                             Retired)]
+                             Retired,
+                             Omistaja_ID = ifelse(Omistaja == 1, "L", "M"))]

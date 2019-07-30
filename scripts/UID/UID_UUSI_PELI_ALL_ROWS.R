@@ -115,5 +115,7 @@ UID_UUSI_PELI_ALL_ROWS <- function(
   #join_omistaja <- omistajadata[join_ennuste, on = "Pakka_ID"]
   
   tulos <- join_ennuste
+  # join_ennuste[, ':=' (Most_same_card = ifelse(is.na(Most_same_card), "Lignify", Most_same_card),
+  #                      Most_wins_sames_card = ifelse(is.na(Most_wins_sames_card), "Lignify", Most_wins_sames_card)]
   return(tulos)
 }

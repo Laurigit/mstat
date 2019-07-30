@@ -19,15 +19,17 @@ observeEvent(input$luo_peleja,{
   #print("luo pejelä alku")
   
   #divarit_dt<-luecsv("./drop_download/divari.csv")
-  required_data(c("ADM_DIVARI", "ADM_PELIT", "STG_PAKAT"))
+  required_data(c("STG_DIVARI", "ADM_PELIT", "STG_PAKAT"))
   #tehään formaatti so+pivaksi pelit.csv:lle
 
   #loop jokasta divaria kohti
   #peliparit divarissa
   #loop jokasta kierrosta kohti
   #loop jokasta ottelua kohti
-  divarit <- ADM_DIVARI
-  kaikkiDivarit<-divarit[order(Divari)][Picked==1,.N,by= .(Pakka_ID, Omistaja_ID, Divari)][,N:=NULL]
+  divarit <- STG_DIVARI
+  kaikkiDivarit <- divarit[order(Divari)][Picked == 1,
+                                          .N,
+                                          by = .(Pakka_ID, Omistaja_ID, Divari)][, N := NULL]
   kaikkiDivarit_vihu <- kaikkiDivarit[, .(Vastustajan_Pakka_ID = Pakka_ID,
                                           Vastustajan_Omistaja_ID = Omistaja_ID,
                                           Divari)]
@@ -133,7 +135,7 @@ observeEvent(input$luo_peleja,{
   kircsv(kaikkipelit,"pelit.csv", upload = TRUE)
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = TRUE)
-  
+  refresh_counter$a <-   refresh_counter$a + 1
   shinyjs::disable("luo_peleja")
   shinyjs::enable("arvo_peli")
   

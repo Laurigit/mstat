@@ -12,6 +12,7 @@ UID_PAKKA <- function(ADM_PELIT,
                       input_BO_mode  = FALSE,
                       input_pfi_mode = FALSE) {
 required_functions("Prepare_Pelit_for_stats")
+  required_data("STG_DIVARI")
 #Voitto_PCT
 Voitto_PCT_data <- Prepare_Pelit_for_stats(ADM_PELIT,
                         MA = "NO",
@@ -34,19 +35,22 @@ Voitto_PCT_MA_pakka <- Voitto_PCT_MA_data[!is.na(Voittaja_Stat),.(Voitto_PCT_MA 
 Voitto_PCT_MA_pakka[, Voitto_PCT_MA_rank := rank(-Voitto_PCT_MA, ties.method = "min")]
 
 
-Lisakortit <- INT_PFI[Pakka_form_ID == Current_Pakka_form_ID,. (Pakka_ID, Deck_size = Kortti_lkm_manastack,
+Lisakortit_all <- INT_PFI[Pakka_form_ID == Current_Pakka_form_ID,. (Pakka_ID, Deck_size = Kortti_lkm_manastack,
                                                                 Shuffle8 = Kortti_lkm_manastack %% 8)]
-Lisakortit[, Deck_size_rank := rank(-Deck_size, ties.method = "min")]
+Lisakortit_all[, Deck_size_rank := rank(-Deck_size, ties.method = "min")]
+
+#only pciked decks
+piked <- STG_DIVARI[Picked == 1,. (Pakka_ID)]
+Lisakortit <- Lisakortit_all[piked, on = "Pakka_ID"]
 
 #putki
 Putki_pakka <- Voitto_PCT_data[Voitto_PCT_data[, .I[which.max(Lopetus_DT)], by=Pakka_ID]$V1][,.(Putki, Pakka_ID)]
 Putki_pakka[, Putki_rank := rank(-Putki, ties.method = "min")]
 #join all
 
-STAT_PAKKA <- Lisakortit[Putki_pakka,
-                                  on = "Pakka_ID"][Voitto_PCT_MA_pakka,
+STAT_PAKKA <- Putki_pakka[Voitto_PCT_MA_pakka,
                                                    on = "Pakka_ID"][Voitto_PCT_pakka,
-                                                                    on = "Pakka_ID"]
+                                                                    on = "Pakka_ID"][Lisakortit, on = "Pakka_ID"]
 return(STAT_PAKKA)
 
 

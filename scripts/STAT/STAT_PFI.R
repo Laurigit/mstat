@@ -20,7 +20,7 @@ aggr_to_pakka <- nykypakan_tilastot[ , .(Voitot = sum(Voittaja * Peli_LKM, na.rm
 aggr_to_pakka[, Pfi_voitot := (Voitot + Tasapelit * 0.5), by = Pakka_ID]
 aggr_to_pakka[, Pfi_tappiot := Peli_LKM - Pfi_voitot, by = Pakka_ID]
 
-sspakat <- STG_PAKAT[, .(Pakka_ID, Omistaja_ID, Pakka_NM)]
+sspakat <- STG_PAKAT[, .(Pakka_ID, Omistaja_ID, Pakka_NM, Retired, Side)]
 
 joinpakat <- sspakat[aggr_to_pakka, on = "Pakka_ID"]
 
@@ -30,7 +30,7 @@ joinlisa <- onlymax[joinpakat, on = "Pakka_ID"]
 #joinmanastackLisa
 joinlisaManaStack <- current_manastack_cards[joinlisa, on = "Pakka_ID"]
 
-res_table <- joinlisaManaStack[, .(Deck = Pakka_NM,
+res_table <- joinlisaManaStack[Retired == 0 | Side == 1, .(Deck = Pakka_NM,
                           Owner = Omistaja_ID,
                           Deck_size = Lisakortit_lkm,
                           Deck_size_MS = Manastack_Cards,
