@@ -162,6 +162,13 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
                                   return(result)
  })
 
+
+
+
+
+tempDataLehtysLaskuri <- reactiveValues(a = 0)
+updatedTempData<- reactiveValues(a = 0)
+
 # 
 # 
 # observeEvent(input$tasuriPeli, {
@@ -170,12 +177,6 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
 #   paivitaSliderit(uusPeliID, session) 
 # })
 # 
-
-
-
-tempDataLehtysLaskuri <- reactiveValues(a = 0)
-updatedTempData<- reactiveValues(a = 0)
-
 
 #KOLME UI KOMPONENTTIA KOPIPASTETTY. TEE MUUTOKSET MOLEMPIIN
 # output$PakkaLeftBox <- renderUI({

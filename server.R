@@ -649,61 +649,77 @@ output$Username <- renderText({
 observe({
  
   invalidateLater(1000)
-  if (file.exists("../common_data/temp_data_storage.csv")) {
-   tempdata <- rc("../common_data/temp_data_storage.csv")
-   temp_storage_Peli_ID <- tempdata[muuttuja == "Peli_ID", arvo]
+
+   # tempdata <- rc("../common_data/temp_data_storage.csv")
+   # temp_storage_Peli_ID <- tempdata[muuttuja == "Peli_ID", arvo]
    
-    if (file.exists(paste0("../common_data/Result_", temp_storage_Peli_ID, ".csv"))) {
-      match_result <- rc(paste0("../common_data/Result_", temp_storage_Peli_ID, ".csv"))
-      #read result
-      kaikkipelit<-data.table(luecsv("pelit.csv"))
-        cols<-names(kaikkipelit)
+   #find all results
+   
+   resultfiles_all <- data.table(dir("../common_data/"))
+   resultfiles <- resultfiles_all[str_sub(V1, 1, 8) != "Result_f" & str_sub(V1, 1, 6) == "Result"]
+   if (nrow(resultfiles) > 0) {
+   #read result
+   kaikkipelit<-data.table(luecsv("pelit.csv"))
+   for(file_looppi in resultfiles[, V1]) {
+     
+
+     
+     
+      match_result <- rc(paste0("../common_data/", file_looppi))
+      #jättää vaan numerot
+      loop_peli_id <-  gsub("[^0-9-]", "", file_looppi)
+      #check if the game has been already played just to be safe
+      if (!is.na(kaikkipelit[peli_ID == loop_peli_id, Voittaja])) {
+        warning("server.R, peli yritettiin tallentaa uudelleen.")
+      } else {
+       
+      
+      
+        cols <- names(kaikkipelit)
 
         kaikkipelit[, (cols):= lapply(.SD, as.character), .SDcols=cols]
 
-        kaikkipelit[peli_ID == temp_storage_Peli_ID, names(match_result) := as.list(match_result)]
+        kaikkipelit[peli_ID == loop_peli_id, names(match_result) := as.list(match_result)]
 
-         #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
-        #laske otteluiden voittoprosentti
-        colsBackToNum <- c("Lauri_voitti", "Martti_voitti", "BO_mode", "Voittaja")
-        kaikkipelit[, (colsBackToNum):= lapply(.SD, as.numeric), .SDcols = colsBackToNum]
-        kaikkipelit[,':=' (MaxVP = pmax(sum(Lauri_voitti, na.rm = TRUE) / .N, sum(Martti_voitti, na.rm = TRUE) / .N)),
-                    by = Ottelu_ID]
-        kaikkipelit[, MaxVP := ifelse(is.na(MaxVP), 0, MaxVP)]
-
-        #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
-        pelit_jaljella <- kaikkipelit[(!is.na(Voittaja) | MaxVP <= 0.5) | BO_mode == 0]
-        pelit_jaljella[,':='(MaxVP = NULL)]
-
-        kircsv(pelit_jaljella,"pelit.csv", TRUE)
-        required_data("ADM_DI_HIERARKIA")
-        updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
-        
-        file.remove(paste0("../common_data/Result_", temp_storage_Peli_ID, ".csv"))
+       
+        file.remove(paste0("../common_data/", file_looppi))
       
-          old_dmg_name <- paste0("../common_data/dmg_", temp_storage_Peli_ID, ".csv")
+          old_dmg_name <- paste0("../common_data/dmg_", loop_peli_id, ".csv")
       if (file.exists(old_dmg_name)) {
-          new_name <- paste0("./external_files/dmg_", temp_storage_Peli_ID, ".csv")
+          new_name <- paste0("./external_files/dmg_", loop_peli_id, ".csv")
           file.copy(from = old_dmg_name,
                     to = new_name)
           file.remove(old_dmg_name)
       }
-          old_turn_name <-  paste0("../common_data/turn_", temp_storage_Peli_ID, ".csv")
+          old_turn_name <-  paste0("../common_data/turn_", loop_peli_id, ".csv")
       if(file.exists(old_turn_name)) {
-          new_name2 <- paste0("./external_files/turn_", temp_storage_Peli_ID, ".csv")
+          new_name2 <- paste0("./external_files/turn_", loop_peli_id, ".csv")
           file.copy(from =old_turn_name,
                     to = new_name2)
           file.remove(old_turn_name)
           
       }
-          zip_all_and_send()  
-          refresh_counter$a <- refresh_counter$a + 1
-    }
-      
-      
-  }
-   
- 
+          warning("tallennetaan pelia", loop_peli_id)
+      }
+   }
+   #jos bo_mode on päällä, niin tuhoa ylijäämäpelit
+          #laske otteluiden voittoprosentti
+          colsBackToNum <- c("Lauri_voitti", "Martti_voitti", "BO_mode", "Voittaja")
+          kaikkipelit[, (colsBackToNum):= lapply(.SD, as.numeric), .SDcols = colsBackToNum]
+          kaikkipelit[,':=' (MaxVP = pmax(sum(Lauri_voitti, na.rm = TRUE) / .N, sum(Martti_voitti, na.rm = TRUE) / .N)),
+                      by = Ottelu_ID]
+          kaikkipelit[, MaxVP := ifelse(is.na(MaxVP), 0, MaxVP)]
+          #jätä rivit, joiden MaxVP<0.5 tai rivillä on voittaja tai BO_mode on pois päältä
+          pelit_jaljella <- kaikkipelit[(!is.na(Voittaja) | MaxVP <= 0.5) | BO_mode == 0]
+          pelit_jaljella[,':='(MaxVP = NULL)]
+          kircsv(pelit_jaljella,"pelit.csv", TRUE)
+          required_data("ADM_DI_HIERARKIA")
+          updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
+           zip_all_and_send()  
+           refresh_counter$a <- refresh_counter$a + 1
+    
+   }
+
   
 })
 
