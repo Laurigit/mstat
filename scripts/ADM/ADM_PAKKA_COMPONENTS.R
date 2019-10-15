@@ -13,9 +13,26 @@ for(loop in missing_cards) {
 
   loop_card <- getCard(loop)
   new_cards <- rbind(new_cards, loop_card)
+ # loop_card[, Text := str_replace_all(Text, "[^[:alnum:]]", " ") ]
+  
+  dbIoU("CARDS_DIM", loop_card)
  
 }
-MANASTACK_CARDS <- rbind(MANASTACK_CARDS, new_cards)
+
+#check if colname MID exists
+sarakenimet <- colnames(STG_MANASTACK_CARDS)
+onko_MID <- is.na(match("MID", sarakenimet))
+if (onko_MID == TRUE) {
+  STG_MANASTACK_CARDS[, MID := as.integer(NA)]
+}
+if (counter > 0) {
+  STG_MANASTACK_CARDS <- rbind(STG_MANASTACK_CARDS, new_cards)
+}
+
+STG_MANASTACK_CARDS[is.na(MID), MID := getCardMid(Name), by = Name]
+MANASTACK_CARDS <- STG_MANASTACK_CARDS
+
+
 saveR_and_send(MANASTACK_CARDS, "MANASTACK_CARDS", "MANASTACK_CARDS.RData")
 updateData("SRC_MANASTACK_CARDS", ADM_DI_HIERARKIA, input_env = globalenv())
 
