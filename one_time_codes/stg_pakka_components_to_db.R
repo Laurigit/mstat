@@ -30,8 +30,18 @@ sscols_pfi <- STG_PFI[, .(Pakka_ID, Pakka_form_ID)]
 
 joinPID <- joinmid[sscols_pfi, on = "Pakka_form_ID"]
 
+#levita Counttien maaran mkaan
+
+levita_muut2 <- joinPID[rep(seq_len(nrow(joinPID)), Count), ][, Count := NULL]
+
+#luo draft_id. Laske eka montako samaa korttia on pakassa ja tee sen jalkee ID yhdistamalla jarjestys ja MID
+levita_muut2[, jarj := seq_len(.N), by = .(Pakka_form_ID, MID)]
+levita_muut2[, DRAFT_CARDS_ID := -1 * as.numeric(paste0(jarj * 10, MID))]
+levita_muut2[, jarj := NULL]
+#levita_muut2[, DRAFT_CARDS_ID := .GRP * -1, by = "MID"]
+
 #fixapo[, Name := gsub('\'','\'\'', Name)]
 #dbIns("CARDS", joinmid)
-dbWriteTable(con, "CARDS", joinPID, append = TRUE, row.names = FALSE, fileEncoding = "UTF-8")
+dbWriteTable(con, "CARDS", levita_muut2, append = TRUE, row.names = FALSE, fileEncoding = "UTF-8")
 
 
