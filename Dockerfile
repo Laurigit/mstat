@@ -8,6 +8,7 @@ RUN  sudo apt-get install -y \
 RUN apt-get update && apt-get install -y \
     sudo \
     gdebi-core \
+    xclip \
     libmagick++-dev \
     libcurl4-gnutls-dev \
     libxt-dev \
