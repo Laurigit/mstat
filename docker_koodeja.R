@@ -10,7 +10,7 @@ docker run -ti -p 80:3838 -link mysql -v /betmtg:/srv/shiny-server/betmtg -v /cl
 
 
 #network
-sudo docker run -ti -p 80:3838 -v /overlay:/srv/shiny-server/overlay -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
+sudo docker run -ti -p 80:3838 -v /overlay:/srv/shiny-server/overlay -v /draft:/srv/shiny-server/draft -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
 docker run -ti -p 80:3838  beepr:latest
 docker run -ti -p 80:3838 -v /overlay:/srv/shiny-server/overlay -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
 docker run -ti -p 80:3838 -v /mstat:/srv/shiny-server/srv  --network my_network beepr:latest
