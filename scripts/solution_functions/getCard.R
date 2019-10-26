@@ -9,8 +9,8 @@ getCard <- function(mana_stack_id) {
   # names(STG_PAKKA_COMPONENTS)
 
   result_row <- data.table( Card_ID = result_json$id,
-                            Name = result_json$name,
-                            Text = ifelse(is.null(result_json$text), NA,  result_json$text),
+                            Name = gsub("[[:punct:]]", "", result_json$name),
+                            Text = gsub("[[:punct:]]", "", ifelse(is.null(result_json$text), NA,  result_json$text)),
                             Cost = ifelse(is.null(result_json$mana_cost), NA, result_json$mana_cost),
                             Converted_Cost = ifelse(is.null(result_json$converted_cost), NA, result_json$converted_cost),
                             Rarity = result_json$rarity,
@@ -20,4 +20,3 @@ getCard <- function(mana_stack_id) {
   
   return(result_row)
 }
-
