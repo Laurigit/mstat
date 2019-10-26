@@ -25,7 +25,7 @@ update_sideboard_after_new_deck <- function(omistaja_input, input_new_deck_id) {
   side_updated <- side_updated_temp[, .(Count, Name)]
  # print(side_updated)
   poistettu <- sideloop_id_list[, sum(Count)] - side_updated[, sum(Count)]
-  
+ #print(new_deck_list)
   new_deck_list <- newLists$removed_list_left
   lisatty <- jaljella - new_deck_list[, sum(Count)] 
   print(poistettu)
@@ -39,4 +39,5 @@ update_sideboard_after_new_deck <- function(omistaja_input, input_new_deck_id) {
               dec = ",")
   }
 }
-#update_sideboard_after_new_deck("L", 18)
+#updateData(c("STG_PAKAT", "STG_PAKKA_COMPONENTS", "STG_PFI"), ADM_DI_HIERARKIA, input_env = globalenv())
+#update_sideboard_after_new_deck("M", 40)

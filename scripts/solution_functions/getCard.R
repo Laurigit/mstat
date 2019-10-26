@@ -20,3 +20,4 @@ getCard <- function(mana_stack_id) {
   
   return(result_row)
 }
+

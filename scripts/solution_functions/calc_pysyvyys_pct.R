@@ -5,6 +5,7 @@
 
 calc_pysyvyys_pct <- function(input_PFID, input_PFI_newer, component_data) {
   #pakan idt
+
   pakka <- component_data[Pakka_form_ID %in% c(input_PFID, input_PFI_newer) & Type != "Lands" & Maindeck == TRUE,
                           .(Name, Count, Pakka_form_ID)]
   joini <- pakka[Pakka_form_ID == input_PFID][pakka[Pakka_form_ID == input_PFI_newer], on = "Name"]

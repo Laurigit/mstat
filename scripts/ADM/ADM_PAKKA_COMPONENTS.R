@@ -7,15 +7,18 @@ joini <- STG_MANASTACK_CARDS[, .(Card_ID, Name)][STG_PAKKA_COMPONENTS[, .(Card_I
 missing_cards <- joini[is.na(Name), .N, by = Card_ID][, Card_ID]
 new_cards <- NULL
 counter <- 0
+con <- connDB(con)
 for(loop in missing_cards) {
   counter <- counter + 1
   print(paste0(counter, "/", length(missing_cards)))
 
   loop_card <- getCard(loop)
-  new_cards <- rbind(new_cards, loop_card)
+  MID <- getCardMid(loop_card[, Name])
+  loop_cardMID <- cbind(loop_card, MID)
+  new_cards <- rbind(new_cards, loop_cardMID)
  # loop_card[, Text := str_replace_all(Text, "[^[:alnum:]]", " ") ]
   
-  dbIoU("CARDS_DIM", loop_card)
+  dbIoU("CARDS_DIM", loop_cardMID)
  
 }
 

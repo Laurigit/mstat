@@ -1,5 +1,5 @@
 required_data("STG_PAKKA_COMPONENTS")
-
+required_data("ADM_PAKKA_COMPONENTS")
 
 connDB <- function(con) {
   con <- tryCatch({

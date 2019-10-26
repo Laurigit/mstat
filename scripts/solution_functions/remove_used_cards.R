@@ -18,10 +18,12 @@ remove_used_cards <- function(decklist_orig_input, removed_cards_input) {
   #pitää aggregoida, koska voi olla sama nimi eri riveillä, koska niillä eri id(eli setti tai kuva)
   
 removed_cards <- removed_cards_input[,. (Count_R = sum(Count)), by = Name]
+
 decklist_orig <- decklist_orig_input[, .(Count = sum(Count)), by = Name]
 
  result <- NULL
   joinaa <- removed_cards[decklist_orig, on = c("Name")]
+  print(joinaa[!is.na(Count_R)])
   joinaa[, Count_R_fix_NA := ifelse(is.na(Count_R), 0, Count_R )]
   #laske vähennyksen jälkeen jäljelle jäävä lkm
   joinaa[, Count_after := Count - Count_R_fix_NA]
