@@ -4,7 +4,7 @@ required_data("ADM_DI_HIERARKIA", TRUE)
 required_data(c("STG_PAKKA_COMPONENTS", "STG_MANASTACK_CARDS", "STG_PFI", "STG_PAKAT"))
 #find missing cards
 joini <- STG_MANASTACK_CARDS[, .(Card_ID, Name)][STG_PAKKA_COMPONENTS[, .(Card_ID)], on = "Card_ID"]
-missing_cards <- joini[is.na(Name), .N, by = Card_ID][, Card_ID][33:40]
+missing_cards <- joini[is.na(Name), .N, by = Card_ID][, Card_ID]
 new_cards <- NULL
 counter <- 0
 con <- connDB(con)
