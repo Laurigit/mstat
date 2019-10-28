@@ -32,6 +32,7 @@ RUN install2.r --error \
 # Install R packages that are required
 # TODO: add further package if you need!
 RUN R -e "devtools::install_github('paulc91/shinyauthr')"
+RUN R -e "devtools::install_github('ayayron/shinydnd')"
 RUN R -e "install.packages(c('qdapRegex','clipr', 'shinyWidgets','shinydashboard','shinyjs','data.table','lubridate','DT','reshape2','jsonlite','rdrop2','zoo','rpivotTable','rvest','curl','stringr'), repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages(c('ggplot2', 'magick','ggthemes','shinyalert','anytime','readxl','qdapRegex','httr','V8','shinydashboardPlus','rhandsontable','tidyverse','beepr','reshape2','grid','gridExtra', 'beepr', 'RMySQL', 'testthat'), repos='http://cran.rstudio.com/')"
 
