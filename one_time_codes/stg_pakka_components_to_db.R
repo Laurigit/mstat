@@ -23,8 +23,8 @@ con  <-connDB(con)
 
 
 fixapo <- STG_PAKKA_COMPONENTS[, .(Pakka_form_ID, Card_ID, Count, Name, Maindeck = ifelse(Maindeck == TRUE, 1, 0))]
-mid <- MANASTACK_CARDS[, .(MID, Card_ID)]
-joinmid <- fixapo[mid, on = "Card_ID"]
+mid <- MANASTACK_CARDS[, .(MID, Name)]
+joinmid <- fixapo[mid, on = "Name"]
 
 sscols_pfi <- STG_PFI[, .(Pakka_ID, Pakka_form_ID)]
 
@@ -71,7 +71,7 @@ joinlandi[, land_MID := NULL]
 #dbIns("CARDS", joinmid)
 con <- connDB(con)
 joinlandi[, Name := iconv(x = Name, to = "UTF-8")]
-dbWriteTable(con, "CARDS", joinlandi, append = TRUE, row.names = FALSE)
+#dbWriteTable(con, "CARDS", joinlandi, append = FALSE, row.names = FALSE, overwrite = TRUE)
 
 # snipe <- joinlandi[MID == 456640]
 #dbQ("SET NAMES utf8")
@@ -79,6 +79,6 @@ dbWriteTable(con, "CARDS", joinlandi, append = TRUE, row.names = FALSE)
 #statement <- iconv(x = 'insert into betmtg2.CARDS (Name) VALUES ("ääthersnipe2")',  to = "UTF-8")
 #table8 <- iconv(x = joinlandi,  to = "UTF-8")
 
-dbSendQuery(con, statement)
+#dbSendQuery(con, statement)
 #dbWriteTable(con, "CARDS", snipe[1], append = FALSE, row.names = FALSE, fileEncoding =  "UTF-8", overwrite = TRUE)
-dbGetQuery(con,"show variables like 'character_set_%'")
+#dbGetQuery(con,"show variables like 'character_set_%'")

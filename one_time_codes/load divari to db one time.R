@@ -25,4 +25,4 @@ add_omistaja_ID <- SRC_DIVARI[1 != 0]
 
 add_omistaja_ID[, Omistaja_ID := ifelse(Omistaja == 1, "L", "M")]
 
-dbWriteTable(con, "DECKS_DIM", add_omistaja_ID, row.names = FALSE, append = TRUE)
+#dbWriteTable(con, "DECKS_DIM", add_omistaja_ID, row.names = FALSE, append = FALSE, overwrite = TRUE)

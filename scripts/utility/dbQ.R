@@ -1,5 +1,5 @@
-dbQ <- function(query) {
-  con <- connDB(con)
-  res <- as.data.table(dbFetch(dbSendQuery(con, query)))
+dbQ <- function(query, con) {
+
+  res <- as.data.table(dbFetch(dbSendQuery(con, query), n = -1))
   return(res)
 }
