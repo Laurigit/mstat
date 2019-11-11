@@ -13,7 +13,7 @@
 # input_turnaus<-28
 # pakat<-omaReadJson("C:/Users/Lauri/Documents/R/mstat2/code/external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
-# divariData<-luecsv("divari.csv")
+# divariData<-luecsv("divari.csv") ###########lu ekannasta?
 
 sarjataulukkoKaikki<-function(divariData,peliData,input_bo_mode=FALSE,input_turnaus=1,input_total=FALSE,input_divari=NA,input_Laurin_pakka=NA,input_Martin_pakka=NA,input_moving_average=NA,input_pfiMA=FALSE,pfi_data=NA) {
 #pysäytä jos nulleja

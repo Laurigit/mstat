@@ -105,13 +105,17 @@ observeEvent(input$tallenna_bannit,{
     shinyjs::enable("luo_peleja")
 
   #print(divarit)
-  raakadivari <- luecsv("divari.csv")
+  #raakadivari <- luecsv("divari.csv")
+  raakadivari <- dbQ("SELECT * FROM DECKS_DIM", con)
   #poista vanhat arvot
   raakadivari[, ':=' (Divari = NULL,
                       Picked = NULL)]
   #joinaa uudet
   joinuus <- divarit[raakadivari, on = .(Pakka_ID == rivi_id)]
+  
   setnames(joinuus, "Pakka_ID", "rivi_id")
+  con<- connDB(con)
+  dbWriteTable(con, "DECKS_DIM", joinuus, overwrite = TRUE, row.names = FALSE)
   kircsv(joinuus, "divari.csv", upload = TRUE)
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_DIVARI", ADM_DI_HIERARKIA, input_env = globalenv())

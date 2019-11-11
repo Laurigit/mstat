@@ -421,24 +421,24 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
 
 
   #päivitä divarit
-  observeEvent(input$tallenna_divarit,{
- 
-    
-    divarit<-divaridata()
-    
-    
-    divarit[,syntax:=(text=paste0(Pakka,Omistaja))]
-    
-    lapply(divarit[,syntax],function(i) {
-      divarit[syntax==i,Divari:=input[[i]]]
-      
-    })
-    divarit[,syntax:=NULL]
-    print(divarit)
-    kircsv(divarit,"./divari.csv", upload = TRUE)
-    #divaridata<-divarit
-  
-  })
+  # observeEvent(input$tallenna_divarit,{
+  # 
+  #   
+  #   divarit<-divaridata()
+  #   
+  #   
+  #   divarit[,syntax:=(text=paste0(Pakka,Omistaja))]
+  #   
+  #   lapply(divarit[,syntax],function(i) {
+  #     divarit[syntax==i,Divari:=input[[i]]]
+  #     
+  #   })
+  #   divarit[,syntax:=NULL]
+  #   print(divarit)
+  #   kircsv(divarit,"./divari.csv", upload = TRUE)
+  #   #divaridata<-divarit
+  # 
+  # })
   
 
  

@@ -76,9 +76,6 @@ joinlandi[, Name := iconv(x = Name, to = "UTF-8")]
 # snipe <- joinlandi[MID == 456640]
 #dbQ("SET NAMES utf8")
 #dbSendQuery(con, 'SET NAMES utf8')
-#statement <- iconv(x = 'insert into betmtg2.CARDS (Name) VALUES ("ääthersnipe2")',  to = "UTF-8")
-#table8 <- iconv(x = joinlandi,  to = "UTF-8")
 
-#dbSendQuery(con, statement)
-#dbWriteTable(con, "CARDS", snipe[1], append = FALSE, row.names = FALSE, fileEncoding =  "UTF-8", overwrite = TRUE)
+
 #dbGetQuery(con,"show variables like 'character_set_%'")

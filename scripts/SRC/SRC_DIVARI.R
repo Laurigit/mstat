@@ -1,7 +1,8 @@
 #SRC_DIVARI
-required_functions("luecsv")
+#required_functions("luecsv")
 
-luettu <- luecsv("divari.csv")
+#luettu <- luecsv("divari.csv")
+luettu <- dbSelectAll("DECKS_DIM", con)
 SRC_DIVARI <- luettu[, .(rivi_id,
                Omistaja = as.numeric(Omistaja),
                Pakka = as.numeric(Pakka),

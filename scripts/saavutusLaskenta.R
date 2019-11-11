@@ -2,7 +2,7 @@
 # peliData<-luecsv("pelit.csv")
 # pakat<-omaReadJson("./external_files/")
 # pfi_data<-pakkaUutuusProsentti(pakat)
-# divariData<-luecsv("divari.csv")
+###########3 divariData<-luecsv("divari.csv") lu ekannasta?
 # saavutusAsetukset[,minVaiMax:="max"]
 # saavutusTaulu<-NULL
 # ´saavutusTaulu<-data.table(Omistaja=character(),saavutusNimi=character(),result=numeric(),Nimi=character())
