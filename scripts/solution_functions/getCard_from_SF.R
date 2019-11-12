@@ -16,10 +16,12 @@ getCard_from_SF <- function(input_card_name) {
     #backupMID
     #https://api.magicthegathering.io/v1/cards?name=%22Goblin%20Guide%22
    # urli_bu <- paste0('https://api.magicthegathering.io/v1/cards?name=\"',  input_card_name, '\"')
+
     urli_bu <- paste0('https://api.magicthegathering.io/v1/cards?name=',  urlName)
     raw.result_bu1 <- GET(url = urli_bu)
     result_json_bu <- fromJSON(rawToChar(raw.result_bu1$content))
     mid <- max(result_json_bu$cards$multiverseid, na.rm = TRUE)
+
   }
 
 
