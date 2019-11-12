@@ -5,7 +5,7 @@ getCard_from_SF <- function(input_card_name) {
   #fixedName <- stringi::stri_trans_general(cardNameInput, "Latin-ASCII")
   
  # input_card_name <- "Aethersnipe"
-  #cardNameInput <- "Kongming,+\"Sleeping+Dragon\""
+  #input_card_name <- "Kongming,+\"Sleeping+Dragon\""
   urlName_frst <- gsub(" ", "+", x = input_card_name)
   urlName <- gsub("\"", "", x = urlName_frst)
   url <- paste0('https://api.scryfall.com/cards/named?exact=\'',  urlName, '\'')
