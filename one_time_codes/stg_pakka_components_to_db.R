@@ -1,6 +1,6 @@
 required_data("STG_PAKKA_COMPONENTS")
 required_data("ADM_PAKKA_COMPONENTS")
-
+required_data("STG_PFI")
 connDB <- function(con) {
   con <- tryCatch({
     
@@ -26,7 +26,7 @@ fixapo <- STG_PAKKA_COMPONENTS[, .(Pakka_form_ID, Card_ID, Count, Name, Maindeck
 mid <- MANASTACK_CARDS[, .(MID, Name)]
 joinmid <- fixapo[mid, on = "Name"]
 
-sscols_pfi <- STG_PFI[, .(Pakka_ID, Pakka_form_ID)]
+sscols_pfi <- STG_PFI[, .(Pakka_ID, Pakka_form_ID, Valid_from_DT)]
 
 joinPID <- joinmid[sscols_pfi, on = "Pakka_form_ID"]
 
