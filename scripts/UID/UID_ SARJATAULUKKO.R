@@ -1,6 +1,6 @@
 #UID_SARJATAULUKKO <- 
 # input_Turnaus_NO <- 11
-# input_BO_mode <- TRUE
+# input_BO_mode <- FALSE
 # 
 # testres <- UID_SARJATAULUKKO(27, TRUE, ADM_PELIT, STG_PAKAT)
 # testres
