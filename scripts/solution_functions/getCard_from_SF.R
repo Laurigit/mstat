@@ -3,7 +3,7 @@ getCard_from_SF <- function(input_card_name) {
   
   #check if exists
   #fixedName <- stringi::stri_trans_general(cardNameInput, "Latin-ASCII")
-  
+  #input_card_name <- "Fire // Ice"
   # input_card_name <- "Aethersnipe"
   # input_card_name <- "Lightning Helix"
   #input_card_name <- "Kongming,+\"Sleeping+Dragon\""
@@ -22,7 +22,8 @@ getCard_from_SF <- function(input_card_name) {
     
     urli_bu <- paste0('https://api.magicthegathering.io/v1/cards?name=',  urlName)
     raw.result_bu1 <- GET(url = urli_bu)
-    result_json_bu <- fromJSON(rawToChar(raw.result_bu1$content))
+    raw.result_bu1_iconv <- content(raw.result_bu1, "text", encoding = "UTF-8")
+    result_json_bu <- fromJSON(raw.result_bu1_iconv)
     mid <- max(result_json_bu$cards$multiverseid, na.rm = TRUE)
     
   }
