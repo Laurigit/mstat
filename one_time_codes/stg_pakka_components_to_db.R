@@ -1,3 +1,4 @@
+con <- connDB(con)
 required_data("STG_PAKKA_COMPONENTS")
 required_data("ADM_PAKKA_COMPONENTS")
 required_data("STG_PFI_FROM_JSON")
@@ -71,7 +72,7 @@ joinlandi[, land_MID := NULL]
 #dbIns("CARDS", joinmid)
 con <- connDB(con)
 joinlandi[, Name := iconv(x = Name, to = "UTF-8")]
-#dbWriteTable(con, "CARDS", joinlandi, append = FALSE, row.names = FALSE, overwrite = TRUE)
+#dbWriteTable(con, "CARDS", joinlandi, append = TRUE, row.names = FALSE, overwrite = FALSE)
 #joinlandi[Valid_from_DT > "2019-10-26 01:00:00", .N, by = .(Pakka_form_ID, Pakka_ID, Valid_from_DT)][order(Valid_from_DT)]
 #joinlandi[Pakka_ID == 40 & Pakka_form_ID > 500]
 # snipe <- joinlandi[MID == 456640]
