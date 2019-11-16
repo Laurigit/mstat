@@ -196,7 +196,7 @@ for(input_kansio in input_kansio_list) {
     })
   }
 }
-
-load_data_from_DB()
 con <- connDB(con)
+load_data_from_DB()
+
 print("Global.R valmis")

@@ -18,4 +18,5 @@ pakka_meta_sorted[,':=' (Valid_to_DT = as.POSIXct((ifelse(is.na(Valid_to_DT),
                                                           as.POSIXct("2100-01-01", tz = "EET"),
                                                           Valid_to_DT)), tz = "EET", origin = "1970-01-01"))]
 pakka_meta_sorted[, Current_Pakka_form_ID := max(Pakka_form_ID), by = Pakka_ID]
+pakka_meta_sorted[, Pakka_ID := as.character(Pakka_ID)]
 STG_PFI <- pakka_meta_sorted 
