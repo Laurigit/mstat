@@ -100,6 +100,7 @@ eR_UID_UUSI_PELI <- reactive({
   # input$radio_pfi_mode <- FALSE
   #create dependency 
   refresh_counter$a
+  input$luo_peleja
   ####
   required_data(c("ADM_PELIT", "INT_PFI", "STG_PAKAT", "STG_OMISTAJA", "STAT_VOITTOENNUSTE", "STAT_CURRENT_PAKKA"))
 required_functions("UID_UUSI_PELI_ALL_ROWS")
