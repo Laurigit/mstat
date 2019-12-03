@@ -2,7 +2,7 @@
 required_data("ADM_PELIT")
 required_functions("NO_conversio")
 #sovittu, että laskenta alkaa vasta tästä turnauksestsa
-subset_pelit <- ADM_PELIT[Turnaus_NO > 53]
+subset_pelit <- ADM_PELIT[Turnaus_NO > 54]
 
 BO_data <- BO_conversio(subset_pelit)
 # aggr_to_turnaus <- BO_data[!is.na(Aloitus_DT),.(Pakka_ID_list = list(unique(Pakka_ID)),
