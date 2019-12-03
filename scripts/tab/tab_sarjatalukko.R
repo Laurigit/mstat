@@ -73,7 +73,7 @@ eR_UID_SARJATAULUKKO <- reactive({
 })
 
 output$sarjataulukot <-renderUI({
-  required_data(c("ADM_PELIT", "STG_PAKAT", "STAT_TURNAUS"))
+  required_data(c("ADM_PELIT", "STG_PAKAT", "STAT_TURNAUS", "STAT_RUNNING_TURNAUS"))
   #print("output$sarjataulukot")
   #input <- NULL
   #input$sarjataulukkokierros <- 27
@@ -93,7 +93,7 @@ output$sarjataulukot <-renderUI({
 
   # print(kokonaistilanne)
   # tilanneteksti <-paste0(kokonaistilanne[,Voitot_Lauri],"-",kokonaistilanne[,Voitot_Martti])
-  current_turnaus <- STAT_TURNAUS[Turnaus_valmis == FALSE]
+  #current_turnaus <- STAT_TURNAUS[Turnaus_valmis == FALSE]
   Lvoitot <- total[Omistaja_ID == "L", sum(Score)]
   Mvoitot <- total[Omistaja_ID == "M" , sum(Score)]
    tilanneteksti <- paste0(Lvoitot,
@@ -102,13 +102,28 @@ output$sarjataulukot <-renderUI({
   subtitle <- ifelse(Lvoitot > Mvoitot,"Lauri johtaa",
                     ifelse(Lvoitot < Mvoitot,"Martti johtaa","Tasan"))
 
-  turnaustilanneteksti<-paste0(STAT_TURNAUS[Omistaja_ID == "L",sum(TurnausVoitto, na.rm = TRUE)],
+  turnaustilanneteksti <- paste0(STAT_TURNAUS[Omistaja_ID == "L",sum(TurnausVoitto, na.rm = TRUE)],
                                "-",STAT_TURNAUS[Omistaja_ID == "M",sum(TurnausVoitto, na.rm = TRUE)])
+  running_teksti <- paste0(STAT_RUNNING_TURNAUS[Turnaus_Valmis == 0, running_voitot_L],
+                           "-",
+                           STAT_RUNNING_TURNAUS[Turnaus_Valmis == 0, running_voitot_M])
+  
+  running_teksti_total <- paste0(STAT_RUNNING_TURNAUS[Turnaus_Valmis == 1, max(running_turnaus_voitot_L)],
+                                "-",
+                                STAT_RUNNING_TURNAUS[Turnaus_Valmis == 1, max(running_turnaus_voitot_M)]) 
+  
   Divarit <- sort(total[Omistaja_ID == "L", unique(Divari)])
   
   fluidPage(
-    fluidRow(valueBox(tilanneteksti,subtitle,icon=icon("dashboard",lib = "font-awesome")),
-             valueBox(turnaustilanneteksti,"Turnaustilanne",icon=icon("trophy",lib = "font-awesome"))),
+    fluidRow(#column(3,
+                    valueBox(width = 3, tilanneteksti,subtitle,icon=icon("dashboard",lib = "font-awesome")),
+           #  column(3,
+                    valueBox(width = 3, turnaustilanneteksti,"Turnaustilanne",icon=icon("trophy",lib = "font-awesome")),
+           #  column(3,
+                    valueBox(width = 3, running_teksti, "Trophy competition", icon = icon("dashboard", lib = "font-awesome"), color = "blue"),
+          #   column(3,
+                    valueBox(width = 3, running_teksti_total, "Trophy count", icon = icon("trophy", lib = "font-awesome"), color = "blue")
+    ),
     
     lapply(Divarit,function(i)  {
       plotname <- paste0("plotdyn", i, sep="")

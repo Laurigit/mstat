@@ -64,7 +64,7 @@ filter_out_poistetut <- filter_out_nochange[kortit, on = c("Pakka_ID", "Name")]
 #filter_out_poistetut <- kortit[filter_out_nochange, on = c("Pakka_ID", "Name")]
 #filter_out_poistetut[is.na(aa) & Maindeck == FALSE]
 #joinaa omistaja
-sscols <- STG_PAKAT[Side >= -1, .(Pakka_NM, Pakka_ID, Omistaja_ID)]
+sscols <- STG_PAKAT[Side >= -1, .(Pakka_NM, Pakka_ID, Omistaja_ID, Side)]
 join_omi <- filter_out_poistetut[sscols, on = "Pakka_ID"]
 #join_omi[is.na(aa) & Maindeck == FALSE & Omistaja_ID == "M"]
 
@@ -72,9 +72,15 @@ STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
                                    Pakka_form_ID,
                                    Omistaja_ID,
                                    Name,
+                                   Side,
                                    Maindeck,
                                    Count = Muutos_NA,
                                    Turnaus_NO_drafted = Turnaus_NO,
                                    Card_age = max_turnaus - Turnaus_NO)]
 
+
+#sidet <- STAT_SIDE_CARD_AGE[ Side == 1][, .N, by = Card_age][order(Card_age)]
+#side_agg <- sidet[, .N, by = .(Card_age, Omistaja_ID)][order(Card_age)]
+
+#dcast.data.table(side_agg, formula = Card_age ~ Omistaja_ID)
 
