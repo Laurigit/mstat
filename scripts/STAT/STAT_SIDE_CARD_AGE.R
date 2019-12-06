@@ -78,9 +78,10 @@ STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
                                    Turnaus_NO_drafted = Turnaus_NO,
                                    Card_age = max_turnaus - Turnaus_NO)]
 
-
-#sidet <- STAT_SIDE_CARD_AGE[ Side == 1][, .N, by = Card_age][order(Card_age)]
-#side_agg <- sidet[, .N, by = .(Card_age, Omistaja_ID)][order(Card_age)]
-
-#dcast.data.table(side_agg, formula = Card_age ~ Omistaja_ID)
-
+# con <- connDB(con)
+# dbWriteTable(con, "STAT_SIDE_CARD_AGE", STAT_SIDE_CARD_AGE, row.names = FALSE, overwrite = TRUE)
+# sidet <- STAT_SIDE_CARD_AGE[ Side == 1][, .N, by = .(Omistaja_ID, Card_age)][order(Card_age)]
+# side_agg <- STAT_SIDE_CARD_AGE[Side == 1, sum(Count), by = .(Card_age, Omistaja_ID)][order(Card_age)]
+# 
+# vert <- dcast.data.table(side_agg, formula = Card_age ~ Omistaja_ID)
+# vert[, .(l = sum(L), m = sum(M))]

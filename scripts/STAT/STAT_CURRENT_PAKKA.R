@@ -87,6 +87,15 @@ setorder(melt_aggr_comp, Pakka_ID, -value)
 variNimi <- melt_aggr_comp[Kirjain != "x", .(Colors = sort_MTG_colors(paste0(Kirjain, collapse = ""))),
                            by = .(Pakka_ID)]
 
+sorttaa <- melt_aggr_comp[order(-value)][!variable %in% c("C", "X")]
+sorttaa[, suhde := value / maxVariLKM ]
+d <- data.table(sorttaa, key="Pakka_ID")
+top2 <- d[, head(.SD, 2), by=Pakka_ID]
+vaan_isot_varit <- top2[suhde > 0.3]
+aggr_to_pakka_ID <- vaan_isot_varit[, .(Top2_colors = paste0(Kirjain, collapse = "")), by = Pakka_ID]
+
+
+
 aggr_comp_pct <- aggr_comp[,. (  
   W = W / (W + B + U + R + G + X + C),
   B = B / (W + B + U + R + G + X + C),
@@ -112,6 +121,11 @@ joinWins[, ':=' (Pakka_NM_Dynamic = paste(word(Pakka_NM, 1, sep = "_"),
                                            word(Pakka_NM, -1, sep = "_"),
                                            sep = "_"))]
 
-STAT_CURRENT_PAKKA <- joinWins[order(as.numeric(Pakka_ID))]
+#jointop2_colors
+sorder_by_pid <- joinWins[order(as.numeric(Pakka_ID))]
+join2top <- aggr_to_pakka_ID[sorder_by_pid, on = "Pakka_ID"]
 
+STAT_CURRENT_PAKKA <- join2top
+#con <- connDB(con)
+#dbWriteTable(con, "STAT_CURRENT_PAKKA", STAT_CURRENT_PAKKA)
 #muistaa joinaa mode
