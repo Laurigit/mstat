@@ -28,7 +28,10 @@ filtter_vaarat <- inequijoini[!(Aloitus_DT < Valid_to_DT & Lopetus_DT < Valid_fr
                                 !(Aloitus_DT > Valid_to_DT & Lopetus_DT > Valid_from_DT) ]
 aggregoi <- filtter_vaarat[, .(Turnaus_NO_max = min(Turnaus_NO)), by = .(Pakka_form_ID)]
 
-sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]#Name == "Thought Scour"]
+sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]#[Name == "Thought Scour"]
+
+
+
 
 joinaa <- aggregoi[sscols_PAKKA_COMPS, on = "Pakka_form_ID"]
 #etitään pakka_Id takasin
@@ -36,18 +39,34 @@ joinaa <- aggregoi[sscols_PAKKA_COMPS, on = "Pakka_form_ID"]
 sscols <- STG_PFI[, .(Pakka_ID, Pakka_form_ID)]
 join_pid <- sscols[joinaa, on = "Pakka_form_ID"]#[Pakka_ID == 33 & Name == "Angelic Page"]
 
-setorder(join_pid, Pakka_ID, Pakka_form_ID)
+#duplikoi alkuperäset sidet kuudeksi eri listaksi
+orig_sides <- join_pid[Pakka_ID %in% c(21, 22)]
+#maxpiffit 
+max_orig_pfi <- orig_sides[, max(Pakka_form_ID), by = Pakka_ID]
+vaan_maxit <- orig_sides[Pakka_form_ID %in% max_orig_pfi[, V1]]
+vaan_maxit[, Omistaja_ID := ifelse(Pakka_form_ID == 236, "L", "M")]
+sscols_vanhat <- vaan_maxit[, .(Count = sum(Count)), by = .(Omistaja_ID, Name, Turnaus_NO_max )]
+#muut sidet
+uudet_sidet <- STG_PAKAT[Side == 1, .(Pakka_ID, Pakka_form_ID = as.numeric(Pakka_ID)*-1, Omistaja_ID)]
+#generoi decklistit
+merketty <- merge(x = uudet_sidet, y = sscols_vanhat, by = "Omistaja_ID", allow.cartesian = TRUE)
+
+merketty[, ':=' (Maindeck = 1, Omistaja_ID = NULL)]
+
+appendaa <- rbind(join_pid, merketty)
+
+setorder(appendaa, Pakka_ID, Pakka_form_ID)
 #paikataan uupuvat
-join_pid[, Turnaus_NO_eka := na.locf(Turnaus_NO_max, fromLast = FALSE, na.rm = FALSE), by = Pakka_ID]
+appendaa[, Turnaus_NO_eka := na.locf(Turnaus_NO_max, fromLast = FALSE, na.rm = FALSE), by = Pakka_ID]
 #ja toiseen suuntaan
 
-join_pid[, Turnaus_NO := na.locf(Turnaus_NO_eka, fromLast = TRUE, na.rm = FALSE), by = Pakka_ID]
+appendaa[, Turnaus_NO := na.locf(Turnaus_NO_eka, fromLast = TRUE, na.rm = FALSE), by = Pakka_ID]
 
 #sorttaa uusiks ja huomio vaan muutokset
 
-setorder(join_pid, Pakka_ID, Turnaus_NO, Pakka_form_ID, Name)
+setorder(appendaa, Pakka_ID, Turnaus_NO, Pakka_form_ID, Name)
 #join_pid[Pakka_ID == 33 & Name == "Angelic Page"]
-diff <- join_pid
+diff <- appendaa#[Name == "Thought Scour"]
 diff[, Muutos := Count - lag(Count), by = .(Pakka_ID, Name, Maindeck)]
 diff[, Muutos_NA := ifelse(is.na(Muutos), Count, Muutos)]
 filter_out_nochange <- diff[Muutos_NA > 0]
@@ -59,13 +78,14 @@ filter_out_nochange <- diff[Muutos_NA > 0]
 #korjaa vielä kortit, jotka on ollut sidessä, mutta ei oo enää.
 maxpfi_data <- join_pid[, .(max_pfi = max(Pakka_form_ID)), by = Pakka_ID]
 #uusimpien pakkojen laput
-kortit <- join_pid[Pakka_form_ID %in% maxpfi_data[, max_pfi],. (Pakka_ID, Pakka_form_ID, Name, aa = "aa")]
-filter_out_poistetut <- filter_out_nochange[kortit, on = c("Pakka_ID", "Name", "Pakka_form_ID")]
+kortit <- join_pid[Pakka_form_ID %in% maxpfi_data[, max_pfi],. (Maindeck, Pakka_ID, Name, aa = "aa")]
+#kortit[Name == "Thought Scour"]
+filter_out_poistetut <- filter_out_nochange[kortit, on = c("Pakka_ID", "Name", "Maindeck")]
 #filter_out_poistetut <- kortit[filter_out_nochange, on = c("Pakka_ID", "Name")]
 #filter_out_poistetut[is.na(aa) & Maindeck == FALSE]
 #joinaa omistaja
-sscols <- STG_PAKAT[Side >= -1, .(Pakka_NM, Pakka_ID, Omistaja_ID, Side)]
-join_omi <- filter_out_poistetut[sscols, on = "Pakka_ID"]
+sscols <- STG_PAKAT[Side > -1, .(Pakka_NM, Pakka_ID, Omistaja_ID, Side)]
+join_omi <- filter_out_poistetut[sscols, on = "Pakka_ID", nomatch = 0]
 #join_omi[is.na(aa) & Maindeck == FALSE & Omistaja_ID == "M"]
 
 STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
@@ -79,10 +99,11 @@ STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
                                    Card_age = max_turnaus - Turnaus_NO)]
 
 con <- connDB(con)
-dbWT(con, STAT_SIDE_CARD_AGE)
+dbWT(con, STAT_SIDE_CARD_aAGE)
 # sidet <- STAT_SIDE_CARD_AGE[ Side == 1][, .N, by = .(Omistaja_ID, Card_age)][order(Card_age)]
 # side_agg <- STAT_SIDE_CARD_AGE[Side == 1, sum(Count), by = .(Card_age, Omistaja_ID)][order(Card_age)]
 # 
 # vert <- dcast.data.table(side_agg, formula = Card_age ~ Omistaja_ID)
 # vert[, .(l = sum(L), m = sum(M))]
-STAT_SIDE_CARD_AGE[Name == "Thought Scour"]
+#STAT_SIDE_CARD_AGE[Name == "Maze of Ith"]
+
