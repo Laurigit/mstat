@@ -22,7 +22,7 @@ aggr_to_pakka[, Pfi_tappiot := Peli_LKM - Pfi_voitot, by = Pakka_ID]
 
 sspakat <- STG_PAKAT[, .(Pakka_ID, Omistaja_ID, Pakka_NM, Retired, Side)]
 
-joinpakat <- sspakat[aggr_to_pakka, on = "Pakka_ID"]
+joinpakat <- aggr_to_pakka[sspakat, on = "Pakka_ID"][Retired == 0 & Side == 0]
 
 #joinlisakortit
 joinlisa <- onlymax[joinpakat, on = "Pakka_ID"]

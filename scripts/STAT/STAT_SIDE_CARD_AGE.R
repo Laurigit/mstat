@@ -28,7 +28,7 @@ filtter_vaarat <- inequijoini[!(Aloitus_DT < Valid_to_DT & Lopetus_DT < Valid_fr
                                 !(Aloitus_DT > Valid_to_DT & Lopetus_DT > Valid_from_DT) ]
 aggregoi <- filtter_vaarat[, .(Turnaus_NO_max = min(Turnaus_NO)), by = .(Pakka_form_ID)]
 
-sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]
+sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]#Name == "Thought Scour"]
 
 joinaa <- aggregoi[sscols_PAKKA_COMPS, on = "Pakka_form_ID"]
 #etitään pakka_Id takasin
@@ -48,7 +48,7 @@ join_pid[, Turnaus_NO := na.locf(Turnaus_NO_eka, fromLast = TRUE, na.rm = FALSE)
 setorder(join_pid, Pakka_ID, Turnaus_NO, Pakka_form_ID, Name)
 #join_pid[Pakka_ID == 33 & Name == "Angelic Page"]
 diff <- join_pid
-diff[, Muutos := Count - lag(Count), by = .(Pakka_ID, Name)]
+diff[, Muutos := Count - lag(Count), by = .(Pakka_ID, Name, Maindeck)]
 diff[, Muutos_NA := ifelse(is.na(Muutos), Count, Muutos)]
 filter_out_nochange <- diff[Muutos_NA > 0]
 # t1 <- filter_out_nochange[Pakka_ID == 33]#[, sum(Muutos_NA)]
@@ -59,8 +59,8 @@ filter_out_nochange <- diff[Muutos_NA > 0]
 #korjaa vielä kortit, jotka on ollut sidessä, mutta ei oo enää.
 maxpfi_data <- join_pid[, .(max_pfi = max(Pakka_form_ID)), by = Pakka_ID]
 #uusimpien pakkojen laput
-kortit <- join_pid[Pakka_form_ID %in% maxpfi_data[, max_pfi],. (Pakka_ID, Name, aa = "aa")]
-filter_out_poistetut <- filter_out_nochange[kortit, on = c("Pakka_ID", "Name")]
+kortit <- join_pid[Pakka_form_ID %in% maxpfi_data[, max_pfi],. (Pakka_ID, Pakka_form_ID, Name, aa = "aa")]
+filter_out_poistetut <- filter_out_nochange[kortit, on = c("Pakka_ID", "Name", "Pakka_form_ID")]
 #filter_out_poistetut <- kortit[filter_out_nochange, on = c("Pakka_ID", "Name")]
 #filter_out_poistetut[is.na(aa) & Maindeck == FALSE]
 #joinaa omistaja
@@ -78,10 +78,11 @@ STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
                                    Turnaus_NO_drafted = Turnaus_NO,
                                    Card_age = max_turnaus - Turnaus_NO)]
 
-# con <- connDB(con)
-# dbWriteTable(con, "STAT_SIDE_CARD_AGE", STAT_SIDE_CARD_AGE, row.names = FALSE, overwrite = TRUE)
+con <- connDB(con)
+dbWT(con, STAT_SIDE_CARD_AGE)
 # sidet <- STAT_SIDE_CARD_AGE[ Side == 1][, .N, by = .(Omistaja_ID, Card_age)][order(Card_age)]
 # side_agg <- STAT_SIDE_CARD_AGE[Side == 1, sum(Count), by = .(Card_age, Omistaja_ID)][order(Card_age)]
 # 
 # vert <- dcast.data.table(side_agg, formula = Card_age ~ Omistaja_ID)
 # vert[, .(l = sum(L), m = sum(M))]
+STAT_SIDE_CARD_AGE[Name == "Thought Scour"]
