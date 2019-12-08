@@ -4,14 +4,22 @@ required_data("SRC_CARDS_DIM")
 required_data("SRC_CARDS")
 
 sscols_cards_dim <- SRC_CARDS_DIM[, .(Type, Name)]
+
+#fix - and  —
+sscols_cards_dim[, Type := gsub("—", "-", Type)]
+
+
+
 sscols_cards <- SRC_CARDS[, .(Name, Pakka_form_ID, Maindeck, Pakka_ID)]
 
 join_ss <- sscols_cards_dim[sscols_cards, on = .(Name)]
 join_ss_aggr <- join_ss[, .(count = .N), by = .(Type, Name, Pakka_form_ID, Maindeck)]
 
+
+
 join_ss_aggr[, ':=' (
-  Type_exact = word(Type, start = 1, sep = " — "),
-  Tribe_total = word(Type, start = 2, sep =" — ")
+  Type_exact = word(Type, start = 1, sep = " - "),
+  Tribe_total = word(Type, start = 2, sep =" - ")
 )]
 join_ss_aggr[, ':=' (Race = word(Tribe_total, start = 1, sep = " "),
                      Class = word(Tribe_total, start = 2, sep = " "),

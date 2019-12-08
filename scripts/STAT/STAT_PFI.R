@@ -40,5 +40,5 @@ res_table <- joinlisaManaStack[Retired == 0 | Side == 1, .(Deck = Pakka_NM,
 setorder(res_table, -Wins)
 
 STAT_PFI <- res_table
-#con <- connDB(con)
-#dbWriteTable(con, "STAT_PFI", STAT_PFI, row.names = FALSE, overwrite = TRUE)
+con <- connDB(con)
+dbWT(con, STAT_PFI)

@@ -9,7 +9,7 @@ comp_and_wins <- pfi_voitot[comp_hist, on = "Pakka_form_ID"]
 #only include cards that are currently in the deck
 curr_card_list <- comp_and_wins[is_current_form == TRUE, .N, by = Card_ID]
 
-most_wins <- comp_and_wins[Type != "Lands" & Card_ID %in% curr_card_list[, Card_ID],
+most_wins <- comp_and_wins[Maindeck == 1 & Type_exact != "Basic Land" & Card_ID %in% curr_card_list[, Card_ID],
                            .(sum_voitot = sum(sum_voitot * Count,
                                               na.rm = TRUE),
                              avg_voitot = sum(sum_voitot * Count,
@@ -21,7 +21,7 @@ most_wins[, ':=' (Likelihood = -sum(dbinom(sum_voitot:count_pelit, count_pelit, 
 most_wins_final <- most_wins[most_wins[, .I[which.max(Likelihood)], by = Pakka_ID]$V1][, .(Pakka_ID, Card_ID_most_wins = Card_ID, Most_wins_sames_card = Name)]
 
 
-mode <- comp[comp[Type != "Lands", .I[which.max(Count)], by=Pakka_ID]$V1][, .(Pakka_ID, Card_ID, Most_same_card = Name)]
+mode <- comp[comp[Maindeck == 1 & Type_exact != "Basic Land", .I[which.max(Count)], by=Pakka_ID]$V1][, .(Pakka_ID, Card_ID, Most_same_card = Name)]
 comp[Type == "Creatures" & substr(Stats, 1, 1) != "*" , ':=' (Power = as.numeric(word(Stats, 1,1, "/")),
              Toughness = as.numeric(word(Stats, 2,2, "/")))]
 comp[Type == "Planeswalkers", Loyalty := str_sub(Stats,-2, -2)]
@@ -126,6 +126,5 @@ sorder_by_pid <- joinWins[order(as.numeric(Pakka_ID))]
 join2top <- aggr_to_pakka_ID[sorder_by_pid, on = "Pakka_ID"]
 
 STAT_CURRENT_PAKKA <- join2top
-#con <- connDB(con)
-#dbWriteTable(con, "STAT_CURRENT_PAKKA", STAT_CURRENT_PAKKA)
-#muistaa joinaa mode
+con <- connDB(con)
+dbWT(con, STAT_CURRENT_PAKKA)
