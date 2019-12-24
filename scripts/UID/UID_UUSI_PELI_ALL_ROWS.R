@@ -51,7 +51,7 @@ UID_UUSI_PELI_ALL_ROWS <- function(
   #Left_pakka <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="L", .(Pakka_ID)]
   #Right_pakka <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="M", .(Pakka_ID)]
   #Divari <- pelidata[Peli_ID == Peli_ID_input & Omistaja_ID=="M", .(Divari)]
-  # browser
+
   Pakka <- UID_PAKKA
   PakkaVS_subset <- UID_PAKKA_VS
   

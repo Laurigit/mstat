@@ -27,7 +27,7 @@ UID_PAKKA_VS <- function(ADM_PELIT,
                          STG_PAKAT = NULL,
                          only_current_decks = FALSE
                          ){
-  
+
 required_functions("Prepare_Pelit_for_stats")
   
   #only active decks

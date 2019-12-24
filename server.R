@@ -354,7 +354,7 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
   #           }
   #         })
   #     } else if (my_action_row[, type] == "RadioGroupButtons") {
-  #        # browser()
+  #       
   #         group_id <- my_action_row[, button_id]
   #         button_name <-  my_action_row[, sub_id]
   #         curr_value <- isolate(eval(parse(text = paste0("input$", group_id))))

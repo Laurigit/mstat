@@ -138,7 +138,8 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_bo_mode<- FALSE
                                   # input$radio_pfi_mode <- FALSE
 required_functions("UID_PAKKA")
-required_data(c("ADM_PELIT", "INT_PFI"))                                  
+required_data(c("ADM_PELIT", "INT_PFI")) 
+browser()
 result <-  UID_PAKKA(ADM_PELIT,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,
@@ -161,6 +162,10 @@ eR_UID_PAKKA_VS <- eventReactive(c(input$numeric_MA_valinta,
                                                        input_MA_length = input$numeric_MA_valinta,
                                                        input_BO_mode  = input$radio_bo_mode,
                                                        input_pfi_mode = input$radio_pfi_mode,
+                                                       STAT_VOITTOENNUSTE,
+                                                       input_P1_mulligan = 0,
+                                                       input_P2_mulligan = 0,
+                                                       
                                                        STG_PAKAT,
                                                        only_current_decks = TRUE)
                                   return(result)
