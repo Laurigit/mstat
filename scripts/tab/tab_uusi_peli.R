@@ -139,7 +139,7 @@ eR_UID_PAKKA <- eventReactive(c(input$numeric_MA_valinta,
                                   # input$radio_pfi_mode <- FALSE
 required_functions("UID_PAKKA")
 required_data(c("ADM_PELIT", "INT_PFI")) 
-browser()
+
 result <-  UID_PAKKA(ADM_PELIT,
                                                         INT_PFI,
                                                         input_MA_length = input$numeric_MA_valinta,

@@ -12,7 +12,7 @@ if (!file.exists(paste0("../common_data/", cardNameInput, ".jpg"))) {
   raw.result <- GET(url = url)
   result_json <- fromJSON(rawToChar(raw.result$content))
   image_url <- result_json$image_uris$art_crop
-  browser()
+
   download.file(url = image_url, destfile = paste0("../common_data/", cardNameInput, ".jpg"), mode = "wb")
 }
   if (!file.exists(paste0("./www/", fixedName, ".jpg"))) {
