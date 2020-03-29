@@ -10,7 +10,7 @@ docker run -ti -p 80:3838 -link mysql -v /betmtg:/srv/shiny-server/betmtg -v /cl
 
 
 #network
-sudo docker run -ti -p 80:3838 -v /overlay:/srv/shiny-server/overlay -v /draft:/srv/shiny-server/draft -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
+sudo docker run --restart always -ti -p 80:3838 -v /overlay:/srv/shiny-server/overlay -v /draft:/srv/shiny-server/draft -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
 docker run -ti -p 80:3838  beepr:latest
 docker run -ti -p 80:3838 -v /overlay:/srv/shiny-server/overlay -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
 docker run -ti -p 80:3838 -v /mstat:/srv/shiny-server/srv  --network my_network beepr:latest
@@ -34,3 +34,9 @@ docker-compose run --service-ports db
 
 #copy. pitää tehdä kansiossa C:\Users\Lauri> cd .\Documents\
 scp -i "betmtg_europe.pem" C:\Users\Lauri\Documents\R\mysql\conf\my.cnf ubuntu@ec2-13-53-105-10.eu-north-1.compute.amazonaws.com:/mysql/conf
+
+
+
+
+#fr
+sudo docker run --restart always -ti -p 80:3838 -v /flAImme:/srv/shiny-server/fr_srv -v /flAImme_client:/srv/shiny-server/fr -v /overlay:/srv/shiny-server/overlay -v /draft:/srv/shiny-server/draft -v /betmtg:/srv/shiny-server/betmtg -v /client:/srv/shiny-server/app -v /mstat:/srv/shiny-server/srv -v /common_data:/srv/shiny-server/common_data --network my_network beepr:latest
