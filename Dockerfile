@@ -24,7 +24,10 @@ RUN apt-get update && apt-get install -y \
     libsodium-dev \
     vim
 RUN chmod -R 755 /srv/shiny-server/
+RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
+
+RUN R -e "install.packages(c('pdftools'), repos='http://cran.rstudio.com/')"
 
 RUN install2.r --error \
     -r 'http://cran.rstudio.com' \
