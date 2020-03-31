@@ -28,7 +28,7 @@ RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
 
 RUN R -e "install.packages(c('pdftools'), repos='http://cran.rstudio.com/')"
-
+RUN R -e "install.packages(c('ROI.plugin.symphony'), repos='http://cran.rstudio.com/')"
 RUN install2.r --error \
     -r 'http://cran.rstudio.com' \
     readtext 
@@ -38,7 +38,7 @@ RUN install2.r --error \
 
 	
 RUN R -e "devtools::install_github('paulc91/shinyauthr')"
-RUN R -e "install.packages(c('ROI.plugin.symphony', 'optiRum', 'dplyr', 'ROI', 'ROI.plugin.glpk', 'ompr.roi', 'ompr', 'adagio', 'dragulaR', 'qdapRegex','clipr', 'shinyWidgets','shinydashboard','shinyjs','data.table','lubridate','DT','reshape2','jsonlite','rdrop2','zoo','rpivotTable','rvest','curl','stringr'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('optiRum', 'dplyr', 'ROI', 'ROI.plugin.glpk', 'ompr.roi', 'ompr', 'adagio', 'dragulaR', 'qdapRegex','clipr', 'shinyWidgets','shinydashboard','shinyjs','data.table','lubridate','DT','reshape2','jsonlite','rdrop2','zoo','rpivotTable','rvest','curl','stringr'), repos='http://cran.rstudio.com/')"
 
 RUN R -e "install.packages(c('ggplot2', 'magick','ggthemes','shinyalert','anytime','readxl','qdapRegex','httr','V8','shinydashboardPlus','rhandsontable','tidyverse','beepr','reshape2','grid','gridExtra', 'beepr', 'RMySQL', 'testthat'), repos='http://cran.rstudio.com/')
 
