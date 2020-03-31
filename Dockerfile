@@ -4,6 +4,7 @@ FROM rocker/shiny-verse
 RUN  apt-get update
 RUN  sudo apt-get install -y \
   pandoc   \
+  apt-get install libglpk-dev \
   coinor-libsymphony-dev \
   pandoc-citeproc
 RUN apt-get update && apt-get install -y \
@@ -24,18 +25,14 @@ RUN chmod -R 755 /srv/shiny-server/
 RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
 
-RUN R -e "install.packages(c('pdftools'), repos='http://cran.rstudio.com/')"
-
 RUN install2.r --error \
     -r 'http://cran.rstudio.com' \
     readtext 
 
 # Install R packages that are required
 # TODO: add further package if you need!
-RUN R -e "devtools::install_github('paulc91/shinyauthr')"
-RUN R -e "devtools::install_github('ggsdc/ROI.plugin.gurobi')"
-RUN R -e "install.packages(c('optiRum', 'dplyr', 'ROI', 'ROI.plugin.glpk', 'ROI.plugin.symphony', 'ompr.roi', 'ompr', 'adagio', 'dragulaR', 'qdapRegex','clipr', 'shinyWidgets','shinydashboard','shinyjs','data.table','lubridate','DT','reshape2','jsonlite','rdrop2','zoo','rpivotTable','rvest','curl','stringr'), repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages(c('ggplot2', 'magick','ggthemes','shinyalert','anytime','readxl','qdapRegex','httr','V8','shinydashboardPlus','rhandsontable','tidyverse','beepr','reshape2','grid','gridExtra', 'beepr', 'RMySQL', 'testthat'), repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages(c('ROI.plugin.glpk'), repos='http://cran.rstudio.com/')"
+
 
 
 ## Copy configuration files into the Docker image
