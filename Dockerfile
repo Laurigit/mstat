@@ -4,7 +4,7 @@ FROM rocker/shiny-verse
 RUN  apt-get update
 RUN  sudo apt-get install -y \
   pandoc   \
-  apt-get install libglpk-dev \
+  install libglpk-dev \
   coinor-libsymphony-dev \
   pandoc-citeproc
 RUN apt-get update && apt-get install -y \
