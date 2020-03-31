@@ -5,7 +5,9 @@ RUN  apt-get update
 RUN  sudo apt-get install -y \
   pandoc   \
   libglpk-dev \
+  coinor-libcgl-dev \
   coinor-libsymphony-dev \
+  coinor-libsymphony-doc \
   pandoc-citeproc
 RUN apt-get update && apt-get install -y \
     sudo \
