@@ -5,6 +5,7 @@ RUN  apt-get update
 RUN  sudo apt-get install -y \
   pandoc   \
   libglpk-dev \
+  coinor-symphony \
   coinor-libcgl-dev \
   coinor-libsymphony-dev \
   coinor-libsymphony-doc \
@@ -28,7 +29,7 @@ RUN    sudo sudo apt-get install -y libpoppler-cpp-dev
 
 
 RUN R -e "install.packages(c('pdftools'), repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages(c('ROI.plugin.symphony'), repos='http://cran.rstudio.com/')"
+#RUN R -e "install.packages(c('ROI.plugin.symphony'), repos='http://cran.rstudio.com/')"
 RUN install2.r --error \
     -r 'http://cran.rstudio.com' \
     readtext 
