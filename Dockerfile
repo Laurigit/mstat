@@ -4,9 +4,9 @@ FROM rocker/shiny-verse
 RUN  apt-get update
 RUN  sudo apt-get install -y \
   pandoc   \
+  coinor-libcgl-dev \
   libglpk-dev \
   coinor-symphony \
-  coinor-libcgl-dev \
   coinor-libsymphony-dev \
   coinor-libsymphony-doc \
   pandoc-citeproc
