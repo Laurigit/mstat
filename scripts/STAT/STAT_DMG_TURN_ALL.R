@@ -15,7 +15,7 @@ div_temp <- ADM_DIVARI[,.(Pakka_ID, Divari, Omistaja_ID)]
 l_pakat <- div_temp[Omistaja_ID == "L"][, Omistaja_ID := NULL]
 m_pakat <- div_temp[Omistaja_ID == "M"][, Omistaja_ID := NULL]
 setnames(m_pakat, "Pakka_ID", "Vastustajan_Pakka_ID")
-joini <- l_pakat[m_pakat, on = "Divari"]
+joini <- l_pakat[m_pakat, on = "Divari", allow.cartesian = TRUE]
 matsupit <- join_pakat_ss[joini, on = .(Pakka_ID, Vastustajan_Pakka_ID)]
 
 #join_pakat[, used_Pakka_ID = ifelse(c)]
