@@ -670,7 +670,7 @@ observe({
       loop_peli_id <-  gsub("[^0-9-]", "", file_looppi)
       #check if the game has been already played just to be safe
       if (!is.na(kaikkipelit[peli_ID == loop_peli_id, Voittaja])) {
-        warning("server.R, peli yritettiin tallentaa uudelleen.")
+        warning("JOS LUET TÄN LOGISTA, NIIN ONGELMA PITÄÄ KORJATA! server.R, peli yritettiin tallentaa uudelleen.")
       } else {
        
       
