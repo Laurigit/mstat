@@ -12,7 +12,7 @@ sscols_cards_dim[, Type := gsub("—", "-", Type)]
 
 sscols_cards <- SRC_CARDS[, .(Name, Pakka_form_ID, Maindeck, Pakka_ID)]
 
-join_ss <- sscols_cards_dim[sscols_cards, on = .(Name)]
+join_ss <- sscols_cards_dim[sscols_cards, on = .(Name), allow.cartesian = TRUE]
 join_ss_aggr <- join_ss[, .(count = .N), by = .(Type, Name, Pakka_form_ID, Maindeck)]
 
 
