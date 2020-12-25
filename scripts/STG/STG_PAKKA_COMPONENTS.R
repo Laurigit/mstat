@@ -3,16 +3,17 @@ required_data("STG_PFI")
 required_data("SRC_CARDS_DIM")
 required_data("SRC_CARDS")
 
-sscols_cards_dim <- SRC_CARDS_DIM[, .(Type, Name)]
+sscols_cards_dim_all <- SRC_CARDS_DIM[, .(Type, Name)]
 
 #fix - and  —
-sscols_cards_dim[, Type := gsub("—", "-", Type)]
+sscols_cards_dim_all[, Type := gsub("—", "-", Type)]
 
-
+sscols_cards_dim <- sscols_cards_dim_all[, .N, by = .(Type, Name)][, N := NULL]
 
 sscols_cards <- SRC_CARDS[, .(Name, Pakka_form_ID, Maindeck, Pakka_ID)]
+sscols_cards[, .N, by =  .(Name, Pakka_form_ID, Maindeck, Pakka_ID) ]
 
-join_ss <- sscols_cards_dim[sscols_cards, on = .(Name), allow.cartesian = TRUE]
+join_ss <- sscols_cards_dim[sscols_cards, on = .(Name)]
 join_ss_aggr <- join_ss[, .(count = .N), by = .(Type, Name, Pakka_form_ID, Maindeck)]
 
 
