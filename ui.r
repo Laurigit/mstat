@@ -8,8 +8,9 @@ uusi_peli <- dashboardBody(
 
   useShinyalert(),
   useShinyjs(),
-  extendShinyjs(text = jscode),
-  extendShinyjs(text = "shinyjs.hidehead = function(parm){
+
+  #extendShinyjs(text = jscode),
+  extendShinyjs(functions = c("hidehead"), text = "shinyjs.hidehead = function(parm){
                                     $('header').css('display', parm);
                                 }"),
  

@@ -41,8 +41,8 @@ Pelatut <- ADM_PELIT[!is.na(Voittaja),. (Vastustajan_Pakka_ID,
                                          Pelit_PFI,
                                          Putki,
                                          Putki_VS)]
-#minimissaan 8 pelia
-peli_lkm <- Pelatut[, .N, by = Pakka_ID][N > 7]
+#minimissaan 10 pelia
+peli_lkm <- Pelatut[, .N, by = Pakka_ID][N > 9]
 tarpeeks_peleja <-Pelatut[peli_lkm, on = "Pakka_ID"]
 nimet <- STG_PAKAT[, .(Pakka_ID, Pakka_NM)]
 STAT_PELATUT_PELIT <- nimet[tarpeeks_peleja, on = "Pakka_ID"]

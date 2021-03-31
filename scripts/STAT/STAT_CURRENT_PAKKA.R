@@ -110,6 +110,8 @@ aggr_comp_pct <- aggr_comp[,. (
            
   )]
 
+
+
 joinVari <- aggr_comp_pct[variNimi, on = "Pakka_ID"]
 joinmode <- mode[joinVari, on = "Pakka_ID"]
 joinWins <- most_wins_final[joinmode, on = "Pakka_ID"]

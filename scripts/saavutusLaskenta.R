@@ -23,6 +23,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
 # saavutusKierrosAsetus <-1
 #print("SAAVUTUSINPUT")
   #print(saavutusDataInput)
+
     saavutusKierrosAsetus <- saavutusDataInput[saavutusKierrosAsetus]
   saavutusKierrosAsetus[, asetukset]
   asetukset<-saavutusKierrosAsetus[,asetukset][[1]]
@@ -109,9 +110,9 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
               vals<-"dummy"
             }
             
-           
+
             
-            pivotDataOut<-as.data.table(dcast(data=valittuData,
+            pivotDataOut<-as.data.table(dcast.data.table(data = valittuData,
                                               formula= as.formula(paste(paste(rows, collapse="+"), "~" ,paste(cols,collapse="+"))),
                                                                   value.var=vals,fun.aggregate=get(aggt_to_dcast)))
             #remove Nmi and Omistaja

@@ -2,6 +2,7 @@
 required_data("STG_PFI")
 required_data("SRC_CARDS_DIM")
 required_data("SRC_CARDS")
+required_data("SRC_DRAFT_CARDS")
 
 sscols_cards_dim_all <- SRC_CARDS_DIM[, .(Type, Name)]
 
@@ -10,11 +11,14 @@ sscols_cards_dim_all[, Type := gsub("—", "-", Type)]
 
 sscols_cards_dim <- sscols_cards_dim_all[, .N, by = .(Type, Name)][, N := NULL]
 
-sscols_cards <- SRC_CARDS[, .(Name, Pakka_form_ID, Maindeck, Pakka_ID)]
-sscols_cards[, .N, by =  .(Name, Pakka_form_ID, Maindeck, Pakka_ID) ]
+sscols_cards <- SRC_CARDS[, .(Name, Pakka_form_ID, Maindeck, Pakka_ID, DRAFT_CARDS_ID )]
+ss_draft <- SRC_DRAFT_CARDS[, .(DRAFT_CARDS_ID = id, PICK_ORDER)]
+join_dcid <- ss_draft[sscols_cards, on = "DRAFT_CARDS_ID"]
 
-join_ss <- sscols_cards_dim[sscols_cards, on = .(Name)]
-join_ss_aggr <- join_ss[, .(count = .N), by = .(Type, Name, Pakka_form_ID, Maindeck)]
+
+join_ss <- sscols_cards_dim[join_dcid, on = .(Name)]
+join_ss_aggr <- join_ss[, .(count = .N, avg_pick_order = mean(PICK_ORDER, na.rm = TRUE)), by = .(Type, Name, Pakka_form_ID, Maindeck)]
+
 
 
 
@@ -46,5 +50,6 @@ STG_PAKKA_COMPONENTS <- join_ss_aggr[, .(Pakka_form_ID,
                                          Tribe_total,
                                          Race,
                                          Class,
-                                         Subclass
+                                         Subclass,
+                                         avg_pick_order
 )]

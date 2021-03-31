@@ -38,12 +38,12 @@ videolliset[, vakiominuutti := convSecsToTimeFormat(ifelse(kesto_sec_tot < 60, 0
 videolliset[, kelausAlkuAika := convSecsToTimeFormat(pmax(kesto_sec_tot - 60, 0))]
 videolliset[, kesto_sec_tot := NULL]
 
-videolliset[, syntaksi := paste0("ffmpeg -ss ", kelausAlkuAika, " -i ", tiedostot,  " -ss ",  vakiominuutti,  " -t ",  kesto_text, " ", filename, ".mp4")]
-videolliset[, syntaksi_copy := paste0(kansio, "/ffmpeg -ss ", kelausAlkuAika, " -i ", kansio, "/", tiedostot,  " -ss ",  vakiominuutti,  " -t ",  kesto_text, " -acodec copy -vcodec copy ", filename, ".mp4")]
+videolliset[, syntaksi := paste0('ffmpeg -ss ', kelausAlkuAika, ' -i ', tiedostot,  ' -ss ',  vakiominuutti,  ' -t ',  kesto_text, ' ', filename, '.mp4')]
+videolliset[, syntaksi_copy := paste0(kansio, '/ffmpeg -ss ', kelausAlkuAika, ' -i "', kansio, '/', tiedostot,  '" -ss ',  vakiominuutti,  ' -t ',  kesto_text, ' -acodec copy -vcodec copy ', filename, '.mp4')]
 
 for(rivi in 1:nrow(videolliset)) {
-  print(videolliset[rivi, filename])
-  system(videolliset[rivi, syntaksi_copy], intern = FALSE)
+  print(videolliset[849, filename])
+  system(videolliset[849, syntaksi_copy], intern = FALSE)
  
 }
 

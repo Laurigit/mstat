@@ -191,7 +191,7 @@ observeEvent(input$tallennaSaavutusAsetus,{
 testSaavutus <- reactiveValues(default = "")
 
 observeEvent(input$validateSaavutusAsetus,{
-  
+ 
   #kato onko siellä dataa
   #saavutusAsetuksetReact <- NULL
   if(is.null(saavutusAsetuksetReact$data)){
