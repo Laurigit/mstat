@@ -10,15 +10,15 @@ max_turnaus <- ADM_PELIT[, max(Turnaus_NO)]
 
 
 sscolst_ajat <- STAT_TURNAUSAJAT[, .(Turnaus_NO, Aloitus_DT, Lopetus_DT,
-                                                    # turnaus_Aloitus_DT = Aloitus_DT,
-                                                     #turnaus_Lopetus_DT = Lopetus_DT,
-                                                     key = 1)]
+                                     # turnaus_Aloitus_DT = Aloitus_DT,
+                                     #turnaus_Lopetus_DT = Lopetus_DT,
+                                     key = 1)]
 sscols <- STG_PFI[,. (Pakka_form_ID, Pakka_ID, Valid_from_DT, Valid_to_DT,
                       key = 1
                       #,
-                     # copy_Valid_from_DT = Valid_from_DT,
+                      # copy_Valid_from_DT = Valid_from_DT,
                       #copy_Valid_to_DT = Valid_to_DT
-                      )]
+)]
 
 #eka kartesian, sitten filtterillä ulos
 inequijoini <- sscolst_ajat[sscols, on = "key", allow.cartesian = TRUE]
@@ -26,47 +26,42 @@ inequijoini <- sscolst_ajat[sscols, on = "key", allow.cartesian = TRUE]
 #filtterii
 filtter_vaarat <- inequijoini[!(Aloitus_DT < Valid_to_DT & Lopetus_DT < Valid_from_DT) &
                                 !(Aloitus_DT > Valid_to_DT & Lopetus_DT > Valid_from_DT) ]
-aggregoi <- filtter_vaarat[, .(Turnaus_NO_max = min(Turnaus_NO)), by = .(Pakka_form_ID)]
+aggregoi <- filtter_vaarat[, .(Turnaus_NO_max = min(Turnaus_NO)), by = .(Pakka_form_ID)]# jos pakka ollut muuttumatta monta turnausta, niin palauta eka turnaus
 
-sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]#[Name == "Thought Scour"]
+sscols_PAKKA_COMPS <- STG_PAKKA_COMPONENTS[, .(Count = sum(Count)), by = .(Pakka_form_ID, Name, Maindeck)]#[Name == "Gods Willing"]
 
-
+#martin_sidet <- STG_PFI[Pakka_ID == 22, .N, by = Pakka_form_ID]
+#sscols_PAKKA_COMPS <- sscols_PAKKA_COMPS[Pakka_form_ID %in% martin_sidet[, Pakka_form_ID]]
 
 
 joinaa <- aggregoi[sscols_PAKKA_COMPS, on = "Pakka_form_ID"]
 #etitään pakka_Id takasin
 
 sscols <- STG_PFI[, .(Pakka_ID, Pakka_form_ID)]
-join_pid <- sscols[joinaa, on = "Pakka_form_ID"]#[Pakka_ID == 33 & Name == "Angelic Page"]
+join_pid <- sscols[joinaa, on = "Pakka_form_ID"]#[Pakka_ID == 22]
 
-#duplikoi alkuperäset sidet kuudeksi eri listaksi
-orig_sides <- join_pid[Pakka_ID %in% c(21, 22)]
-#maxpiffit 
-max_orig_pfi <- orig_sides[, max(Pakka_form_ID), by = Pakka_ID]
-vaan_maxit <- orig_sides[Pakka_form_ID %in% max_orig_pfi[, V1]]
-vaan_maxit[, Omistaja_ID := ifelse(Pakka_form_ID == 236, "L", "M")]
-sscols_vanhat <- vaan_maxit[, .(Count = sum(Count)), by = .(Omistaja_ID, Name, Turnaus_NO_max )]
-#muut sidet
-uudet_sidet <- STG_PAKAT[Side == 1, .(Pakka_ID, Pakka_form_ID = as.numeric(Pakka_ID)*-1, Omistaja_ID)]
-#generoi decklistit
-merketty <- merge(x = uudet_sidet, y = sscols_vanhat, by = "Omistaja_ID", allow.cartesian = TRUE)
+# #duplikoi alkuperäset sidet kuudeksi eri listaksi
+# orig_sides <- join_pid[Pakka_ID %in% c(21, 22)]
+# #maxpiffit 
+# max_orig_pfi <- orig_sides[!is.na(Turnaus_NO_max), max(Pakka_form_ID), by = Pakka_ID]
+# vaan_maxit <- orig_sides[Pakka_form_ID %in% max_orig_pfi[, V1]] #nykyinen pakan tila
+# #vaan_maxit[, Omistaja_ID := ifelse(Pakka_form_ID == 236, "L", "M")]
+# ss_omistaja <- STG_PAKAT[, .(Pakka_ID, Omistaja_ID)]
+# join_omistaja <- ss_omistaja[vaan_maxit, on = "Pakka_ID"]
 
-merketty[, ':=' (Maindeck = 1, Omistaja_ID = NULL)]
 
-appendaa <- rbind(join_pid, merketty)
-
-setorder(appendaa, Pakka_ID, Pakka_form_ID)
+setorder(join_pid, Pakka_ID, Pakka_form_ID)
 #paikataan uupuvat
-appendaa[, Turnaus_NO_eka := na.locf(Turnaus_NO_max, fromLast = FALSE, na.rm = FALSE), by = Pakka_ID]
+join_pid[, Turnaus_NO_eka := na.locf(Turnaus_NO_max, fromLast = FALSE, na.rm = FALSE), by = Pakka_ID]
 #ja toiseen suuntaan
 
-appendaa[, Turnaus_NO := na.locf(Turnaus_NO_eka, fromLast = TRUE, na.rm = FALSE), by = Pakka_ID]
+join_pid[, Turnaus_NO := na.locf(Turnaus_NO_eka, fromLast = TRUE, na.rm = FALSE), by = Pakka_ID]
 
 #sorttaa uusiks ja huomio vaan muutokset
 
-setorder(appendaa, Pakka_ID, Turnaus_NO, Pakka_form_ID, Name)
+setorder(join_pid, Pakka_ID, Turnaus_NO, Pakka_form_ID, Name)
 #join_pid[Pakka_ID == 33 & Name == "Angelic Page"]
-diff <- appendaa#[Name == "Thought Scour"]
+diff <- join_pid#[Pakka_ID == 22] #[Name == "Thought Scour"]
 diff[, Muutos := Count - lag(Count), by = .(Pakka_ID, Name, Maindeck)]
 diff[, Muutos_NA := ifelse(is.na(Muutos), Count, Muutos)]
 filter_out_nochange <- diff[Muutos_NA > 0]
@@ -97,6 +92,7 @@ STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
                                    Count = Muutos_NA,
                                    Turnaus_NO_drafted = Turnaus_NO,
                                    Card_age = pmin(pmax(round((109 - Turnaus_NO * 1.25), 0), 10), 40) - (max_turnaus - Turnaus_NO))]
+# Card_age = pmin(pmax(round((109 - Turnaus_NO * 1.25), 0), 10), 40) - (max_turnaus - Turnaus_NO))]
 
 con <- connDB(con)
 dbWT(con, STAT_SIDE_CARD_AGE)
