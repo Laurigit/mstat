@@ -2,6 +2,7 @@ FROM rocker/shiny-verse
 
 #RUN add-apt-repository -y ppa:opencpu/poppler
 RUN  apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install lightdm -y 
 RUN  sudo apt-get install -y \
   pandoc   \
   coinor-libcgl-dev \
@@ -21,7 +22,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libv8-dev \
     vlc \
-    libsodium18 \
+   
     libsodium-dev \
     vim
 RUN chmod -R 755 /srv/shiny-server/
