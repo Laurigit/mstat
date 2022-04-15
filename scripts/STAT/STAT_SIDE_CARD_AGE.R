@@ -91,7 +91,9 @@ STAT_SIDE_CARD_AGE <- join_omi[,. (Pakka_ID,
                                    Maindeck,
                                    Count = Muutos_NA,
                                    Turnaus_NO_drafted = Turnaus_NO,
-                                   Card_age = pmin(pmax(round((109 - Turnaus_NO * 1.25), 0), 10), 40) - (max_turnaus - Turnaus_NO))]
+                                   #Card_age = pmin(pmax(round((109 - Turnaus_NO * 1.25), 0), 10), 40) - (max_turnaus - Turnaus_NO)
+                                   Card_age = max_turnaus - Turnaus_NO
+                                   )]
 # Card_age = pmin(pmax(round((109 - Turnaus_NO * 1.25), 0), 10), 40) - (max_turnaus - Turnaus_NO))]
 
 con <- connDB(con)
