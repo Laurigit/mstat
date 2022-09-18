@@ -2,6 +2,9 @@
 required_data(c("ADM_PAKKA_COMPONENTS", "STG_PAKAT", "ADM_PELIT"))
 comp <- ADM_PAKKA_COMPONENTS[is_current_form == TRUE & Maindeck == TRUE]
 
+#card counts
+
+
 comp_hist <- ADM_PAKKA_COMPONENTS[Maindeck == TRUE]
 pfi_voitot <- ADM_PELIT[!is.na(Voittaja),.(sum_voitot = sum(Voittaja, na.rm = TRUE), sum_pelit = .N), by = .( Pakka_form_ID)]
 #join voitot
@@ -127,6 +130,10 @@ joinWins[, ':=' (Pakka_NM_Dynamic = paste(word(Pakka_NM, 1, sep = "_"),
 sorder_by_pid <- joinWins[order(as.numeric(Pakka_ID))]
 join2top <- aggr_to_pakka_ID[sorder_by_pid, on = "Pakka_ID"]
 
-STAT_CURRENT_PAKKA <- join2top
+count_cards <- ADM_PAKKA_COMPONENTS[is_current_form == TRUE, .(card_count = sum(Count)), by = .(Pakka_ID, Maindeck)]
+cast_count <- dcast.data.table(count_cards, formula = Pakka_ID ~ Maindeck, value.var = "card_count")
+setnames(cast_count, c("0", "1"), c("Cards_in_side", "Cards_in_Main"))
+join_count <- cast_count[join2top, on = "Pakka_ID"]
+STAT_CURRENT_PAKKA <- join_count
 con <- connDB(con)
 dbWT(con, STAT_CURRENT_PAKKA)

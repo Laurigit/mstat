@@ -42,8 +42,8 @@ videolliset[, syntaksi := paste0('ffmpeg -ss ', kelausAlkuAika, ' -i ', tiedosto
 videolliset[, syntaksi_copy := paste0(kansio, '/ffmpeg -ss ', kelausAlkuAika, ' -i "', kansio, '/', tiedostot,  '" -ss ',  vakiominuutti,  ' -t ',  kesto_text, ' -acodec copy -vcodec copy ', filename, '.mp4')]
 
 for(rivi in 1:nrow(videolliset)) {
-  print(videolliset[849, filename])
-  system(videolliset[849, syntaksi_copy], intern = FALSE)
+ # print(videolliset[849, filename])
+  system(videolliset[type == "mkv"][35][, syntaksi_copy], intern = FALSE)
  
 }
 
