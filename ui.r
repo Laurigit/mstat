@@ -88,7 +88,7 @@ sidebar <- dashboardSidebar(
              
              #radioButtons("radio_debug_mode", label = h5("Debug"),choices = list("Pois" = FALSE, "Paalla" = TRUE), selected = FALSE,inline=T),
                #div(style="display:inline-block;width:90%;text-align: center;",uiOutput("sarjataulukkovalitsin")),
-              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value=7),
+              numericInput("numeric_MA_valinta","Valitse Ed X pelia",value = 8 ),
              actionButton("loginbutton", "Login")
               #menuSubItem(icon = NULL,actionButton("luo_peleja","Luo uudet pelit"))
   )
