@@ -227,11 +227,11 @@ observeEvent(input$validateSaavutusAsetus,{
 })
 
 output$validateSaavutusText <- renderUI({
-  looppiData <- testSaavutus$default
+  looppiData <- testSaavutus$default[source == "Paras"]
 
    #print(nrow(looppiData))
   if (!is.null(nrow(looppiData))) {
-  box(HTML(looppiData[1,teksti]),background = looppiData[,color])
+  box(HTML(looppiData[,teksti]),background = looppiData[,color])
   } else {
     box("Create a stat and then test achievement")
   }

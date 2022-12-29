@@ -41,6 +41,7 @@ uusi_peli <- dashboardBody(
   source("./scripts/ui/ui_sarjataulukko.R",local = TRUE)$value,
   source("./scripts/ui/ui_tilastomurskain.R",local = TRUE)$value,
   source("./scripts/ui/ui_saavutukset.R",local = TRUE)$value,
+  source("./scripts/ui/ui_hall_of_shame.R",local = TRUE)$value,
   source("./scripts/ui/ui_pakkaupload.R",local = TRUE)$value,
   source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
   source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
@@ -65,6 +66,7 @@ sidebar <- dashboardSidebar(
               menuItem("Sarjataulukko", icon = icon("trophy"), tabName = "tab_sarjataulukko"),
               menuItem("Tilastomurskain",icon = icon("bar-chart"),tabName = "tab_tilastomurskain"),
               menuItem("Saavutukset",icon = icon("bullseye"),tabName = "tab_saavutukset"),
+            menuItem("Hall of Shame",icon = icon("toilet"), tabName = "tab_hall_of_shame"),
               
               #menuItem("Turnausasetukset",tabName="nimeton",
               menuItem('Divarit ja pickit', icon = icon("tasks") ,tabName = 'tab_combined'),
@@ -74,7 +76,6 @@ sidebar <- dashboardSidebar(
               menuItem("Saavutusasetukset", icon = icon("cog"), tabName = "tab_saavutusasetukset"),
               menuItem("Boosterit", icon = icon("envelope"), tabName = "tab_boosterit"),
               menuItem("Decks", icon = icon("server"), tabName = "tab_decks"),
-             menuItem("Deck lists", icon = icon("server"), tabName = "tab_deck_lists"),
               radioButtons("radio_pfi_mode",
                            label = h5("PFI mode"),
                            choices = list("Pois" = FALSE, "Paalla" = TRUE),

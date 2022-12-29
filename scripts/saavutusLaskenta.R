@@ -17,8 +17,9 @@
 # saavutusTaulu
 
 # tulos<-laskeSaavtusAsetuksista(saavutusKierrosAsetus,peliData,divariData,pfi_data)
-laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
+laskeSaavtusAsetuksista <- function(saavutusKierrosAsetus, saavutusDataInput){ #ui inputteja käytetään, jotta shiny server luulee että tätä päivitetään
 #required_data("STG_SAAVUTUSASETUKSET", force_update =  TRUE)
+  required_data("STAT_CURRENT_PAKKA")
 # saavutusDataInput <- STG_SAAVUTUSASETUKSET
 # saavutusKierrosAsetus <-1
 #print("SAAVUTUSINPUT")
@@ -143,8 +144,9 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
             append_PH[,c(numeric_cols):=NULL]
             #join kuvaus
             kuvaus<-cbind(append_PH,saavutusNimi)
+            
             #omistaja kasittely. joinaa se ja pakkanimi
-            ssColsPakat <- STG_PAKAT[, .(Pakka_ID, Omistaja_ID, Pakka_NM)]
+            ssColsPakat <- STAT_CURRENT_PAKKA[, .(Pakka_ID, Omistaja_ID, Pakka_NM = Pakka_NM_Dynamic)]
             setnames(ssColsPakat, "Pakka_ID", rows)
             
             joinOmistaja <- ssColsPakat[kuvaus, on = rows]

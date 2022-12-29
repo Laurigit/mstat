@@ -1,4 +1,4 @@
-saavutusTaulu<-reactive({
+saavutusTaulu <- reactive({
   saavutusTaulu<-NULL
   for(kierros in 1:nrow(saavutusAsetuksetReact$data)) {
     #kierrosData<-saavutusAsetukset[kierros]
@@ -20,7 +20,7 @@ saavutusTaulu<-reactive({
 )
 
 
-output$saavutus_UI<-renderUI({
+output$saavutus_UI <- renderUI({
   
   tekstiData<-saavutusTaulu()[source == "Paras"]
   # print("render UI ssavutus_UI")
