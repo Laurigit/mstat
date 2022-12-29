@@ -34,7 +34,7 @@ observeEvent(input$paivita_saavutus,{
   #print(uusrivi)
   uus_ja_vanha_rivi<-cbind(uusrivi,vanhat_asetukset)
 #  print(uus_ja_vanha_rivi)
-  browser()
+
   #tarkista onko asetusrivi olemassa
   if(nrow(saavutusAsetuksetReact$data[input$tallennetut_saavutusAsetukset_rows_selected])>0){
     #poista vanha rivi

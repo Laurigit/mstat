@@ -161,7 +161,7 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
     }
   }
   if (test_mode == FALSE) {
-    is_local <- Sys.getenv('SHINY_PORT') == ""
+    is_local <- .Platform$OS.type == "windows"
     if (is_local == FALSE) {
       zip_all_and_send()
     }
