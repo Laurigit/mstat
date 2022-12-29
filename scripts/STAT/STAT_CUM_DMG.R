@@ -53,6 +53,8 @@ join_voittaja[, lethal_damage := ifelse(Turn == last_turn & cum_dmg_dealt >= 20,
 join_voittaja[, lethal_damage_capped_to_20 := ifelse(Turn == last_turn & cum_dmg_dealt >= 20, Amount + 20 - cum_dmg_dealt, NA)]
 join_voittaja[, extra_damage_over_20 := ifelse(Turn == last_turn & cum_dmg_dealt >= 20, cum_dmg_dealt - 20, NA)]
 join_voittaja[, lifegain_amount := ifelse(Amount < 0, -Amount, 0)]
+join_voittaja[, Life_left_my_deck := 20 - cum_dmg_received]
+join_voittaja[, Life_left_opponent := 20 - cum_dmg_dealt ]
 STAT_CUM_DMG <- join_voittaja
 
 

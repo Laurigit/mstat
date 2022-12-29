@@ -149,7 +149,7 @@ zip_all_and_send <- function() {
 
 
 saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
-  
+
   assign(RdataTallenna,rdatasetti)
   #print(get(RdataTallenna))
  # print("ladattu")
@@ -161,7 +161,11 @@ saveR_and_send <- function(rdatasetti,RdataTallenna,RdataTiedostonimi){
     }
   }
   if (test_mode == FALSE) {
-  #  zip_all_and_send()
+    is_local <- Sys.getenv('SHINY_PORT') == ""
+    if (is_local == FALSE) {
+      zip_all_and_send()
+    }
+    
     #print("tallennettu uus R-tiedosto jo lähetetty")
   }
 

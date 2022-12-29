@@ -13,6 +13,7 @@ tabItem(tabName="tab_tilastomurskain",
                  
                  actionButton("tallennaSaavutusAsetus", "Tallenna saavutukset"),
                  actionButton("validateSaavutusAsetus", "Testaa toimiiko saavutus"),
+                 HTML("laita saavutukseen sarakkeeseen vain Pakka_ID"),
                  
                  
                  

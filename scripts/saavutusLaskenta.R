@@ -66,6 +66,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
   valittuData<-outputData[,selectCols,with=FALSE]
   
   #filtteröi valittu data
+
   if(length(filters)>0){
   for(kierros in 1:length(filters)) {
   kierrosData<-filters[[kierros]]
@@ -166,7 +167,7 @@ laskeSaavtusAsetuksista<-function(saavutusKierrosAsetus, saavutusDataInput){ #ui
             #                          saavutusNimi,": <b>",txtResult,"</b><h4/>")]
             # }
        
-          
+        
           return(joinOmistaja)
             } else {
   return(NULL)

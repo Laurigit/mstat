@@ -49,6 +49,12 @@ setorder(aggregate_overinput, Peli_ID, TSID, Target_player)
 # joint20 <- CJ_dt(turn50, aggregate_overinput)
 # joint20[Peli_ID == 994 & TSID == 1]
 
+aggregate_overinput[, row_id := seq_len(.N), by = Peli_ID]
+aggregate_overinput[, was_last_dmg := row_id == .N, by = Peli_ID]
+aggregate_overinput[, Opponents_turn := Starters_turn == TRUE & Aloittaja == 1]
+aggregate_overinput[, row_id := NULL]
+
+
 STAT_DMG_TURN_ALL <- aggregate_overinput
 # 
 # #join_seq[, half_turn := (Turn  + ifelse(Starters_turn == TRUE, 0, 0.5))]

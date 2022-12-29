@@ -67,7 +67,8 @@ ssCols_comp <- comp[,. (Omistaja_ID,
                         X,
                         P,
                         AnyColor,
-                        avg_pick_order)]
+                        avg_pick_order,
+                        Text)]
 
 STAT_CURRENT_PAKKA_COMPONENTS <- ssCols_comp
 

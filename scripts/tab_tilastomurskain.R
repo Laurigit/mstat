@@ -223,13 +223,15 @@ observeEvent(input$validateSaavutusAsetus,{
     uusrivi[,':=' (Palkintonimi="",Esitysmuoto="Decimal",minVaiMax="max",minVaiMax_rivi="max")]
   
     testSaavutus$default <- laskeSaavtusAsetuksista(1, uusrivi)
+ 
 })
 
 output$validateSaavutusText <- renderUI({
   looppiData <- testSaavutus$default
+
    #print(nrow(looppiData))
   if (!is.null(nrow(looppiData))) {
-  box(HTML(looppiData[,teksti]),background = looppiData[,color])
+  box(HTML(looppiData[1,teksti]),background = looppiData[,color])
   } else {
     box("Create a stat and then test achievement")
   }
