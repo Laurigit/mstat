@@ -1,6 +1,6 @@
 #options are prod, test, dev
 options(shiny.trace = FALSE)
-GLOBAL_test_mode <- "prod"
+GLOBAL_test_mode <- "dev"
 options(shiny.fullstacktrace = FALSE)
 if(!GLOBAL_test_mode %in% c("test", "prod", "dev")) {
   stop()
@@ -124,7 +124,9 @@ kircsv <- function(datataulu, tiedostonimi, upload = TRUE) {
 }
 
 zip_all_and_send <- function() {
-  
+    #get default schema
+ 
+
     tiedostot <- as.data.table(dir(path = "./external_files/"))
     file.remove("./upload_folder/all_files.zip")
     setwd("./external_files")
@@ -142,7 +144,14 @@ zip_all_and_send <- function() {
       }
     }
     if (test_mode == "prod") {
-      drop_upload("./upload_folder/all_files.zip", upload_dir, mode = "overwrite", dtoken = token)
+      #if sname is something else than betmtg2, then do nothing
+      sname <- dbFetch(dbSendQuery(con, "SELECT DATABASE();"))
+      if (sname == "betmtg2") {
+        browser()
+         drop_upload("./upload_folder/all_files.zip", upload_dir, mode = "overwrite", dtoken = token)
+      } else {
+        warning("default schema was not betmtg2. I was supposed to upload data to drop box, but I did not")
+      }
     }
   
 }
