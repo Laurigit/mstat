@@ -1,5 +1,6 @@
 #dbWT
 dbWT <- function(con, table) {
+
   result <- tryCatch({
     dbWriteTable(con, deparse(substitute(table)), table, row.names = FALSE, overwrite = TRUE) 
     result <- "SUCCESS"

@@ -3,17 +3,17 @@
 
 warning("alku stat_voittoennuste")
 required_data("ADM_PELIT")
+STAT_VOITTOENNUSTE <- dbSelectAll("STAT_VOITTOENNUSTE_DB", con)
 #p1, vastpak, turnaus, ennuste
 print("TaMa KESTaa")
 
 #check if common data has this already updated
 update_or_create <- FALSE
 
-if (file.exists("../common_data/STAT_VOITTOENNUSTE.RData")) {
+if (exists("STAT_VOITTOENNUSTE")) {
   warning("voittoennuste loyty, seuraavaks update or create tulos. FALSE tarkottaa, ettei paiviteta")
-  load("../common_data/STAT_VOITTOENNUSTE.RData")
+
   update_or_create <- ADM_PELIT[, max(Turnaus_NO)] != STAT_VOITTOENNUSTE[, max(Turnaus_NO)]
-  warning(update_or_create)
 } else {
   #doesn not exist at all, create it
   update_or_create <- TRUE 
@@ -72,7 +72,11 @@ mallitulokset <- NULL
 countteri <- 0
 list_all <- list()
 model_list <- list()
-for(tour_loop in crossjoin[, .N, by = "Turnaus_NO"][order(Turnaus_NO)][,Turnaus_NO]){
+#current tournament in maxTurnaus. Only forecast that
+maxTurnaus
+
+
+for(tour_loop in maxTurnaus){
 
 #  print(tour_loop)
 #  print(dtim())   
@@ -162,13 +166,13 @@ ma_ranking_data_vastustaja[, Turnaus_NO := Turnaus_NO + 1]
 
 fit_data <- pelatut_turnaukset[, .(Peli_ID, Turnaus_NO, Pakka_ID, Vastustajan_Pakka_ID, Aloittaja, Voittaja, Omistaja_ID)]
 join_MA <- ma_ranking_data[fit_data, on = .(Pakka_ID, Turnaus_NO)]
-join_MA_Vihu <- ma_ranking_data_vastustaja[join_MA, on = .(Vastustajan_Pakka_ID, Turnaus_NO)]
+join_MA_Vihu <- ma_ranking_data_vastustaja[join_MA, on = .(Vastustajan_Pakka_ID, Turnaus_NO)][order(Peli_ID)]
 
 
 join_MA_Vihu[, MA_ranking_ero := mean_MA - mean_MA_vastustaja]
 
 
-join_model <- mallitulokset[join_MA_Vihu, on = .(Pakka_ID, Vastustajan_Pakka_ID, Turnaus_NO)]
+join_model <- mallitulokset[join_MA_Vihu, on = .(Pakka_ID, Vastustajan_Pakka_ID, Turnaus_NO)][Turnaus_NO == maxTurnaus]
 # 
 # mallitulokset
 # CJ(crossjoin, Aloittaja)
@@ -206,7 +210,7 @@ join_model[,  ':=' (rivi = seq_len(.N),
   nimiLooppi<- join_Nimet[rivi %in% (eri_nimi_rivit[,rivi]), .(malliNimiLista, nimi_string)][,rivi := seq_len(.N)]
   
   nimiLooppi[,para_count := unlist(lapply(malliNimiLista,length))]
-  nimiLooppi<-nimiLooppi[order(-para_count)]
+  nimiLooppi <- nimiLooppi[order(-para_count)]
   tot_result <- NULL
   for(kierros in nimiLooppi[,rivi]) {
     #tähän jäit kirjottaa filtteriä
@@ -247,6 +251,11 @@ join_model[,  ':=' (rivi = seq_len(.N),
   # ssCols[, Aloittaja_TN := (ennuste - 0.5) - Pakka_TN - VS_TN]
   # 
 
-STAT_VOITTOENNUSTE <- ssCols
-save(list = "STAT_VOITTOENNUSTE", file = "../common_data/STAT_VOITTOENNUSTE.RData")
+
+STAT_VOITTOENNUSTE_DB <- copy(ssCols)
+STAT_VOITTOENNUSTE_DB[, malli := NULL]
+dbQ(paste0("DELETE FROM STAT_VOITTOENNUSTE_DB WHERE Turnaus_NO >= ", maxTurnaus), con)
+dbWriteTable(con, "STAT_VOITTOENNUSTE_DB", STAT_VOITTOENNUSTE_DB, append = TRUE, row.names = FALSE)
+STAT_VOITTOENNUSTE <- rbind(STAT_VOITTOENNUSTE[Turnaus_NO < maxTurnaus], STAT_VOITTOENNUSTE_DB)
+#save(list = "STAT_VOITTOENNUSTE", file = "../common_data/STAT_VOITTOENNUSTE.RData")
 }

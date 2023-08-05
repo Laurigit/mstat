@@ -17,7 +17,7 @@ output$peliAsetuksetUI<-renderUI({
 #luo uusi turnaus
 observeEvent(input$luo_peleja,{
   #print("luo pejelä alku")
-  
+  shinyjs::disable("luo_peleja")
   #divarit_dt<-luecsv("./drop_download/divari.csv")
   required_data(c("STG_DIVARI", "ADM_PELIT", "STG_PAKAT"))
   #tehään formaatti so+pivaksi pelit.csv:lle
@@ -136,7 +136,7 @@ observeEvent(input$luo_peleja,{
   required_data("ADM_DI_HIERARKIA")
   updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv(), rewriteSaveR = TRUE)
   refresh_counter$a <-   refresh_counter$a + 1
-  shinyjs::disable("luo_peleja")
+
   shinyjs::enable("arvo_peli")
   
   #print("luo pejelä loppu")
@@ -158,4 +158,5 @@ observeEvent(input$luo_peleja,{
   
   warning("SEIVATTUS peliasetukseissa")
   dbWT(con, UID_UUSI_PELI)
+  dbWriteTable(con, "UID_UUSI_PELI", UID_UUSI_PELI, row.names = FALSE, overwrite = TRUE)
 })

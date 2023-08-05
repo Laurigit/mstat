@@ -4,7 +4,7 @@
 
 
 eR_UID_UUSI_PELI <- reactive({
-  browser()
+
   # input$numeric_MA_valinta <- 7
   # input$radio_bo_mode<- FALSE
   # input$radio_pfi_mode <- FALSE
@@ -28,9 +28,11 @@ UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
                          STAT_CURRENT_PAKKA
                         ))
 
-save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
+#save(list = "UID_UUSI_PELI", file = "../common_data/UID_UUSI_PELI.RData")
+
 warning("SEIVATTUS")
-dbWT(con, UID_UUSI_PELI)
+
+dbWriteTable(con, "UID_UUSI_PELI", UID_UUSI_PELI, row.names = FALSE, overwrite = TRUE)
 #  load("./Rdata/UID_UUSI_PELI.RData", envir = globalenv())
  
  

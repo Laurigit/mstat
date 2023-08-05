@@ -734,7 +734,7 @@ observe({
            
  
            warning("SEIVATTUS serverilla")
-           dbWT(con, UID_UUSI_PELI)
+           dbWriteTable(con, "UID_UUSI_PELI", UID_UUSI_PELI, row.names = FALSE, overwrite = TRUE)
    }
 
   
