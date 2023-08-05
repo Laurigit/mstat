@@ -140,5 +140,22 @@ observeEvent(input$luo_peleja,{
   shinyjs::enable("arvo_peli")
   
   #print("luo pejelä loppu")
+  required_functions("UID_UUSI_PELI_ALL_ROWS")
   
+  
+  UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
+    eR_UID_PAKKA(),
+    eR_UID_PAKKA_VS(),
+    STG_PAKAT,
+    STG_OMISTAJA,
+    ADM_PELIT,
+    STAT_VOITTOENNUSTE,
+    0, #input$slider_laurin_mulligan,
+    0, # input$slider_martin_mulligan,
+    STAT_CURRENT_PAKKA
+  ))
+  
+  
+  warning("SEIVATTUS peliasetukseissa")
+  dbWT(con, UID_UUSI_PELI)
 })

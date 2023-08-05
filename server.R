@@ -664,7 +664,7 @@ observe({
      
 
      
-     
+  
       match_result <- rc(paste0("../common_data/", file_looppi))
       #jättää vaan numerot
       loop_peli_id <-  gsub("[^0-9-]", "", file_looppi)
@@ -717,7 +717,24 @@ observe({
           updateData("SRC_PELIT", ADM_DI_HIERARKIA, input_env = globalenv())
            zip_all_and_send()  
            refresh_counter$a <- refresh_counter$a + 1
-    
+           required_functions("UID_UUSI_PELI_ALL_ROWS")
+           
+           
+           UID_UUSI_PELI <- isolate(UID_UUSI_PELI_ALL_ROWS(
+             eR_UID_PAKKA(),
+             eR_UID_PAKKA_VS(),
+             STG_PAKAT,
+             STG_OMISTAJA,
+             ADM_PELIT,
+             STAT_VOITTOENNUSTE,
+             0, #input$slider_laurin_mulligan,
+             0, # input$slider_martin_mulligan,
+             STAT_CURRENT_PAKKA
+           ))
+           
+ 
+           warning("SEIVATTUS serverilla")
+           dbWT(con, UID_UUSI_PELI)
    }
 
   
