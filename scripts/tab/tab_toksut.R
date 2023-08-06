@@ -11,7 +11,7 @@ find_token <- cp[, res := grep("token", Text), by = row_id]
 find_token[, subis := (str_extract_all(Text, "Create(.*?)token"))]
 find_token[, subis]
 
-regelist <- c("(?<=Create).*(?=token)", "(?<=create).*(?=token)" ,"(?<=Put).*(?=token)" ,"(?<=put).*(?=token)", "(?<=a).*(?=token)")
+regelist <- c("(?<=Create).*(?=token)", "(?<=create).*(?=token)" ,"(?<=Put).*(?=token)" ,"(?<=put).*(?=token)")
 totres <- NULL
 tot_dt <- NULL
 for (regeloop in regelist) {
