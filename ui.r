@@ -46,6 +46,7 @@ uusi_peli <- dashboardBody(
   source("./scripts/ui/ui_saavutusasetukset.R",local = TRUE)$value,
   source("./scripts/ui/ui_boosterit.R",local = TRUE)$value,
   source("./scripts/ui/ui_decks.R",local = TRUE)$value,
+  source("./scripts/ui/ui_toksut.R",local = TRUE)$value,
   source("./scripts/ui/ui_deck_lists.R",local = TRUE)$value
 #  source("./scripts/ui/ui_life_counter.R",local = TRUE)$value,
 
@@ -75,6 +76,7 @@ sidebar <- dashboardSidebar(
               menuItem("Download decks", icon = icon("cloud-download-alt") ,tabName = "pakkaupload"),
               menuItem("Saavutusasetukset", icon = icon("cog"), tabName = "tab_saavutusasetukset"),
               menuItem("Boosterit", icon = icon("envelope"), tabName = "tab_boosterit"),
+              menuItem("Toksut", icon = icon("server"), tabName = "tab_toksut"),
               menuItem("Decks", icon = icon("server"), tabName = "tab_decks"),
               radioButtons("radio_pfi_mode",
                            label = h5("PFI mode"),
@@ -98,7 +100,7 @@ sidebar <- dashboardSidebar(
 )
 
 #RUNKO  
-dashboardPage( title = "Server",
+dashboardPage(title = "MTG: Server",
   
   #dashboardHeader(title = paste0("run_mode = ", GLOBAL_test_mode, " ", textOutput('blow_timer')),
 #  dashboardHeader(title = textOutput('blow_timer'),
