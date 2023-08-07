@@ -1,4 +1,4 @@
-output$toksulista  <-active <- ADM_DIVARI[, Pakka_ID]
+active <- ADM_DIVARI[, Pakka_ID]
 cp <- copy(STAT_CURRENT_PAKKA_COMPONENTS)[Pakka_ID %in% active]
 cp[, .N, by = Pakka_ID]
 cp[, row_id := seq_len(.N)]
@@ -25,7 +25,7 @@ found <- find_token#[leng>0]
 #matches <- unlist(str_extract_all(found[, subis2], "\\b[A-Z]\\w+"))
 
 found[, toksut := (str_extract_all(found[, subis2], "\\b[A-Z]\\w+"))]
-ss_found <- found[, .(Pakka_NM, toksut, Omistaja_ID)]
+ss_found <- found[, .(Pakka_NM, toksut, Omistaja_ID, Text)]
 dt_unlisted <- ss_found[,.(toksut = unlist(toksut)), by = setdiff(names(ss_found), 'toksut')]
 
 tot_dt <- rbind(dt_unlisted, tot_dt)
@@ -38,8 +38,10 @@ printtaa <- aggre3[, unique(unlist(toksulist))]
 totres <- c(totres, printtaa)
 }
 tot_dt_agg <- tot_dt[, .N, by = .(Pakka_NM, toksut, Omistaja_ID)]
-analyss <- tot_dt_agg[, .(pakat = paste0(Pakka_NM, collapse = " "), count_pakat = .N, omistajat = paste0(unique(sort(Omistaja_ID)), collapse = "")), by = toksut]
+analyss2 <- tot_dt_agg[, .(pakat = paste0(Pakka_NM, collapse = " "), count_pakat = .N, omistajat = paste0(unique(sort(Omistaja_ID)), collapse = "")), by = toksut]
 
+joinaa <- analyss2[analyss, on = .(toksut = Token)]
+joinaa2 <- analyss[analyss2, on = .(Token = toksut)]
 analyss[order(omistajat, toksut)][, .(omistajat, toksut, pakat, count_pakat )]
 tot_dt_agg[order(Omistaja_ID, Pakka_NM, toksut)][, .(Omistaja_ID, Pakka_NM, toksut)]
 uniikit <- unique(totres)

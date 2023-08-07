@@ -1,51 +1,24 @@
 #tab toksut
 output$toksulista  <- renderTable({
 
-  required_data(c("STAT_CURRENT_PAKKA_COMPONENTS", "ADM_DIVARI"))
-active <- ADM_DIVARI[, Pakka_ID]
-cp <- copy(STAT_CURRENT_PAKKA_COMPONENTS)[Pakka_ID %in% active]
-cp[, .N, by = Pakka_ID]
-cp[, row_id := seq_len(.N)]
-find_token <- cp[, res := grep("token", Text), by = row_id]
+  required_data(c("STAT_TOKENS_IN_DECKS", "ADM_DIVARI"))
+  active <- ADM_DIVARI[, Deck_name]
+  tot_dt_agg <- STAT_TOKENS_IN_DECKS[Pakka_NM  %in% active]
+  analyss <- tot_dt_agg[, .(pakat = paste0(Pakka_NM, collapse = " "), count_pakat = .N, omistajat = paste0(unique(sort(Omistaja_ID)), collapse = "")), by = Token]
 
-find_token[, subis := (str_extract_all(Text, "Create(.*?)token"))]
-find_token[, subis]
+analyss[order(omistajat, Token)][, .(omistajat, Token, pakat, count_pakat )]
+res <- tot_dt_agg[order(Omistaja_ID, Pakka_NM, Token)][, .N, by = .(Omistaja_ID, Pakka_NM, Token)][, N := NULL]
+res[, how_many_decks_uses_this := .N, by = Token]
+how_many_owners_a_token_has <- res[, .N, by = .(Token, Omistaja_ID)][, .(how_many_owners_has_this_token = .N), by = Token]
+join_to_res <- how_many_owners_a_token_has[res, on = "Token"]
 
-regelist <- c("(?<=Create).*(?=token)", "(?<=create).*(?=token)" ,"(?<=Put).*(?=token)" ,"(?<=put).*(?=token)")
-totres <- NULL
-tot_dt <- NULL
-for (regeloop in regelist) {
-  find_token[, subis2 := (str_extract_all(Text, regeloop))]
-  #find_token[, subis3 := (str_extract_all(Text, "(?<=create).*(?=token)"))]
-  #find_token[, subis4 := (str_extract_all(Text, "(?<=put).*(?=token)"))]
-  #find_token[, subis5 := (str_extract_all(Text, "(?<=Put).*(?=token)"))]
-  #find_token[, all_list := list(list(subis2[[1]], subis3[[1]], subis4[[1]], subis5[[1]]))]
-  find_token[, row_id := seq_len(.N)]
-  #find_token[, leng := nchar(subis2[[1]]), by=row_id]
-  #find_token[1, all_list]
-  found <- copy(find_token)#[leng>0]
-  
-  #found[,  grep(pattern, subis2 , value = TRUE)]
-  #matches <- unlist(str_extract_all(found[, subis2], "\\b[A-Z]\\w+"))
-  
-  found[, toksut := (str_extract_all(found[, subis2], "\\b[A-Z]\\w+"))]
-  ss_found <- found[, .(Pakka_NM, toksut, Omistaja_ID)]
-  dt_unlisted <- ss_found[,.(toksut = unlist(toksut)), by = setdiff(names(ss_found), 'toksut')]
-  
-  tot_dt <- rbind(dt_unlisted, tot_dt)
-
-  #aggre2 <- found[, toksulist3 = list(toksut),), by = Pakka_ID]
-  aggre3 <- found[, .(toksulist = (list(toksut)))]
-  #aggre4<- found[, .(toksulist = (list(all_list)))]
-  printtaa <- aggre3[, unique(unlist(toksulist))]
-  totres <- c(totres, printtaa)
-}
-tot_dt_agg <- tot_dt[, .N, by = .(Pakka_NM, toksut, Omistaja_ID)]
-analyss <- tot_dt_agg[, .(pakat = paste0(Pakka_NM, collapse = " "), count_pakat = .N, omistajat = paste0(unique(sort(Omistaja_ID)), collapse = "")), by = toksut]
-
-analyss[order(omistajat, toksut)][, .(omistajat, toksut, pakat, count_pakat )]
-res <- tot_dt_agg[order(Omistaja_ID, Pakka_NM, toksut)][, .(Omistaja_ID, Pakka_NM, toksut)]
-res
+sorttaa_pakat <- join_to_res[,.(Pakka_NM, Token, how_many_decks_uses_this, how_many_owners_has_this_token )][order(Pakka_NM, Token, how_many_decks_uses_this, how_many_owners_has_this_token)]
+sorttaa_toksut <- join_to_res[, .(decks_using = paste0(Pakka_NM, collapse = " - ")), by = .(Token, how_many_decks_uses_this, how_many_owners_has_this_token )][order(Token, how_many_decks_uses_this, how_many_owners_has_this_token)]
+if (input$toksut_vai_pakat == "Decks") {
+  sorttaa_pakat 
+  } else {
+    sorttaa_toksut
+  }
 })
 # uniikit <- unique(totres)
 # 
