@@ -16,13 +16,14 @@ print_us <- join_tokens_and_set[, .N, by = .(Token, uniqueness, tokenset, number
 one_row_per_group <- print_us[, head(.SD, 1), by = .(Token, uniqueness)]
 one_row_per_group
 #print_us_final <- print_us[, .N, by = .(one_set, Token, uniqueness)]
-cat((paste0(one_row_per_group[, .(paste0("1 ", Token, " (", tokenset, ") ",  number, collapse = "\n"))])))
+#cat((paste0(one_row_per_group[, .(paste0("1 ", Token, " (", tokenset, ") ",  number, collapse = "\n"))])))
 
+kortit[, tokenset := paste0("t", Set)]
+all_tokens <- STG_TOKENS[kortit, on = .(Name, tokenset)][!is.na(Token) & Token != "Copy", .(countti = .N, setti = paste0(Set, collapse = ";")), by = .(Token, uniqueness, tokenset)][order(-countti)]
+one_per_unique <- all_tokens[, head(.SD, 1), by = .(Token, uniqueness)]
 
-all_tokens <- STG_TOKENS[kortit, on = "Name"][!is.na(Token) & Token != "Copy", .(countti = .N, setti = paste0(Set, collapse = ";")), by = .(Token)][order(-countti)]
-all_tokens[, one_set := word(setti, 1,1, sep = ";")]
-cat(print(paste0(all_tokens[, .(paste0("1 ", Token, " (T", one_set, ")", collapse = "\n"))]), row.names = FALSE))
-STAT_TOKENS_IN_DECKS <- STG_TOKENS[ss_pakka, on = "Name"][!is.na(Token) & Token != "Copy", .(Token, Pakka_NM, Omistaja_ID)]
+cat(paste0(one_per_unique[, .(paste0("1 ", Token, " (", tokenset, ")", collapse = "\n"))]))
+STAT_TOKENS_IN_DECKS <- STG_TOKENS[ss_pakka, on = "Name"][!is.na(Token) & Token != "Copy", .(Token, Pakka_NM, Omistaja_ID, uniqueness, tokenset, number)]
 #mitkä toksut on vai laurilla. Vain martilla, molemmilla?
 #mitkä toksut on pakassa X?
 
