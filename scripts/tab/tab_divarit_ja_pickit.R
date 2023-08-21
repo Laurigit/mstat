@@ -121,5 +121,11 @@ observeEvent(input$tallenna_bannit,{
   updateData("SRC_DIVARI", ADM_DI_HIERARKIA, input_env = globalenv())
   refresh_counter$a <-   refresh_counter$a +1
   #print("tallenna bannit loppu")
+  rm("SRC_DIVARI")
+  rm("STG_PAKAT")
+  required_data("STG_PAKAT")
+  save(list = "STG_PAKAT", file = "../common_data/STG_PAKAT.RData")
   shinyjs::enable("tallenna_bannit")
+  
+
 })
