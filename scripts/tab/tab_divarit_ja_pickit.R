@@ -15,7 +15,7 @@ output$combUI<-renderUI({
 
   required_data(c("ADM_DIVARI", "ADM_PELIT"))
   ranking <- ADM_DIVARI
-  edellinen_divari <- ADM_PELIT[ADM_PELIT[, .I[which.max(Turnaus_NO)], by=Pakka_ID]$V1][, .(Pakka_ID, Divari)]
+  edellinen_divari <- ADM_PELIT[ADM_PELIT[, .I[which.max(Turnaus_NO)], by=Pakka_ID]$V1][, .(Pakka_ID, Edellinen_Divari = Divari)]
 
  
   #required_data(c("STG_DIVARI", "STG_PAKAT", "STAT_LISAKORTIT", "ADM_PELIT"))
@@ -23,10 +23,17 @@ output$combUI<-renderUI({
   #ranking <- UID_DIVARI(STG_DIVARI, STG_PAKAT , STAT_LISAKORTIT, ADM_PELIT)
   setorder(ranking, Divari, -Score, -Lisakortit_lkm)
   ranking_ss <- ranking[, .(Score, Lisakortit_lkm, Pakka_ID, rank = seq_len(.N)), by = Omistaja_ID ]
-  max_rank <- max(ranking_ss[, rank])
-  ranking_ss[, amount_lottery_tickets := max_rank - rank + 1]
-  ranking_ss[, lottery_tickets := min(runif(amount_lottery_tickets)), by = .(Pakka_ID)]
-  sorted <-  ranking_ss[order(Omistaja_ID, lottery_tickets)]
+  join_prev_div <- edellinen_divari[ranking_ss, on = "Pakka_ID"]
+  join_prev_div[, I_won_my_div := rank == min(rank), by = .(Edellinen_Divari, Omistaja_ID)]
+  max_div <- join_prev_div[, max(Edellinen_Divari)]
+  min_div <- join_prev_div[, min(Edellinen_Divari)]
+  join_prev_div[, my_new_div := pmin(pmax(ifelse(I_won_my_div == TRUE, Edellinen_Divari - 1, Edellinen_Divari + 1), min_div), max_div)]
+  setorder(join_prev_div, Omistaja_ID, my_new_div, rank)
+  join_prev_div[, new_rank := seq_len(.N), by = .(Omistaja_ID)]
+  max_rank <- max(join_prev_div[, new_rank])
+  join_prev_div[, amount_lottery_tickets := max_rank - new_rank + 1]
+  join_prev_div[, lottery_tickets := min(runif(amount_lottery_tickets)), by = .(Pakka_ID)]
+  sorted <-  join_prev_div[order(Omistaja_ID, lottery_tickets)]
   sorted[, lottery_order := seq_len(.N), by = Omistaja_ID]
   
   prev_divs <- ranking[, .(Omistaja_ID, Prev_div = Divari)][order(Omistaja_ID, Prev_div)][, .(Prev_div)]
@@ -42,7 +49,7 @@ output$combUI<-renderUI({
   if (input$randomize_divisions == TRUE) {
     joinrank[, used_divari := Prev_div]
   } else {
-    joinrank[, used_divari := Divari]
+    joinrank[, used_divari := my_new_div]
   }
   
   divarilist <- joinrank[, .N, by = .(Divari, Picked)]
@@ -73,7 +80,7 @@ output$combUI<-renderUI({
               Omistaja <- joinrank[Pakka_ID == j, Omistaja_ID]
               Score <- joinrank[Pakka_ID == j, Score]
               Kortit <- joinrank[Pakka_ID == j, Lisakortit_lkm]
-              Old_divari <- edellinen_divari[Pakka_ID == j, Divari]
+              Old_divari <- edellinen_divari[Pakka_ID == j, Edellinen_Divari]
               input_label <- paste0(pakkanimi, ": ", Score, " Cards: ", Kortit, "Old_Div :", Old_divari)
               
              
