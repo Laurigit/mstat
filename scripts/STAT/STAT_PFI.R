@@ -1,4 +1,4 @@
-required_data(c("STAT_LISAKORTIT", "ADM_PELIT", "STG_PAKAT", "INT_PFI", "STG_PFI"))
+required_data(c("STAT_LISAKORTIT", "ADM_PELIT", "STG_PAKAT", "INT_PFI", "STG_PFI", "STAT_VAHENNYSKORTIT"))
 
 current_manastack_cards <- INT_PFI[Pakka_form_ID == Current_Pakka_form_ID,. (Manastack_Cards = Kortti_lkm_manastack, Pakka_ID)]
 maxturnaus_per_pakka <- STAT_LISAKORTIT[, .(Turnaus_NO = max(Turnaus_NO)), by = .(Pakka_ID)]
@@ -30,15 +30,30 @@ joinlisa <- onlymax[joinpakat, on = "Pakka_ID"]
 #joinmanastackLisa
 joinlisaManaStack <- current_manastack_cards[joinlisa, on = "Pakka_ID"]
 
-res_table <- joinlisaManaStack[Retired == 0 | Side == 1, .(Deck = Pakka_NM,
-                          Owner = Omistaja_ID,
-                          Deck_size = Lisakortit_lkm,
-                          Deck_size_MS = Manastack_Cards,
-                          Wins = Pfi_voitot,
-                          Losses = Pfi_tappiot,
-                          Valid = ifelse((Pfi_voitot + Pfi_tappiot == 0) & floor(Lisakortit_lkm + 40) != Manastack_Cards, 0, 1))]
-setorder(res_table, -Wins)
+#join vahennyskortit
+
+joinvah <- STAT_VAHENNYSKORTIT[joinlisaManaStack, on = "Pakka_ID"]
+joinvah[, Lisakortit_lkm := ifelse(is.na(Lisakortit_lkm), 0, Lisakortit_lkm)]
+joinvah[, Card_cnt := Lisakortit_lkm - vahennyskortit]
+res_table <- joinvah[Retired == 0 & Side == 0 & Card_cnt != 0, .(
+                          Deck = Pakka_NM,
+                          Own = Omistaja_ID,
+                          Incr = round(Lisakortit_lkm, 2),
+                          Decr = round(vahennyskortit, 2),
+                          Min_cards = pmax(floor(Card_cnt) + 40, 40),
+                          Act_cards = Manastack_Cards,
+                          W = Pfi_voitot,
+                          L = Pfi_tappiot,
+                          OK = ifelse((Pfi_voitot + Pfi_tappiot == 0) & floor(Card_cnt + 40) <= Manastack_Cards, 0, 1))]
+setorder(res_table, -Min_cards)
 
 STAT_PFI <- res_table
+todb <- STAT_PFI[, .(Deck,
+                     Owner = Own,
+                     Deck_size = Min_cards,
+                     Deck_size_MS = Act_cards,
+                     Wins = W,
+                     Losses = L,
+                     Valid = OK)]
 con <- connDB(con)
-dbWT(con, STAT_PFI)
+dbWT(con, todb)

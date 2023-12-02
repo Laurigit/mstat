@@ -1,21 +1,12 @@
 tabItem(tabName = "pakkaupload",
         fluidPage(
           
-          fluidRow(column(3,
-                          fileInput("file1",
-                                    "Valitse pakkoja .json muodossa",
-                                    multiple = TRUE,
-                                    accept = c(".json"))),
+          fluidRow(
                    column(3,
                           offset = 3,
                           fileInput("anyfile",
                                     "lähetä mikä tahansa tiedosto",
-                                    multiple = TRUE)),
-                   column(3,
-                          actionButton("input_lataa_valitut_pakat", "Update selected decks"))),
-          
-          fluidRow(tableOutput("contents")),
-          fluidRow(verbatimTextOutput("text_validointi")),
+                                    multiple = TRUE))),
           fluidRow(box(DT::dataTableOutput("pfi_taulukko"),
                        title = ("Nykypakkastatsit"),
                        solidHeader = TRUE,
