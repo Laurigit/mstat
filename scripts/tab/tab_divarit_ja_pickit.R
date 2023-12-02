@@ -1,10 +1,15 @@
 
+observeEvent(input$randomize_divisions, {
+  
+})
+
+
 #divariNumericinput
 output$combUI<-renderUI({
   refresh_counter$a
   message("output$combUI")
   required_data("ADM_PICKIT")
-  divarit<-ADM_PICKIT
+  divarit <- copy(ADM_PICKIT)
   # required_data(c("STG_DIVARI", "STG_PAKAT"))
   # divarit <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
 
@@ -17,9 +22,29 @@ output$combUI<-renderUI({
   
   #ranking <- UID_DIVARI(STG_DIVARI, STG_PAKAT , STAT_LISAKORTIT, ADM_PELIT)
   setorder(ranking, Divari, -Score, -Lisakortit_lkm)
-  ranking_ss <- ranking[, .(Score, Lisakortit_lkm, Pakka_ID, rank = seq_len(.N))]
-  joinrank <- ranking_ss[divarit, on = "Pakka_ID"]
+  ranking_ss <- ranking[, .(Score, Lisakortit_lkm, Pakka_ID, rank = seq_len(.N)), by = Omistaja_ID ]
+  max_rank <- max(ranking_ss[, rank])
+  ranking_ss[, amount_lottery_tickets := max_rank - rank + 1]
+  ranking_ss[, lottery_tickets := min(runif(amount_lottery_tickets)), by = .(Pakka_ID)]
+  sorted <-  ranking_ss[order(Omistaja_ID, lottery_tickets)]
+  sorted[, lottery_order := seq_len(.N), by = Omistaja_ID]
+  
+  prev_divs <- ranking[, .(Omistaja_ID, Prev_div = Divari)][order(Omistaja_ID, Prev_div)][, .(Prev_div)]
+  bindaa_prevdiv <- cbind(sorted, prev_divs)
+  #sorted
+  #sorted[1:8, mean(rank)]
+  #sorted[9:16, mean(rank)]
+ 
+  
+  joinrank <- bindaa_prevdiv[divarit, on = .(Pakka_ID, Omistaja_ID)]
   setorder(joinrank, rank)
+  
+  if (input$randomize_divisions == TRUE) {
+    joinrank[, used_divari := Prev_div]
+  } else {
+    joinrank[, used_divari := Divari]
+  }
+  
   divarilist <- joinrank[, .N, by = .(Divari, Picked)]
   #divarit <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
   setorder(divarilist, -Picked, Divari)
@@ -56,7 +81,7 @@ output$combUI<-renderUI({
                 column(8,
                      numericInput(paste0("nimput", divarit[Pakka_ID == j, Pakka_ID]),
                                   label = input_label,
-                                  value = divarit[Pakka_ID == j, Divari])),
+                                  value = joinrank[Pakka_ID == j, used_divari])),
                 column(4,
                      checkboxInput(paste0("checkbox", divarit[Pakka_ID == j, Pakka_ID]),
                                    label = substr(paste0(divarit[Pakka_ID == j, Pakka_NM]), 1, 3),
