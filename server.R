@@ -451,8 +451,14 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
    
     })
   })
-
-
+  
+  #just keeps server alive
+  keep_alive <- shiny::reactiveTimer(intervalMs = 10000, 
+                                     session = shiny::getDefaultReactiveDomain())
+  
+  shiny::observe({keep_alive()})
+#stop keeping server alive.
+  
   observeEvent(input$sidebarmenu,{
     required_data("STAT_TURNAUS")
     maxturnaus <-max(STAT_TURNAUS[,Turnaus_NO])
