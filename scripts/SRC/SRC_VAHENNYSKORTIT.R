@@ -5,3 +5,4 @@ SRC_VAHENNYSKORTIT <- luecsv("vahennyskortit.csv")
 SRC_VAHENNYSKORTIT[, ':=' (TurnausNo = as.numeric(TurnausNo),
                           vahennyskortit_ykkospick = as.numeric(vahennyskortit_ykkospick),
                           jakaja = as.numeric(jakaja))]
+dbWriteTable(con, "SRC_VAHENNYSKORTIT", SRC_VAHENNYSKORTIT, overwrite = TRUE)

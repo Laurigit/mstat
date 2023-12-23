@@ -212,6 +212,8 @@ updateTabItems(session,"sidebarmenu", "tab_overlay")
     intToUtf8(input$mydata[[1]])
   })
  
+  #read vahennyskortit for draft
+  required_data("SRC_VAHENNYSKORTIT")
 
   # observeEvent(input$mydata, {
   #   ekakirjain <- str_sub(intToUtf8(input$mydata[[1]], 1, 1))
