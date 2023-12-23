@@ -4,9 +4,11 @@ required_data(c("SRC_CARDS", "SRC_DIVARI"))
 
 #muuttuja Sum_maindeck_DCID yrittää tarkailla, onko maindeckiin tehty muutoksia
 
-pakkametataulu_uus <- SRC_CARDS[, .(Sum_maindeck_DCID = sum((Maindeck * DRAFT_CARDS_ID)),
-                                                            Kortti_lkm_manastack = sum(Maindeck),
+pakkametataulu_uus <- SRC_CARDS[, .(Sum_maindeck_DCID = sum((as.integer(Maindeck) * as.integer(DRAFT_CARDS_ID)))/100000,
+                                                            Kortti_lkm_manastack = sum(as.integer(Maindeck)),
                                     Valid_from_DT = max(Valid_from_DT)), by = .(Pakka_form_ID, Pakka_ID)]
+
+
 pakkametataulu_uus[, ':=' (Hinta = 1,
                            Hinta_low = 1,
                            Hinta_high = 1,
