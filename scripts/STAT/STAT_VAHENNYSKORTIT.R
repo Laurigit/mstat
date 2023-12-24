@@ -17,7 +17,7 @@ aggr_cards <- ss_cards[Pakka_ID %in% eisidet,. (Valid_from_Date = min(Valid_from
 
 ss_draft <-  STG_DRAFT_CARDS[PICKED == 1, .(PICK_ORDER, DRAFT_CARDS_ID, PICK_DT)]#[DRAFT_CARDS_ID == 5]
 
-join_draft_and_decklists <- ss_draft[aggr_cards, on = "DRAFT_CARDS_ID"][!is.na(PICK_ORDER)]
+join_draft_and_decklists <- ss_draft[aggr_cards, on = "DRAFT_CARDS_ID"][!is.na(PICK_ORDER)]#[Pakka_ID == 46]
 
 ss_jat <- STAT_TURNAUSAJAT[, .(alku = as.IDate(Aloitus_DT), lopp = as.IDate(Lopetus_DT), Turnaus_NO)]
 
