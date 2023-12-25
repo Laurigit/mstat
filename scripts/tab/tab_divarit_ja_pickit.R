@@ -5,11 +5,13 @@ observeEvent(input$randomize_divisions, {
 
 
 #divariNumericinput
-output$combUI<-renderUI({
+output$combUI <- renderUI({
+
   refresh_counter$a
   message("output$combUI")
   required_data("ADM_PICKIT")
   divarit <- copy(ADM_PICKIT)
+  divarit[is.na(Divari), Divari := 5]
   # required_data(c("STG_DIVARI", "STG_PAKAT"))
   # divarit <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
 
@@ -56,12 +58,13 @@ output$combUI<-renderUI({
   #divarit <- UID_PICKIT(STG_DIVARI, STG_PAKAT)
   setorder(divarilist, -Picked, Divari)
   divarilist[, rivi := seq_len(.N)]
+
   fluidPage(
   lapply(divarilist[,rivi], function(i) {
    
     loop_divari <- divarilist[i, Divari]
     loop_picked <- divarilist[i, Picked]
-  
+ 
 
     fluidRow(
       # box(
@@ -69,12 +72,13 @@ output$combUI<-renderUI({
     
             lapply(sort(joinrank[Divari == loop_divari & Picked == loop_picked, unique(Omistaja_ID)]), function(k) {
               loop_omistaja <- k
+      
               title_text <- paste0("Div: ", loop_divari, " Picked: ", loop_picked)
               
 
               box(width = 6,
                   title = title_text,
-                 
+        
               lapply(joinrank[Divari == loop_divari & Picked == loop_picked & Omistaja_ID == loop_omistaja, Pakka_ID], function(j){
               pakkanimi <- joinrank[Pakka_ID == j, Pakka_NM]
               Omistaja <- joinrank[Pakka_ID == j, Omistaja_ID]
@@ -83,7 +87,7 @@ output$combUI<-renderUI({
               Old_divari <- edellinen_divari[Pakka_ID == j, Edellinen_Divari]
               input_label <- paste0(pakkanimi, ": ", Score, " Cards: ", Kortit, "Old_Div :", Old_divari)
               
-             
+    
               fluidRow(        
                 column(8,
                      numericInput(paste0("nimput", divarit[Pakka_ID == j, Pakka_ID]),
@@ -106,18 +110,23 @@ output$combUI<-renderUI({
 
 #paivitä bannit
 observeEvent(input$tallenna_bannit,{
-#browser()
+
   shinyjs::disable("tallenna_bannit")
   
  # print("tallenna bannit alku")
   required_data("STG_DIVARI")
+  
   divarit<-STG_DIVARI[Retired == 0 & Side == 0,. (Pakka_ID, Divari, Picked)]
   divarit[,syntax_cb:=(text=paste0("checkbox",Pakka_ID))]
   divarit[,syntax:=(text=paste0("nimput", Pakka_ID))]
-  
+  browser()
   lapply(divarit[,syntax_cb],function(i) {
     inputti <- input[[i]]
-   # print(inputti)
+    print(inputti)
+    if (is.null(inputti)) {
+      inputti <-  0
+    } 
+
     divarit[syntax_cb==i,Picked:=as.numeric((inputti))]
     
   })
