@@ -44,16 +44,18 @@ res_table <- joinvah[Retired == 0 & Side == 0 & Card_cnt != 0, .(
                           Act_cards = Manastack_Cards,
                           W = Pfi_voitot,
                           L = Pfi_tappiot,
-                          OK = ifelse((Pfi_voitot + Pfi_tappiot == 0) & floor(Card_cnt + 40) <= Manastack_Cards, 0, 1))]
+                          OK = ifelse((Pfi_voitot + Pfi_tappiot == 0) & floor(Card_cnt + 40) <= Manastack_Cards, 0, 1),
+                          Card_cnt)]
 setorder(res_table, -Min_cards)
 
 STAT_PFI <- res_table
 todb <- STAT_PFI[, .(Deck,
                      Owner = Own,
-                     Deck_size = Min_cards,
+                     Deck_size = pmax(Card_cnt + 40, 40),
                      Deck_size_MS = Act_cards,
                      Wins = W,
                      Losses = L,
                      Valid = OK)]
 con <- connDB(con)
-dbWT(con, todb)
+dbWT(con, todb, "STAT_PFI")
+STAT_PFI[, Card_cnt := NULL]

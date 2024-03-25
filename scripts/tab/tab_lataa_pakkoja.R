@@ -12,9 +12,9 @@ output$pfi_taulukko <- renderDataTable({
   rowCallback = DT::JS(
     'function(row, data) {
     // Bold cells for those >= 5 in the first column
-    if (parseFloat(data[8]) >= 4)
+    if (parseFloat(data[7]) >= 4)
     $("td", row).css("background", "Orange");
-     if (parseFloat(data[7]) >= 4)
+     if (parseFloat(data[6]) >= 4)
     $("td", row).css("background", "DodgerBlue");
       if (parseFloat(data[9]) == 0)
     $("td", row).css("background", "Red");}')
