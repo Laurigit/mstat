@@ -1,18 +1,29 @@
-output$peliAsetuksetUI<-renderUI({
+output$peliAsetuksetUI <- renderUI({
   required_data("STG_DIVARI")
   divarit <- STG_DIVARI
-  divarit<-divarit[Picked==1,.N,by=.(Divari)][order(Divari)]
+  divarit <- divarit[Picked == 1, .N, by = .(Divari)][order(Divari)]
   
   lapply(divarit[,Divari], function(i) {
     fluidRow(
       #column(3,textOutput(paste0("textPeliasetusDivari",i),paste0("Divari: ",i)))
-      column(3,checkboxInput(paste0("checkbox_BO_mode",i),paste0("Best-of-mode päällä. Divari: ",i))),
-      column(5,numericInput(paste0("numeric_rounds",i),paste0("Montako runkosarjakierrosta. Divari: ",i), value = 1)),
-      column(4,numericInput(paste0("numeric_ottelut",i),paste0("Montako pelia per ottelu. Divari: ",i), value = 2))
+      column(3, checkboxInput(paste0("checkbox_BO_mode", i),paste0("Best-of-mode päällä. Divari: ", i))),
+      column(5, numericInput(paste0("numeric_rounds", i),paste0("Montako runkosarjakierrosta. Divari: ", i), value = 1)),
+      column(4, numericInput(paste0("numeric_ottelut", i),paste0("Montako pelia per ottelu. Divari: ", i), value = 2))
     )
   })
   
 })
+
+output$check_if_unplayed_games <- renderUI({
+  refresh_counter$a 
+  required_data("ADM_PELIT")
+  pelaamattomat <- nrow(ADM_PELIT[is.na(Voittaja)]) / 2
+  HTML(paste0("Check if the tournament is finished. Estimated games left: ", pelaamattomat))
+  
+})
+
+
+
 
 #luo uusi turnaus
 observeEvent(input$luo_peleja,{
